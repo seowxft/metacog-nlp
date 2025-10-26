@@ -1,0 +1,70 @@
+.textBox {
+  max-width: 85%;
+  margin: auto;
+  margin-top: 90px;
+  margin-bottom: 90px;
+  height: auto;
+  color: white;
+  font-size: 18px;
+  overflow: auto;
+}
+
+.textBox2 {
+  min-width: 80vw;
+  justify-content: center;
+  height: auto;
+  color: white;
+  font-size: 18px;
+}
+
+/* button css */
+.sv_nav {
+  font-family: "Calibri", "Calibri", cursive;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+/* table stripes css */
+/* tr:nth-child(even) {
+  background-color: #1e293b;
+} */
+
+/* the entire table after header css */
+.sv_row {
+  font-size: 17px;
+  margin-top: 10px;
+  width: auto;
+}
+
+.sd-matrix__table tbody tr.sd-table__row:nth-child(even) td.sd-table__cell {
+  background-color: #1e293b; /* The new dark slate-blue color */
+}
+
+/* response options css */
+.sv_q_m_cell {
+  font-size: 15px;
+  padding: 0px 0px;
+}
+
+/* item response  header css */
+th:nth-child(1),
+td:nth-child(1) {
+  font-size: 17px;
+  width: auto;
+  font-weight: bold;
+}
+
+button {
+  font-family: "Calibri", monospace;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
