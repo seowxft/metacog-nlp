@@ -12,7 +12,7 @@ import * as ConfSlider from "./drawassets/DrawConfSlider.jsx";
 import * as ConfSliderGlobal from "./drawassets/DrawConfSliderGlobal.jsx";
 
 import style from "./style/perTaskStyle.module.css";
-//import { DATABASE_URL } from "./config";
+import { DATABASE_URL } from "./config.jsx";
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -924,7 +924,7 @@ class PerTask extends React.Component {
       dotStairLeft: this.state.dotStairLeft,
       dotStairRight: this.state.dotStairRight,
     };
-    /* 
+
     try {
       fetch(`${DATABASE_URL}/per_task_data/` + prolificID, {
         method: "POST",
@@ -936,7 +936,7 @@ class PerTask extends React.Component {
       });
     } catch (e) {
       console.log("Cant post?");
-    } */
+    }
 
     //  console.log("trialNum: " + this.state.trialNum);
     //  console.log("trialNumPerBlock: " + this.state.trialNumPerBlock);
@@ -997,7 +997,7 @@ class PerTask extends React.Component {
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
     };
-    /* 
+
     try {
       fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
         method: "POST",
@@ -1009,7 +1009,7 @@ class PerTask extends React.Component {
       });
     } catch (e) {
       console.log("Cant post?");
-    } */
+    }
 
     if (this.state.quizState === "pre") {
       // begin the task

@@ -16,7 +16,7 @@ import style from "./style/perTaskStyle.module.css";
 
 import astrodude from "./img/astronaut.png";
 
-//import { DATABASE_URL } from "./config";
+import { DATABASE_URL } from "./config.jsx";
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1355,7 +1355,7 @@ class PerTut extends React.Component {
       dotStairRight: this.state.dotStairRight,
     };
 
-    /* try {
+    try {
       fetch(`${DATABASE_URL}/per_tutorial_data/` + prolificID, {
         method: "POST",
         headers: {
@@ -1366,7 +1366,7 @@ class PerTut extends React.Component {
       });
     } catch (e) {
       console.log("Cant post?");
-    } */
+    }
 
     setTimeout(
       function () {
@@ -1399,7 +1399,7 @@ class PerTut extends React.Component {
       quizCorTotal: this.state.quizCorTotal,
     };
 
-    /*     try {
+    try {
       fetch(`${DATABASE_URL}/per_quiz_test/` + prolificID, {
         method: "POST",
         headers: {
@@ -1411,7 +1411,7 @@ class PerTut extends React.Component {
     } catch (e) {
       console.log("Cant post?");
     }
- */
+
     setTimeout(
       function () {
         this.quizReset();

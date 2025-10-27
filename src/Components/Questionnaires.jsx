@@ -29,6 +29,8 @@ import { demo } from "./quest/demo.jsx";
 import { icar1 } from "./quest/icar1.jsx";
 import { icar2 } from "./quest/icar2.jsx";
 
+//import { DATABASE_URL } from "./config.jsx";
+
 class Questionnaires extends React.Component {
   constructor(props) {
     super(props);
