@@ -7,4 +7,9 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
   },
+  preview: {
+    // We only need to set allowedHosts here.
+    // The port and host are set by the "start" script.
+    allowedHosts: ["metacog-nlp.osc-fr1.scalingo.io"],
+  },
 });
