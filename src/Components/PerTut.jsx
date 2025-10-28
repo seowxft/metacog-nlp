@@ -36,16 +36,14 @@ class PerTut extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-import React from 'react';
-
-class MyComponent extends React.Component {
-  constructor(props) {
-    super(props);
-
-    var sectionTime = Math.round(performance.now());
-
     // --- Declare variables OUTSIDE the if/else ---
-    let userID, prolificID, date, startTime, condition, memCorrectPer, perCorrectPer;
+    let userID,
+      prolificID,
+      date,
+      startTime,
+      condition,
+      memCorrectPer,
+      perCorrectPer;
 
     var debug = true; // Still using manual flag for now
 
@@ -58,8 +56,8 @@ class MyComponent extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
-      console.log("DEBUG MODE: Using hardcoded values."); 
-    } else { 
+      console.log("DEBUG MODE: Using hardcoded values.");
+    } else {
       prolificID = this.props.state.prolificID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
@@ -154,7 +152,6 @@ class MyComponent extends React.Component {
       instructNum: 1, //start from 1
       taskScreen: false,
       taskSection: null,
-
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
     };
@@ -186,8 +183,6 @@ class MyComponent extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   /// KEYBOARD HANDLES ////
-
-
 
   // This handles instruction screen within the component USING KEYBOARD
   handleInstruct(keyPressed) {
@@ -1442,91 +1437,88 @@ class MyComponent extends React.Component {
   ///////////////////////////////////////////////////////////////
   render() {
     let text;
-  
-    if (
-        this.state.instructScreen === true &&
-        this.state.taskScreen === false
-      ) {
-        document.addEventListener("keyup", this._handleInstructKey);
-        document.addEventListener("keyup", this._handleBeginKey);
-        text = <div> {this.instructText(this.state.instructNum)}</div>;
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "iti"
-      ) {
-        text = <div className={style.boxStyle}></div>;
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "fixation"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawFix />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "stimulus"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawDots.DrawDots
-              dotRadius={this.state.dotRadius}
-              dotDiffLeft={this.state.dotDiffLeft}
-              dotDiffRight={this.state.dotDiffRight}
-            />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "choice"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawBox />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "choiceFeedback"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawChoice.DrawChoice choice={this.state.choice} />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "corFeedback"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawCorFeedback.DrawFeedback
-              choice={this.state.choice}
-              correct={this.state.correct}
-            />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "quiz"
-      ) {
-        text = (
-          <div>
-            {this.quizText(this.state.quizNum)}
-            <br />
-            <br />
-            <center>Please use the top row number keys to respond.</center>
-          </div>
-        );
-      }
+
+    if (this.state.instructScreen === true && this.state.taskScreen === false) {
+      document.addEventListener("keyup", this._handleInstructKey);
+      document.addEventListener("keyup", this._handleBeginKey);
+      text = <div> {this.instructText(this.state.instructNum)}</div>;
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "iti"
+    ) {
+      text = <div className={style.boxStyle}></div>;
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "fixation"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawFix />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "stimulus"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawDots.DrawDots
+            dotRadius={this.state.dotRadius}
+            dotDiffLeft={this.state.dotDiffLeft}
+            dotDiffRight={this.state.dotDiffRight}
+          />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "choice"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawBox />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "choiceFeedback"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawChoice.DrawChoice choice={this.state.choice} />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "corFeedback"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawCorFeedback.DrawFeedback
+            choice={this.state.choice}
+            correct={this.state.correct}
+          />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "quiz"
+    ) {
+      text = (
+        <div>
+          {this.quizText(this.state.quizNum)}
+          <br />
+          <br />
+          <center>Please use the top row number keys to respond.</center>
+        </div>
+      );
+    }
 
     return (
       <>
