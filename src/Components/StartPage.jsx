@@ -18,18 +18,40 @@ class StartPage extends React.Component {
     const survey = new Model(json); // Create an instance of the Model
     survey.applyTheme(LayeredDarkPanelless); // Apply your chosen theme
 
-    const prolificID = this.props.state?.prolificID;
+    // --- Declare variables OUTSIDE the if/else ---
+    let userID, prolificID, date, dateTime, startTime, condition;
 
-    // The rest of your logic remains the same
-    var dateTime = new Date().toLocaleString();
-    var currentDate = new Date();
-    var date = currentDate.getDate();
-    var month = currentDate.getMonth();
-    var year = currentDate.getFullYear();
-    var dateString = date + "-" + (month + 1) + "-" + year;
-    var timeString = currentDate.toTimeString();
-    var userID = Math.floor(100000 + Math.random() * 900000);
-    var condition = 2;
+    var debug = true; // Still using manual flag for now
+
+    if (debug === true) {
+      // --- Assign debug values ---
+      userID = 100;
+      prolificID = 100;
+      date = 100; // Note: You might want a real date string here for debugging
+      dateTime = 100;
+      startTime = 100; // Note: You might want a real timestamp for debugging
+      condition = 1;
+      console.log("DEBUG MODE: Using hardcoded values.");
+    } else {
+      // The rest of your logic remains the same
+
+      prolificID = this.props.state.prolificID;
+      userID = Math.floor(100000 + Math.random() * 900000);
+      dateTime = new Date().toLocaleString();
+      var currentDate = new Date();
+      var dateString = currentDate.getDate();
+      var month = currentDate.getMonth();
+      var year = currentDate.getFullYear();
+      date = dateString + "-" + (month + 1) + "-" + year;
+      startTime = currentDate.toTimeString();
+      if (userID % 2 === 0) {
+        condition = 1;
+        console.log("Start with perception task.");
+      } else {
+        condition = 2;
+        console.log("Start with memory task.");
+      }
+    }
 
     this.state = {
       userID: userID,
@@ -37,7 +59,7 @@ class StartPage extends React.Component {
       condition: condition,
       date: dateString,
       dateTime: dateTime,
-      startTime: timeString,
+      startTime: startTime,
       consentComplete: 0,
     };
 

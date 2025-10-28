@@ -12,16 +12,25 @@ class EndPage extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-    //when deug
-    //  const userID = 100;
-    //  const date = 100;
-    //  const startTime = 100;
+    let userID, prolificID, date, startTime, condition;
 
-    const userID = this.props.state.userID;
-    const prolificID = this.props.state.prolificID;
-    const condition = this.props.state.condition;
-    const date = this.props.state.date;
-    const startTime = this.props.state.startTime;
+    var debug = true; // Still using manual flag for now
+
+    if (debug === true) {
+      // --- Assign debug values ---
+      userID = 100;
+      prolificID = 100;
+      date = 100; // Note: You might want a real date string here for debugging
+      startTime = 100; // Note: You might want a real timestamp for debugging
+      condition = 100;
+      console.log("DEBUG MODE: Using hardcoded values.");
+    } else {
+      prolificID = this.props.state.prolificID;
+      condition = this.props.state.condition;
+      userID = this.props.state.userID;
+      date = this.props.state.date;
+      startTime = this.props.state.startTime;
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +52,7 @@ class EndPage extends React.Component {
       instructScreen: true,
       instructNum: 1, //start from 1
 
-      debug: false,
+      debug: debug,
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////

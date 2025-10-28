@@ -36,24 +36,38 @@ class PerTut extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-    //when deug
-    const userID = 100;
-    const prolificID = 100;
-    const date = 100;
-    const startTime = 100;
-    const condition = 100;
+import React from 'react';
 
-    const memCorrectPer = 0.9;
-    const perCorrectPer = 0; //if perception task is done, it will be filled, else zero
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
 
-    //const prolificID = this.props.state.prolificID;
-    // const condition = this.props.state.condition;
-    // const userID = this.props.state.userID;
-    //const date = this.props.state.date;
-    //const startTime = this.props.state.startTime;
+    var sectionTime = Math.round(performance.now());
 
-    //const memCorrectPer = this.props.state.memCorrectPer;
-    //  const perCorrectPer = this.props.state.perCorrectPer; //if perception task is done, it will be filled, else zero
+    // --- Declare variables OUTSIDE the if/else ---
+    let userID, prolificID, date, startTime, condition, memCorrectPer, perCorrectPer;
+
+    var debug = true; // Still using manual flag for now
+
+    if (debug === true) {
+      // --- Assign debug values ---
+      userID = 100;
+      prolificID = 100;
+      date = 100; // Note: You might want a real date string here for debugging
+      startTime = 100; // Note: You might want a real timestamp for debugging
+      condition = 100;
+      memCorrectPer = 0.9;
+      perCorrectPer = 0;
+      console.log("DEBUG MODE: Using hardcoded values."); 
+    } else { 
+      prolificID = this.props.state.prolificID;
+      condition = this.props.state.condition;
+      userID = this.props.state.userID;
+      date = this.props.state.date;
+      startTime = this.props.state.startTime;
+      memCorrectPer = this.props.state.memCorrectPer;
+      perCorrectPer = this.props.state.perCorrectPer;
+    }
 
     var trialNumTotal = 4; //26
 
@@ -67,6 +81,7 @@ class PerTut extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
     // SET STATES
     this.state = {
+      debug: debug,
       // demo paramters
       prolificID: prolificID,
       condition: condition,
@@ -139,7 +154,6 @@ class PerTut extends React.Component {
       instructNum: 1, //start from 1
       taskScreen: false,
       taskSection: null,
-      debug: false,
 
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
@@ -158,7 +172,6 @@ class PerTut extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    this.handleDebugKey = this.handleDebugKey.bind(this);
     this.handleInstruct = this.handleInstruct.bind(this);
     this.handleBegin = this.handleBegin.bind(this);
     this.handleResp = this.handleResp.bind(this);
@@ -174,32 +187,7 @@ class PerTut extends React.Component {
   //////////////////////////////////////////////////////////////////////////////////////////////
   /// KEYBOARD HANDLES ////
 
-  handleDebugKey(pressed) {
-    var whichButton = pressed;
 
-    if (whichButton === 10) {
-      document.removeEventListener("keyup", this._handleDebugKey);
-      setTimeout(
-        function () {
-          this.redirectToTarget();
-        }.bind(this),
-        0
-      );
-    }
-  }
-
-  _handleDebugKey = (event) => {
-    var pressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is SPACEBAR
-        pressed = 10;
-        this.handleDebugKey(pressed);
-        break;
-      default:
-    }
-  };
 
   // This handles instruction screen within the component USING KEYBOARD
   handleInstruct(keyPressed) {
@@ -1454,8 +1442,8 @@ class PerTut extends React.Component {
   ///////////////////////////////////////////////////////////////
   render() {
     let text;
-    if (this.state.debug === false) {
-      if (
+  
+    if (
         this.state.instructScreen === true &&
         this.state.taskScreen === false
       ) {
@@ -1539,20 +1527,6 @@ class PerTut extends React.Component {
           </div>
         );
       }
-    } else if (this.state.debug === true) {
-      document.addEventListener("keyup", this._handleDebugKey);
-      text = (
-        <div>
-          <p>
-            <span>DEBUG MODE</span>
-            <br />
-            <span>
-              Press [<strong>SPACEBAR</strong>] to skip to next section.
-            </span>
-          </p>
-        </div>
-      );
-    }
 
     return (
       <>

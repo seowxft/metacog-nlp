@@ -35,13 +35,27 @@ class Questionnaires extends React.Component {
   constructor(props) {
     super(props);
 
-    // --- 1. Prepare Data and Survey Model in the Constructor ---
-    const userID = 1; // For debug
-    const prolificID = 1;
-    const condition = 1;
-    const date = 1;
-    const startTime = 1;
     const sectionTime = Math.round(performance.now());
+    // --- Declare variables OUTSIDE the if/else ---
+    let userID, prolificID, date, startTime, condition;
+
+    var debug = true; // Still using manual flag for now
+
+    if (debug === true) {
+      // --- Assign debug values ---
+      userID = 100;
+      prolificID = 100;
+      date = 100; // Note: You might want a real date string here for debugging
+      startTime = 100; // Note: You might want a real timestamp for debugging
+      condition = 100;
+      console.log("DEBUG MODE: Using hardcoded values.");
+    } else {
+      prolificID = this.props.state.prolificID;
+      condition = this.props.state.condition;
+      userID = this.props.state.userID;
+      date = this.props.state.date;
+      startTime = this.props.state.startTime;
+    }
 
     let quizLabel = [
       "AES",
@@ -110,7 +124,7 @@ class Questionnaires extends React.Component {
       // Store shuffled labels for the timer callback
       shuffledQuizLabels: quizLabel,
 
-      debug: false,
+      debug: debug,
     };
     // Bind methods to `this`
     this.survey = survey;
@@ -210,56 +224,45 @@ class Questionnaires extends React.Component {
   // --- 5. Render Method ---
   render() {
     let text;
-    if (this.state.debug === false) {
-      if (
-        this.state.instructScreen === true &&
-        this.state.questScreen === false
-      ) {
-        text = (
-          <>
-            <div className={style.bg} />
-            <div className={style.textFrame}>
-              <div className={style.fontStyle}>
-                For the last section, we would like you to:
-                <br />
-                <br />
-                <li>Provide some demographic information (age and gender)</li>
-                <li>Complete {this.state.qnTotal} questionnaires</li>
-                <li>Complete a short IQ quiz</li>
-                <br />
-                Do read the instructions for each quiz, which will be positioned
-                at the top of each page, carefully.
-                <br />
-                <br />
-                <center>
-                  Please press [<strong>SPACEBAR</strong>] to begin.
-                </center>
-              </div>
-            </div>
-          </>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.questScreen === true
-      ) {
-        text = (
-          <div>
-            <Survey model={this.survey} />
-          </div>
-        );
-      }
-    } else if (this.state.debug === true) {
+
+    if (
+      this.state.instructScreen === true &&
+      this.state.questScreen === false
+    ) {
       text = (
         <>
           <div className={style.bg} />
           <div className={style.textFrame}>
             <div className={style.fontStyle}>
-              Press the [<strong>SPACEBAR</strong>] to skip to next section.
+              For the last section, we would like you to:
+              <br />
+              <br />
+              <li>Provide some demographic information (age and gender)</li>
+              <li>Complete {this.state.qnTotal} questionnaires</li>
+              <li>Complete a short IQ quiz</li>
+              <br />
+              Do read the instructions for each quiz, which will be positioned
+              at the top of each page, carefully.
+              <br />
+              <br />
+              <center>
+                Please press [<strong>SPACEBAR</strong>] to begin.
+              </center>
             </div>
           </div>
         </>
       );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.questScreen === true
+    ) {
+      text = (
+        <div>
+          <Survey model={this.survey} />
+        </div>
+      );
     }
+
     return <div className="textBox2">{text}</div>;
   }
 }

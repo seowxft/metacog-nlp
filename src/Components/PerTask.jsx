@@ -28,21 +28,39 @@ class PerTask extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-    //when deug
-    //  const userID = 100;
-    //  const date = 100;
-    //  const startTime = 100;
-    //
+    // --- Declare variables OUTSIDE the if/else ---
+    let userID,
+      prolificID,
+      date,
+      startTime,
+      condition,
+      dotStair,
+      memCorrectPer,
+      perCorrectPer;
 
-    const prolificID = this.props.state.prolificID;
-    const condition = this.props.state.condition;
-    const userID = this.props.state.userID;
-    const date = this.props.state.date;
-    const startTime = this.props.state.startTime;
-    const dotStair = this.props.state.dotStair;
+    var debug = true; // Still using manual flag for now
 
-    const memCorrectPer = this.props.state.memCorrectPer;
-    const perCorrectPer = this.props.state.perCorrectPer; //if perception task is done, it will be filled, else zero
+    if (debug === true) {
+      // --- Assign debug values ---
+      userID = 100;
+      prolificID = 100;
+      date = 100; // Note: You might want a real date string here for debugging
+      startTime = 100; // Note: You might want a real timestamp for debugging
+      condition = 100;
+      memCorrectPer = 0.9;
+      perCorrectPer = 0;
+      dotStair = 1;
+      console.log("DEBUG MODE: Using hardcoded values.");
+    } else {
+      prolificID = this.props.state.prolificID;
+      condition = this.props.state.condition;
+      userID = this.props.state.userID;
+      date = this.props.state.date;
+      startTime = this.props.state.startTime;
+      dotStair = this.props.state.dotStair;
+      memCorrectPer = this.props.state.memCorrectPer;
+      perCorrectPer = this.props.state.perCorrectPer;
+    }
 
     var trialNumTotal = 2; //150
     var blockNumTotal = 3;
@@ -123,7 +141,7 @@ class PerTask extends React.Component {
       quizScreen: false,
       taskScreen: false,
       taskSection: null,
-      debug: false,
+      debug: debug,
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
     };
@@ -140,7 +158,7 @@ class PerTask extends React.Component {
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
-    this.handleDebugKey = this.handleDebugKey.bind(this);
+
     this.handleInstruct = this.handleInstruct.bind(this);
     this.handleBegin = this.handleBegin.bind(this);
     this.handleResp = this.handleResp.bind(this);
@@ -150,33 +168,6 @@ class PerTask extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
     //End constructor props
   }
-
-  handleDebugKey(pressed) {
-    var whichButton = pressed;
-
-    if (whichButton === 10) {
-      document.removeEventListener("keyup", this._handleDebugKey);
-      setTimeout(
-        function () {
-          this.redirectToTarget();
-        }.bind(this),
-        0
-      );
-    }
-  }
-
-  _handleDebugKey = (event) => {
-    var pressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is SPACEBAR
-        pressed = 10;
-        this.handleDebugKey(pressed);
-        break;
-      default:
-    }
-  };
 
   // This handles instruction screen within the component USING KEYBOARD
   handleInstruct(keyPressed) {
@@ -1079,131 +1070,116 @@ class PerTask extends React.Component {
   ///////////////////////////////////////////////////////////////
   render() {
     let text;
-    if (this.state.debug === false) {
-      if (
-        this.state.instructScreen === true &&
-        this.state.taskScreen === false &&
-        this.state.quizScreen === false
-      ) {
-        document.addEventListener("keyup", this._handleInstructKey);
-        document.addEventListener("keyup", this._handleBeginKey);
-        text = <div> {this.instructText(this.state.instructNum)}</div>;
-        //    console.log("Page: " + this.state.instructNum);
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.taskScreen === false &&
-        this.state.quizScreen === true &&
-        this.state.taskSection === "rating"
-      ) {
-        text = <div> {this.quizText(this.state.quizState)}</div>;
-        //    console.log("Quiz state: " + this.state.quizState);
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.quizScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "iti"
-      ) {
-        text = <div className={style.boxStyle}></div>;
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.quizScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "fixation"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawFix />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.quizScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "stimulus"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawDots.DrawDots
-              dotRadius={this.state.dotRadius}
-              dotDiffLeft={this.state.dotDiffLeft}
-              dotDiffRight={this.state.dotDiffRight}
-            />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.quizScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "choice"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawBox />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.quizScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "choiceFeedback"
-      ) {
-        text = (
-          <div className={style.boxStyle}>
-            <DrawChoice.DrawChoice choice={this.state.choice} />
-          </div>
-        );
-      } else if (
-        this.state.instructScreen === false &&
-        this.state.quizScreen === false &&
-        this.state.taskScreen === true &&
-        this.state.taskSection === "confidence"
-      ) {
-        text = (
-          <div>
-            <center>
-              Rate your confidence on the probability that your choice was
-              correct:
-            </center>
-            <br />
-            <br />
-            <br />
-            <br />
-            <center>
-              <ConfSlider.ConfSlider
-                callBackValue={this.handleCallbackConf.bind(this)}
-                initialValue={this.state.confInitial}
-              />
-            </center>
-            <br />
-            <br />
-            <br />
-            <br />
-            <center>
-              Press [SPACEBAR] to continue.
-              <br />
-              <br />
-              You will not allowed to move on unless you have adjusted the
-              scale.
-            </center>
-          </div>
-        );
-      } else {
-        console.log("ERROR CAN'T FIND THE RIGHT PAGE");
-        return null;
-      }
-    } else if (this.state.debug === true) {
-      document.addEventListener("keyup", this._handleDebugKey);
+
+    if (
+      this.state.instructScreen === true &&
+      this.state.taskScreen === false &&
+      this.state.quizScreen === false
+    ) {
+      document.addEventListener("keyup", this._handleInstructKey);
+      document.addEventListener("keyup", this._handleBeginKey);
+      text = <div> {this.instructText(this.state.instructNum)}</div>;
+      //    console.log("Page: " + this.state.instructNum);
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === false &&
+      this.state.quizScreen === true &&
+      this.state.taskSection === "rating"
+    ) {
+      text = <div> {this.quizText(this.state.quizState)}</div>;
+      //    console.log("Quiz state: " + this.state.quizState);
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.quizScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "iti"
+    ) {
+      text = <div className={style.boxStyle}></div>;
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.quizScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "fixation"
+    ) {
       text = (
-        <div>
-          <p>
-            <span>DEBUG MODE</span>
-            <br />
-            <span>
-              Press [<strong>SPACEBAR</strong>] to skip to next section.
-            </span>
-          </p>
+        <div className={style.boxStyle}>
+          <DrawFix />
         </div>
       );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.quizScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "stimulus"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawDots.DrawDots
+            dotRadius={this.state.dotRadius}
+            dotDiffLeft={this.state.dotDiffLeft}
+            dotDiffRight={this.state.dotDiffRight}
+          />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.quizScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "choice"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawBox />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.quizScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "choiceFeedback"
+    ) {
+      text = (
+        <div className={style.boxStyle}>
+          <DrawChoice.DrawChoice choice={this.state.choice} />
+        </div>
+      );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.quizScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "confidence"
+    ) {
+      text = (
+        <div>
+          <center>
+            Rate your confidence on the probability that your choice was
+            correct:
+          </center>
+          <br />
+          <br />
+          <br />
+          <br />
+          <center>
+            <ConfSlider.ConfSlider
+              callBackValue={this.handleCallbackConf.bind(this)}
+              initialValue={this.state.confInitial}
+            />
+          </center>
+          <br />
+          <br />
+          <br />
+          <br />
+          <center>
+            Press [SPACEBAR] to continue.
+            <br />
+            <br />
+            You will not allowed to move on unless you have adjusted the scale.
+          </center>
+        </div>
+      );
+    } else {
+      console.log("ERROR CAN'T FIND THE RIGHT PAGE");
+      return null;
     }
 
     return (
