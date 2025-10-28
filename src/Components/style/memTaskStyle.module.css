@@ -1,15 +1,9 @@
 .fontStyle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 25px;
-  margin-bottom: 25px;
-  margin-left: 50px;
-  margin-right: 50px;
-  height: auto;
+  margin: 50px;
   color: white;
   font-size: 20px;
-  font-family: "Courier New", monospace;
+  font-family: "Lucida Console", monospace;
+  text-align: center; /* Good for centering text content */
 }
 
 .boxStyle2 {
@@ -27,14 +21,14 @@
 
 .confTextLeft {
   font-size: 16px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Lucida Console", monospace;
   float: left;
 }
 
-.confTextRight {
+.confTextMiddle {
   font-size: 16px;
-  font-family: Arial, Helvetica, sans-serif;
-  float: right;
+  font-family: "Lucida Console", monospace;
+  /* float: center; */
 }
 
 .textFrame {
@@ -62,7 +56,7 @@
 
 span.choiceWord {
   font-size: 45px;
-  font-family: "Courier New", monospace;
+  font-family: "Lucida Console", monospace;
   font-weight: bold;
   text-align: center;
   padding: 30px;
@@ -71,7 +65,7 @@ span.choiceWord {
 
 span.choiceWordCorrect {
   font-size: 45px;
-  font-family: "Courier New", monospace;
+  font-family: "Lucida Console", monospace;
   font-weight: bold;
   text-align: center;
   padding: 30px;
@@ -81,7 +75,7 @@ span.choiceWordCorrect {
 
 span.choiceWordWrong {
   font-size: 45px;
-  font-family: "Courier New", monospace;
+  font-family: "Lucida Console", monospace;
   font-weight: bold;
   text-align: center;
   padding: 30px;
@@ -91,7 +85,7 @@ span.choiceWordWrong {
 
 span.choiceWordChosen {
   font-size: 45px;
-  font-family: "Courier New", monospace;
+  font-family: "Lucida Console", monospace;
   font-weight: bold;
   text-align: center;
   padding: 30px;
@@ -120,7 +114,8 @@ button {
   padding: 12px 14px;
   margin: 4px 2px;
   cursor: pointer;
-  font-family: "Courier New", monospace;
+  font-family: "Lucida Console", monospace;
+  z-index: 1;
 }
 
 li {
@@ -151,32 +146,31 @@ input[type="reset"] {
   padding: 12px 14px;
   margin: 4px 2px;
   cursor: pointer;
-  font-family: "Courier New", monospace;
+  font-family: "Lucida Console", monospace;
 }
 
 .bg {
   /* The image used */
   background-image: url("../img/space-bg2.jpg");
-
-  /* Full height */
-  height: auto;
-  min-height: 100%;
-  min-width: 1024px;
-  width: 100%;
+  /* --- FIX STARTS HERE --- */
+  position: fixed; /* Change from absolute to fixed */
+  top: 0;
+  left: 0;
+  width: 100%; /* Explicitly set width to 100% of the viewport */
+  height: 100%; /* Explicitly set height to 100% of the viewport */
+  z-index: -1; /* Push it behind all other content */
+  /* --- FIX ENDS HERE --- */
 
   /* Center and scale the image nicely */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  position: absolute;
-  /* background-attachment: fixed; */
 }
 
 .astro {
   position: absolute;
-  width: 150;
+  width: 150px;
   height: auto;
-  zindex: -1;
   bottom: 10px;
   right: 0px;
 }

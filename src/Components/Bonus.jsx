@@ -23,25 +23,40 @@ class Bonus extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-    //when deug
-    const prolificID = 1;
-    const condition = 1;
-    const userID = 1;
-    const date = 1;
-    const startTime = 1;
+    // --- Declare variables OUTSIDE the if/else ---
+    let userID,
+      prolificID,
+      date,
+      startTime,
+      condition,
+      dotStair,
+      memCorrectPer,
+      perCorrectPer;
 
-    const memCorrectPer = 1;
-    const perCorrectPer = 1;
+    var debug = true; // Still using manual flag for now
 
-    /*     const prolificID = this.props.state.prolificID;
-    const condition = this.props.state.condition;
-    const userID = this.props.state.userID;
-    const date = this.props.state.date;
-    const startTime = this.props.state.startTime;
+    if (debug === true) {
+      // --- Assign debug values ---
+      userID = 100;
+      prolificID = 100;
+      date = 100; // Note: You might want a real date string here for debugging
+      startTime = 100; // Note: You might want a real timestamp for debugging
+      condition = 100;
+      memCorrectPer = 0.9;
+      perCorrectPer = 0;
+      dotStair = 1;
+      console.log("DEBUG MODE: Using hardcoded values.");
+    } else {
+      prolificID = this.props.state.prolificID;
+      condition = this.props.state.condition;
+      userID = this.props.state.userID;
+      date = this.props.state.date;
+      startTime = this.props.state.startTime;
+      dotStair = this.props.state.dotStair;
+      memCorrectPer = this.props.state.memCorrectPer;
+      perCorrectPer = this.props.state.perCorrectPer;
+    }
 
-    const memCorrectPer = this.props.state.memCorrectPer;
-    const perCorrectPer = this.props.state.perCorrectPer; //if perception task is done, it will be filled, else zero
- */
     var memBonus = Math.round((2 * memCorrectPer + Number.EPSILON) * 100) / 100; // 2 dec pl
     var perBonus = Math.round((2 * perCorrectPer + Number.EPSILON) * 100) / 100; // 2 dec pl
     var totalBonus =
@@ -70,7 +85,7 @@ class Bonus extends React.Component {
       memBonus: memBonus,
       perBonus: perBonus,
       totalBonus: totalBonus,
-      debug: false,
+      debug: debug,
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -438,23 +453,13 @@ class Bonus extends React.Component {
   ///////////////////////////////////////////////////////////////
   render() {
     let text;
-    if (this.state.debug === false) {
-      if (this.state.instructScreen === true) {
-        document.addEventListener("keyup", this._handleInstructKey);
-        text = <div> {this.instructText(this.state.instructNum)}</div>;
-      }
-    } else if (this.state.debug === true) {
-      text = (
-        <div>
-          <p>
-            <span>DEBUG MODE</span>
-            <br />
-            <span>
-              Press [<strong>SPACEBAR</strong>] to skip to next section.
-            </span>
-          </p>
-        </div>
-      );
+
+    if (this.state.instructScreen === true) {
+      document.addEventListener("keyup", this._handleInstructKey);
+      text = <div> {this.instructText(this.state.instructNum)}</div>;
+    } else {
+      console.log("ERROR CAN'T FIND THE RIGHT PAGE");
+      return null;
     }
 
     return (

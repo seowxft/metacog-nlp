@@ -30,7 +30,7 @@ class StartPage extends React.Component {
       date = 100; // Note: You might want a real date string here for debugging
       dateTime = 100;
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 1;
+      condition = 2;
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       // The rest of your logic remains the same
@@ -83,7 +83,7 @@ class StartPage extends React.Component {
   redirectToTarget() {
     this.setState({ consentComplete: 1 });
     var condition = this.state.condition;
-    var condUrl = "/PerTut?PROLIFIC_PID=";
+    var condUrl = "/Wellcome?PROLIFIC_PID=";
 
     this.props.navigate(condUrl + this.state.prolificID, {
       state: {
@@ -92,8 +92,6 @@ class StartPage extends React.Component {
         condition: condition,
         date: this.state.date,
         startTime: this.state.startTime,
-        memCorrectPer: 0,
-        perCorrectPer: 0,
       },
     });
   }
