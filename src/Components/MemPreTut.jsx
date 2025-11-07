@@ -39,37 +39,6 @@ class MemPreTut extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-    // --- Declare variables OUTSIDE the if/else ---
-    let userID,
-      prolificID,
-      date,
-      startTime,
-      condition,
-      memCorrectPer,
-      perCorrectPer;
-
-    var debug = true; // Still using manual flag for now
-
-    if (debug === true) {
-      // --- Assign debug values ---
-      userID = 100;
-      prolificID = 100;
-      date = 100; // Note: You might want a real date string here for debugging
-      startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 100;
-      memCorrectPer = 0.9;
-      perCorrectPer = 0;
-      console.log("DEBUG MODE: Using hardcoded values.");
-    } else {
-      prolificID = this.props.state.prolificID;
-      condition = this.props.state.condition;
-      userID = this.props.state.userID;
-      date = this.props.state.date;
-      startTime = this.props.state.startTime;
-      memCorrectPer = this.props.state.memCorrectPer;
-      perCorrectPer = this.props.state.perCorrectPer;
-    }
-
     ////////////////
     var stateWord = [
       "butterfly",
@@ -115,9 +84,44 @@ class MemPreTut extends React.Component {
       return val !== undefined;
     });
 
+    // --- Declare variables OUTSIDE the if/else ---
+    let userID,
+      prolificID,
+      date,
+      startTime,
+      condition,
+      memCorrectPer,
+      perCorrectPer;
+
+    var debug = true; // Still using manual flag for now
+
+    if (debug === true) {
+      // --- Assign debug values ---
+      userID = 100;
+      prolificID = 100;
+      date = 100; // Note: You might want a real date string here for debugging
+      startTime = 100; // Note: You might want a real timestamp for debugging
+      condition = 100;
+      memCorrectPer = 0.9;
+      perCorrectPer = 0;
+      stateWord = stateWord.slice(0, 2);
+      statePic = statePic.silce(0, 2);
+      console.log("DEBUG MODE: Using hardcoded values.");
+    } else {
+      prolificID = this.props.state.prolificID;
+      condition = this.props.state.condition;
+      userID = this.props.state.userID;
+      date = this.props.state.date;
+      startTime = this.props.state.startTime;
+      memCorrectPer = this.props.state.memCorrectPer;
+      perCorrectPer = this.props.state.perCorrectPer;
+    }
+
+    // number of trials is dependent on statePic array
+
     var stateNum = stateWord.length; //26
 
-    var trialNumTotal = 102; // it shouldn't go past this...
+    var trialNumTotal = 102; // it shouldn't go past 102 this...
 
     //the stim position
     var choicePos = Array(Math.round(trialNumTotal / 2))

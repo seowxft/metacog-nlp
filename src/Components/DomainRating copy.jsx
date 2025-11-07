@@ -54,11 +54,11 @@ class RatingDomain extends React.Component {
       sectionTime: sectionTime,
       section: "domain",
       quizState: "domain",
-      ratingDomain: null,
-      textTime: null,
-      selfKnowledge: [],
-      wordCount: 0,
-      minWordCount: 10,
+
+      confTimeInitial: null,
+      confTime: null,
+      confInitial: 5,
+      confLevel: null,
 
       // screen parameters
       instructScreen: true,
@@ -79,52 +79,50 @@ class RatingDomain extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    this.handleInstruct = this.handleInstruct.bind(this);
     this.instructText = this.instructText.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  //for the submitting the text plus moving to next page
-  handleChange(event) {
-    var text = event.target.value;
-    var trimmedText = text.trim();
-    var wordCount = trimmedText ? trimmedText.split(/\s+/).length : 0;
+  // This handles instruction screen within the component USING KEYBOARD
+  handleInstruct(keyPressed, timePressed) {
+    var curInstructNum = this.state.instructNum;
+    var confLevel = this.state.confLevel;
+    var whichButton = keyPressed;
 
-    this.setState({
-      selfKnowledge: text,
-      wordCount: wordCount,
-      error: null,
-    });
-  }
+    if (whichButton === 3 && curInstructNum < 3 && confLevel !== null) {
+      var confTime = timePressed - this.state.sectionTime;
 
-  handleSubmit(event) {
-    event.preventDefault(); // Always call this first!
-
-    // --- Validation Check ---
-    if (this.state.wordCount < this.state.minWordCount) {
       this.setState({
-        error:
-          "Please write at least " +
-          this.state.minWordCount +
-          " words to continue.",
+        confTime: confTime,
       });
-      return; // Stop the submission
+
+      setTimeout(
+        function () {
+          this.renderRatingSave();
+        }.bind(this),
+        0
+      );
     }
-    // --- End Validation ---
-    var timePressed = Math.round(performance.now());
-    var textTime = timePressed - this.state.sectionTime;
+  }
 
-    this.setState({
-      selfKnowledge: this.state.selfKnowledge,
-      textTime: textTime,
-    });
+  // handle key keyPressed
+  _handleInstructKey = (event) => {
+    var keyPressed;
+    var timePressed;
 
-    setTimeout(
-      function () {
-        this.renderRatingSave();
-      }.bind(this),
-      0
-    );
+    switch (event.keyCode) {
+      case 32:
+        //    this is spacebar
+        keyPressed = 3;
+        timePressed = Math.round(performance.now());
+        this.handleInstruct(keyPressed, timePressed);
+        break;
+      default:
+    }
+  };
+
+  handleCallbackConf(callBackValue) {
+    this.setState({ confLevel: callBackValue });
   }
 
   instructText(instructNum) {
@@ -133,68 +131,71 @@ class RatingDomain extends React.Component {
       //if the curren domain is memory
       explain = (
         <span>
-          involve remembering what you just saw. For example, in remembering
-          items you studied earlier.
-          <br /> <br />
-          How good do you think your are at remembering things accurately or
-          knowing when a memory feels correct?
-          <br /> <br />
+          For example, in remembering events that you experienced a long time
+          ago.
         </span>
       );
     } else if (this.state.domain[instructNum - 1] === "perception") {
       explain = (
         <span>
-          involve judging what you see. For example, deciding which image looks
-          stronger or clearer.
-          <br /> <br />
-          How good do you think you are at noticing small visual details or
-          deciding when you are right you spotted the detail?
-          <br /> <br />
+          For example, how good you are at spotting hidden things, like birds in
+          a forest.
         </span>
       );
     }
 
     let instruct_text1 = (
       <div>
-        Before we begin the tasks, please tell us a bit on how you usually do on
-        tasks that {explain}
+        Wellcome to this study!
+        <br />
+        <br />
+        Before we begin the tasks, we would like to ask 2 questions:
+        <br />
+        <br />
+        1. How you do generally rate your {this.state.domain[0]} ability?{" "}
+        {explain}
+        <br />
+        <br />
+        <br />
+        <br />
         <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
+          <ConfSliderDomain.ConfSliderDomain
+            callBackValue={this.handleCallbackConf.bind(this)}
+            initialValue={this.state.confInitial}
+          />
+          <br />
+          <br />
+        </center>
+        <center>
+          Press the [SPACEBAR] to continue.
+          <br /> <br />
+          You will need to have moved the slider to continue.
         </center>
       </div>
     );
 
     let instruct_text2 = (
       <div>
-        How you usually do on tasks that {explain}
+        2. How you do generally rate your {this.state.domain[1]} ability?{" "}
+        {explain}
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
         <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
+          <ConfSliderDomain.ConfSliderDomain
+            callBackValue={this.handleCallbackConf.bind(this)}
+            initialValue={this.state.confInitial}
+          />
+          <br />
+          <br />
+        </center>
+        <center>
+          Press the [SPACEBAR] to continue.
+          <br /> <br />
+          You will need to have moved the slider to continue.
         </center>
       </div>
     );
@@ -227,8 +228,9 @@ class RatingDomain extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       quizState: this.state.quizState,
-      textTime: this.state.textTime,
-      selfKnowledge: this.state.selfKnowledge,
+      //  confTime: this.state.confTime,
+      confInitial: this.state.confInitial,
+      confLevel: this.state.confLevel,
     };
 
     try {
@@ -254,12 +256,12 @@ class RatingDomain extends React.Component {
 
   nextPg() {
     var instructNum = this.state.instructNum;
-    console.log(instructNum);
     if (instructNum === 1) {
       //move to page 2
       this.setState({
         instructNum: this.state.instructNum + 1,
-        selfKnowledge: [],
+        confInitial: 5,
+        confLevel: null,
       });
     } else if (instructNum === 2) {
       // move to real task!

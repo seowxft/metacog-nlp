@@ -29,7 +29,6 @@ class Bonus extends React.Component {
       date,
       startTime,
       condition,
-      dotStair,
       memCorrectPer,
       perCorrectPer;
 
@@ -44,7 +43,6 @@ class Bonus extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
-      dotStair = 1;
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -52,7 +50,6 @@ class Bonus extends React.Component {
       userID = this.props.state.userID;
       date = this.props.state.date;
       startTime = this.props.state.startTime;
-      dotStair = this.props.state.dotStair;
       memCorrectPer = this.props.state.memCorrectPer;
       perCorrectPer = this.props.state.perCorrectPer;
     }
