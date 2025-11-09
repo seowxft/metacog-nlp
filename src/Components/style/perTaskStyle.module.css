@@ -29,17 +29,21 @@
 }
 
 .textFrame {
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
-  justify-content: center; /* Center children vertically */
-  align-items: center; /* Center children horizontally */
+  /*   display: flex;
+ /*    flex-direction: column; /* Stack children vertically */
+  /*    justify-content: center; /* Center children vertically */
+  /*   align-items: center; /* Center children horizontally */
+
   z-index: 1;
+
+  width: 95vw;
+  box-sizing: border-box;
   /* Your other styles remain */
   position: relative;
   background-color: rgba(0, 0, 0, 0.7);
   border-radius: 30px;
   border: 1px solid white;
-  max-width: 1000px;
+  max-width: 1050px;
   width: 90%;
   margin: 50px auto;
   padding: 20px 40px;

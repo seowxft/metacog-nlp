@@ -94,9 +94,11 @@ class MemPreTut extends React.Component {
       perCorrectPer;
 
     var debug = true; // Still using manual flag for now
+    var cutStim = 4; // if reduce the stim to pass this section faster
 
     if (debug === true) {
       // --- Assign debug values ---
+
       userID = 100;
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
@@ -104,8 +106,8 @@ class MemPreTut extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
-      stateWord = stateWord.slice(0, 2);
-      statePic = statePic.silce(0, 2);
+      stateWord = stateWord.slice(0, cutStim);
+      statePic = statePic.slice(0, cutStim);
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -544,14 +546,11 @@ class MemPreTut extends React.Component {
             />
             <br />
             <br />
-            <br />
-            <br />
             <span className={style.choiceWordChosen}>
               {this.state.stateWord[3]}
-            </span>{" "}
-            <span className={style.choiceWord}>{this.state.stateWord[11]}</span>
+            </span>
+            <span className={style.choiceWord}>{this.state.stateWord[2]}</span>
           </center>
-          <br />
           <br />
           As the animal in the picture is a {this.state.stateWord[3]}, you would
           select the <strong>left</strong> word in this case.
@@ -1120,15 +1119,14 @@ class MemPreTut extends React.Component {
         <div className={style.boxStyle2}>
           <br />
           <br />
-
-          <center>
-            <img
-              className={style.stimDisHide}
-              src={this.state.stimShown}
-              alt="stim1"
-            />{" "}
-          </center>
           <DrawFix />
+          <center>
+            {this.renderImages(
+              this.state.stimNum,
+              this.state.stimShown,
+              style.stimDisHide
+            )}
+          </center>
         </div>
       );
     } else if (
@@ -1137,7 +1135,7 @@ class MemPreTut extends React.Component {
       this.state.taskSection === "stimChoice"
     ) {
       text = (
-        <div className={style.boxStyle2}>
+        <div className={style.boxStyle}>
           <center>What animal is this?</center>
           <br />
           <br />
@@ -1146,10 +1144,8 @@ class MemPreTut extends React.Component {
               className={style.instructStimDis}
               src={this.state.stimShown}
               alt="stim1"
-            />{" "}
+            />
           </center>
-          <br />
-          <br />
           <br />
           <br />
           <span className={style.choiceWord}>
@@ -1172,7 +1168,7 @@ class MemPreTut extends React.Component {
       this.state.taskSection === "choiceFeedback"
     ) {
       text = (
-        <div className={style.boxStyle2}>
+        <div className={style.boxStyle}>
           <center>What animal is this?</center>
           <br />
           <br />
@@ -1183,8 +1179,6 @@ class MemPreTut extends React.Component {
               alt="stim1"
             />{" "}
           </center>
-          <br />
-          <br />
           <br />
           <br />
           <span className={this.state.choiceFbLeft}>
@@ -1207,7 +1201,7 @@ class MemPreTut extends React.Component {
       this.state.taskSection === "corFeedback"
     ) {
       text = (
-        <div className={style.boxStyle2}>
+        <div className={style.boxStyle}>
           <center>{this.state.choiceFbRewText}</center>
           <br />
           <br />
@@ -1218,8 +1212,6 @@ class MemPreTut extends React.Component {
               alt="stim1"
             />{" "}
           </center>
-          <br />
-          <br />
           <br />
           <br />
           <span className={this.state.choiceFbRewLeft}>

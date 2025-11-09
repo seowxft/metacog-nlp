@@ -7,6 +7,22 @@ import * as ConfSlider from "./drawassets/DrawConfSlider.jsx";
 import * as ConfSliderGlobal from "./drawassets/DrawConfSliderGlobal.jsx";
 import * as staircase from "./MemStaircase.jsx";
 
+import butterfly from "./ani-stim/butterfly.jpg";
+import ladybug from "./ani-stim/ladybug.jpg";
+import snail from "./ani-stim/snail.jpg";
+import frog from "./ani-stim/frog.jpg";
+import beetle from "./ani-stim/beetle.jpg";
+import ant from "./ani-stim/ant.jpg";
+import camel from "./ani-stim/camel.jpg";
+import owl from "./ani-stim/owl.jpg";
+import tiger from "./ani-stim/tiger.jpg";
+import panther from "./ani-stim/panther.jpg";
+import bear from "./ani-stim/bear.jpg";
+import snake from "./ani-stim/snake.jpg";
+import gorilla from "./ani-stim/gorilla.jpg";
+import spider from "./ani-stim/spider.jpg";
+import buffalo from "./ani-stim/buffalo.jpg";
+
 import style from "./style/memTaskStyle.module.css";
 
 import { DATABASE_URL } from "./config.jsx";
@@ -33,7 +49,9 @@ class MemTask extends React.Component {
       condition,
       stimNum,
       memCorrectPer,
-      perCorrectPer;
+      perCorrectPer,
+      stateWord,
+      statePic;
 
     var debug = true; // Still using manual flag for now
 
@@ -47,6 +65,43 @@ class MemTask extends React.Component {
       memCorrectPer = 0.9;
       perCorrectPer = 0;
       stimNum = 5;
+
+      ////////////////
+      stateWord = [
+        "butterfly",
+        "ladybug",
+        "snail",
+        "frog",
+        "beetle",
+        "ant",
+        "owl",
+        "tiger",
+        "panther",
+        "bear",
+        "snake",
+        "gorilla",
+        "spider",
+        "camel",
+        "buffalo",
+      ];
+
+      statePic = [
+        butterfly,
+        ladybug,
+        snail,
+        frog,
+        beetle,
+        ant,
+        owl,
+        tiger,
+        panther,
+        bear,
+        snake,
+        gorilla,
+        spider,
+        camel,
+        buffalo,
+      ];
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -57,10 +112,10 @@ class MemTask extends React.Component {
       stimNum = this.props.state.stimNum;
       memCorrectPer = this.props.state.memCorrectPer;
       perCorrectPer = this.props.state.perCorrectPer;
-    }
 
-    var statePic = this.props.state.statePic;
-    var stateWord = this.props.state.stateWord;
+      statePic = this.props.state.statePic;
+      stateWord = this.props.state.stateWord;
+    }
 
     statePic = statePic.filter(function (val) {
       return val !== undefined;
@@ -573,16 +628,12 @@ class MemTask extends React.Component {
         </center>
         <br />
         <br />
-        <br />
-        <br />
         <center>
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
           />
         </center>
-        <br />
-        <br />
         <br />
         <br />
         <center>
@@ -604,16 +655,12 @@ class MemTask extends React.Component {
         </center>
         <br />
         <br />
-        <br />
-        <br />
         <center>
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
           />
         </center>
-        <br />
-        <br />
         <br />
         <br />
         <center>
@@ -1223,7 +1270,7 @@ class MemTask extends React.Component {
       this.state.taskSection === "fixation"
     ) {
       text = (
-        <div className={style.boxStyle}>
+        <div className={style.boxStyle2}>
           <br />
           <br />
           <DrawFix />

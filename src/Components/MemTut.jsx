@@ -6,6 +6,22 @@ import DrawFix from "./drawassets/DrawFix.jsx";
 import * as ConfSliderEx from "./drawassets/DrawConfSliderExample.jsx";
 import * as staircase from "./MemStaircase.jsx";
 
+import butterfly from "./ani-stim/butterfly.jpg";
+import ladybug from "./ani-stim/ladybug.jpg";
+import snail from "./ani-stim/snail.jpg";
+import frog from "./ani-stim/frog.jpg";
+import beetle from "./ani-stim/beetle.jpg";
+import ant from "./ani-stim/ant.jpg";
+import camel from "./ani-stim/camel.jpg";
+import owl from "./ani-stim/owl.jpg";
+import tiger from "./ani-stim/tiger.jpg";
+import panther from "./ani-stim/panther.jpg";
+import bear from "./ani-stim/bear.jpg";
+import snake from "./ani-stim/snake.jpg";
+import gorilla from "./ani-stim/gorilla.jpg";
+import spider from "./ani-stim/spider.jpg";
+import buffalo from "./ani-stim/buffalo.jpg";
+
 import style from "./style/memTaskStyle.module.css";
 import astrodude from "./img/astronaut.png";
 
@@ -35,7 +51,10 @@ class MemTut extends React.Component {
       startTime,
       condition,
       memCorrectPer,
-      perCorrectPer;
+      perCorrectPer,
+      statePic,
+      stateWord,
+      trialNumTotal;
 
     var debug = true; // Still using manual flag for now
 
@@ -48,6 +67,44 @@ class MemTut extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
+
+      ////////////////
+      stateWord = [
+        "butterfly",
+        "ladybug",
+        "snail",
+        "frog",
+        "beetle",
+        "ant",
+        "owl",
+        "tiger",
+        "panther",
+        "bear",
+        "snake",
+        "gorilla",
+        "spider",
+        "camel",
+        "buffalo",
+      ];
+
+      statePic = [
+        butterfly,
+        ladybug,
+        snail,
+        frog,
+        beetle,
+        ant,
+        owl,
+        tiger,
+        panther,
+        bear,
+        snake,
+        gorilla,
+        spider,
+        camel,
+        buffalo,
+      ];
+      trialNumTotal = 9; //26
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -57,10 +114,11 @@ class MemTut extends React.Component {
       startTime = this.props.state.startTime;
       memCorrectPer = this.props.state.memCorrectPer;
       perCorrectPer = this.props.state.perCorrectPer;
-    }
 
-    var statePic = this.props.state.statePic;
-    var stateWord = this.props.state.stateWord;
+      statePic = this.props.state.statePic;
+      stateWord = this.props.state.stateWord;
+      trialNumTotal = 26; //26
+    }
 
     statePic = statePic.filter(function (val) {
       return val !== undefined;
@@ -69,8 +127,6 @@ class MemTut extends React.Component {
     stateWord = stateWord.filter(function (val) {
       return val !== undefined;
     });
-
-    var trialNumTotal = 25; //26
 
     //the stim position
     var choicePos = Array(Math.round(trialNumTotal / 2))
@@ -234,16 +290,16 @@ class MemTut extends React.Component {
     } else if (
       whichButton === 1 &&
       curInstructNum >= 8 &&
-      curInstructNum <= 10
+      curInstructNum <= 11
     ) {
-      // from page 7 to 10, I can move back a page
+      // from page 7 to 11, I can move back a page
       this.setState({ instructNum: curInstructNum - 1 });
     } else if (
       whichButton === 2 &&
       curInstructNum >= 7 &&
-      curInstructNum <= 9
+      curInstructNum <= 10
     ) {
-      // from page 6 to 9, I can move forward a page
+      // from page 6 to 10, I can move forward a page
       this.setState({ instructNum: curInstructNum + 1 });
     }
   }
@@ -266,14 +322,14 @@ class MemTut extends React.Component {
         }.bind(this),
         0
       );
-    } else if (whichButton === 3 && curInstructNum === 10) {
+    } else if (whichButton === 3 && curInstructNum === 11) {
       setTimeout(
         function () {
           this.quizBegin();
         }.bind(this),
         0
       );
-    } else if (whichButton === 3 && curInstructNum === 11) {
+    } else if (whichButton === 3 && curInstructNum === 12) {
       setTimeout(
         function () {
           this.redirectToNextTask();
@@ -542,6 +598,8 @@ class MemTut extends React.Component {
           <br />
           Your task is to choose the word that{" "}
           <strong>matches one of the animals you saw previously</strong>.
+          <br />
+          <br />
         </span>
       );
     }
@@ -638,7 +696,7 @@ class MemTut extends React.Component {
             />
             <img
               className={style.instructStimDis}
-              src={this.state.statePic[7]}
+              src={this.state.statePic[8]}
               alt="stim3"
             />
             <br />
@@ -677,20 +735,17 @@ class MemTut extends React.Component {
           .
           <br />
           <br />
-          Previously we saw <strong>{this.state.stateWord[7]}</strong>, not{" "}
-          {this.state.stateWord[8]}, and so we should choose as such:
+          Previously we saw <strong>{this.state.stateWord[4]}</strong>, not{" "}
+          {this.state.stateWord[0]}, and so we should choose as such:
+          <br />
           <br />
           <br />
           <center>
-            <br />
-            <br />
             <span className={style.choiceWordChosen}>
-              {this.state.stateWord[7]}
+              {this.state.stateWord[4]}
             </span>
             &nbsp;or&nbsp;
-            <span className={style.choiceWord}>{this.state.stateWord[8]}</span>
-            <br />
-            <br />
+            <span className={style.choiceWord}>{this.state.stateWord[0]}</span>
           </center>
           <br />
           <br />
@@ -777,8 +832,6 @@ class MemTut extends React.Component {
       <div>
         <span>
           {text2}
-          <br />
-          <br />
           During the main task, you will also have to indicate your{" "}
           <strong>confidence</strong> in your choice of the animal you pick.
           <br />
@@ -818,7 +871,7 @@ class MemTut extends React.Component {
         <br />
         <br />
         <center>
-          <ConfSliderEx.ConfSliderEx1
+          <ConfSliderEx.ConfSliderEx2
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={50}
           />
@@ -826,6 +879,15 @@ class MemTut extends React.Component {
         <br />
         <br />
         <br />
+        <br />
+        <center>
+          [<strong>←</strong>] [<strong>→</strong>]
+        </center>
+      </div>
+    );
+
+    let instruct_text9 = (
+      <div>
         If you are <strong>very sure</strong> that you made a correct judgement,
         you should select a 100% chance of being correct, or the{" "}
         <strong>right</strong> end of the scale. It means that you are
@@ -850,7 +912,7 @@ class MemTut extends React.Component {
       </div>
     );
 
-    let instruct_text9 = (
+    let instruct_text10 = (
       <div>
         If you are <strong>somewhat sure</strong> that you made a correct
         judgement, you should select a rating between the two ends of the scale.
@@ -884,7 +946,7 @@ class MemTut extends React.Component {
       </div>
     );
 
-    let instruct_text10 = (
+    let instruct_text11 = (
       <div>
         Before you begin, you have to pass a quick quiz to make sure that you
         have understood the key points of your task for today.
@@ -909,7 +971,7 @@ class MemTut extends React.Component {
       </div>
     );
 
-    let instruct_text11 = (
+    let instruct_text12 = (
       <div>
         Amazing! You scored {this.state.quizCorTotal}/{this.state.quizNumTotal}{" "}
         for the quiz.
@@ -947,6 +1009,8 @@ class MemTut extends React.Component {
         return <div>{instruct_text10}</div>;
       case 11:
         return <div>{instruct_text11}</div>;
+      case 12:
+        return <div>{instruct_text12}</div>;
       default:
     }
   }
@@ -1123,7 +1187,7 @@ class MemTut extends React.Component {
         this.setState({
           instructScreen: true,
           taskScreen: false,
-          instructNum: 11,
+          instructNum: 12,
           taskSection: "instruct",
         });
       } else if (quizCorTotal !== this.state.quizNumTotal && quizTry <= 2) {
@@ -1655,17 +1719,10 @@ class MemTut extends React.Component {
       this.state.taskSection === "fixation"
     ) {
       text = (
-        <div className={style.boxStyle}>
+        <div className={style.boxStyle2}>
           <br />
           <br />
           <DrawFix />
-          <center>
-            {this.renderImages(
-              this.state.stimNum,
-              this.state.stimShown,
-              style.stimDisHide
-            )}
-          </center>
           <br />
           <br />
         </div>
