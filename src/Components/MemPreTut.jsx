@@ -260,7 +260,8 @@ class MemPreTut extends React.Component {
     }
   }
 
-  handleResp(keyPressed, timePressed) {
+  handleResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var respTime = timePressed - (this.state.trialTime + this.state.fixTime);
 
     var choiceCor = this.state.choiceCor; // what the actual answer is
@@ -357,7 +358,8 @@ class MemPreTut extends React.Component {
     );
   }
 
-  handleNextResp(keyPressed, timePressed) {
+  handleNextResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (whichButton === 3) {
       var rewFbTime =
@@ -373,7 +375,7 @@ class MemPreTut extends React.Component {
         rewFbTime: rewFbTime,
       });
 
-      document.removeEventListener("keyup", this._handleNextRespKey);
+      // document.removeEventListener("keyup", this._handleNextRespKey);
       setTimeout(
         function () {
           this.renderPreTutorSave();
@@ -384,7 +386,7 @@ class MemPreTut extends React.Component {
   }
 
   // handle key keyPressed
-  _handleInstructKey = (event) => {
+  /*   _handleInstructKey = (event) => {
     var keyPressed;
 
     switch (event.keyCode) {
@@ -400,9 +402,9 @@ class MemPreTut extends React.Component {
         break;
       default:
     }
-  };
+  }; */
 
-  // handle key keyPressed
+  /*   // handle key keyPressed
   _handleBeginKey = (event) => {
     var keyPressed;
 
@@ -454,7 +456,7 @@ class MemPreTut extends React.Component {
         break;
       default:
     }
-  };
+  }; */
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   /// INSTRUCTION TEXT ////
@@ -494,9 +496,9 @@ class MemPreTut extends React.Component {
           in reallocating them back to their pods.
           <br /> <br />
           <center>
-            Use the ← and → keys to navigate the pages.
-            <br />
-            <br />[<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
         <span className={style.astro}>
@@ -518,7 +520,12 @@ class MemPreTut extends React.Component {
         <br />
         <span>
           <center>
-            [<strong>←</strong>] [<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -530,15 +537,11 @@ class MemPreTut extends React.Component {
           As there are many animals, we will first get you familar with what
           they are called. We will show you one picture at one time. You will
           have to <strong>select the correct name</strong> of the animal that is
-          shown.
+          shown. For instance:
         </span>
-        <br />
-        <br />
         <span>
+          <br />
           <center>
-            For instance:
-            <br />
-            <br />
             <img
               className={style.instructStimDis}
               src={this.state.statePic[3]}
@@ -549,7 +552,7 @@ class MemPreTut extends React.Component {
             <span className={style.choiceWordChosen}>
               {this.state.stateWord[3]}
             </span>
-            <span className={style.choiceWord}>{this.state.stateWord[2]}</span>
+            <span className={style.word}>{this.state.stateWord[2]}</span>
           </center>
           <br />
           As the animal in the picture is a {this.state.stateWord[3]}, you would
@@ -559,7 +562,12 @@ class MemPreTut extends React.Component {
           <br />
           <br />
           <center>
-            [<strong>←</strong>] [<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -568,11 +576,7 @@ class MemPreTut extends React.Component {
     let instruct_text4 = (
       <div>
         <span>
-          <strong>Press W</strong> to choose the word on the{" "}
-          <strong>left</strong>.
-          <br />
-          <strong>Press O</strong> to choose the word on the{" "}
-          <strong>right</strong>.
+          <strong>Click</strong> on the word to select it.
           <br />
           <br />
           If you are <strong>correct</strong>, the word that you selected will
@@ -592,7 +596,12 @@ class MemPreTut extends React.Component {
           <br />
           <br />
           <center>
-            [<strong>←</strong>] [<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -615,17 +624,17 @@ class MemPreTut extends React.Component {
           As a reminder:
           <br />
           <br />
-          <strong>Press W</strong> to choose the animal on the{" "}
-          <strong>left</strong>.
-          <br />
-          <strong>Press O</strong> to choose the animal on the{" "}
-          <strong>right</strong>.
+          <strong>Click</strong> on the word to choose the word correctly naming
+          the animal.
           <br />
           <br />
           <center>
-            Press [<strong>SPACEBAR</strong>] to begin.
-            <br />
-            <br />[<strong>←</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>{" "}
+            </button>{" "}
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>BEGIN</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -641,7 +650,7 @@ class MemPreTut extends React.Component {
           <br />
           <br />
           <center>
-            Press [<strong>SPACEBAR</strong>] to continue.
+            <button onClick={() => this.handleBegin(3)}>CONTINUE</button>
           </center>
         </span>
       </div>
@@ -670,8 +679,8 @@ class MemPreTut extends React.Component {
 
   preTutorBegin() {
     // remove access to left/right/space keys for the instructions
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
+    // document.removeEventListener("keyup", this._handleInstructKey);
+    // document.removeEventListener("keyup", this._handleBeginKey);
 
     // push to render fixation for the first trial
     setTimeout(
@@ -884,7 +893,7 @@ class MemPreTut extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderStimChoice() {
-    document.addEventListener("keyup", this._handleRespKey);
+    //  document.addEventListener("keyup", this._handleRespKey);
     var fixTime = Math.round(performance.now()) - this.state.trialTime;
 
     this.setState({
@@ -897,7 +906,7 @@ class MemPreTut extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-    document.removeEventListener("keyup", this._handleRespKey);
+    //  document.removeEventListener("keyup", this._handleRespKey);
 
     var choice = this.state.choice;
     var choiceFbLeft;
@@ -934,7 +943,7 @@ class MemPreTut extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderCorFb() {
-    document.addEventListener("keyup", this._handleNextRespKey);
+    // document.addEventListener("keyup", this._handleNextRespKey);
 
     var respFbTime =
       Math.round(performance.now()) -
@@ -1049,8 +1058,8 @@ class MemPreTut extends React.Component {
   }
 
   redirectToNextTask() {
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
+    // document.removeEventListener("keyup", this._handleInstructKey);
+    // document.removeEventListener("keyup", this._handleBeginKey);
     this.props.navigate("/MemTut?PROLIFIC_PID=" + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
@@ -1099,8 +1108,8 @@ class MemPreTut extends React.Component {
     let text;
 
     if (this.state.instructScreen === true && this.state.taskScreen === false) {
-      document.addEventListener("keyup", this._handleInstructKey);
-      document.addEventListener("keyup", this._handleBeginKey);
+      //  document.addEventListener("keyup", this._handleInstructKey);
+      //  document.addEventListener("keyup", this._handleBeginKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
       //  console.log("THIS SHOULD BE INSTRUCTION BLOCK");
       //  console.log("instructNum: " + this.state.instructNum);
@@ -1148,11 +1157,11 @@ class MemPreTut extends React.Component {
           </center>
           <br />
           <br />
-          <span className={style.choiceWord}>
+          <span className={style.choiceWord} onClick={() => this.handleResp(1)}>
             {this.state.choiceShownWordLeft}
           </span>
           &nbsp;or&nbsp;
-          <span className={style.choiceWord}>
+          <span className={style.choiceWord} onClick={() => this.handleResp(2)}>
             {this.state.choiceShownWordRight}
           </span>
           <br />
@@ -1223,9 +1232,9 @@ class MemPreTut extends React.Component {
           </span>
           <br />
           <br />
-          <br />
-          <br />
-          <center>Press the [SPACEBAR] to continue.</center>
+          <center>
+            <button onClick={() => this.handleNextResp(3)}>Next</button>
+          </center>
         </div>
       );
     }

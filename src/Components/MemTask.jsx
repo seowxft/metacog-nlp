@@ -311,7 +311,8 @@ class MemTask extends React.Component {
     }
   }
 
-  handleResp(keyPressed, timePressed) {
+  handleResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     //Check first whether it is a valid press
     var respTime =
       timePressed -
@@ -372,7 +373,8 @@ class MemTask extends React.Component {
     );
   }
 
-  handleConfResp(keyPressed, timePressed) {
+  handleConfResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (whichButton === 3 && this.state.confLevel !== null) {
       console.log("conf level: " + this.state.confLevel);
@@ -399,7 +401,7 @@ class MemTask extends React.Component {
       );
     }
   }
-
+  /* 
   // handle key keyPressed
   _handleInstructKey = (event) => {
     var keyPressed;
@@ -488,7 +490,7 @@ class MemTask extends React.Component {
       default:
     }
   };
-
+ */
   handleCallbackConf(callBackValue) {
     this.setState({ confLevel: callBackValue });
     //  console.log("Confidence is: " + callBackValue);
@@ -523,9 +525,9 @@ class MemTask extends React.Component {
           incorrect.
           <br /> <br />
           <center>
-            Use the ← and → keys to navigate the pages.
-            <br />
-            <br />[<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -547,10 +549,12 @@ class MemTask extends React.Component {
           <strong>£2 bonus</strong>!
           <br /> <br />
           <center>
-            When you are ready, please press the [<strong>SPACEBAR</strong>] to
-            start.
-            <br />
-            <br />[<strong>←</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>BEGIN</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -567,8 +571,9 @@ class MemTask extends React.Component {
           <br />
           <br />
           <center>
-            Press the [<strong>SPACEBAR</strong>] when you are ready to
-            continue.
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>CONTINUE</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -584,7 +589,9 @@ class MemTask extends React.Component {
           <br />
           <br />
           <center>
-            Press the [<strong>SPACEBAR</strong>] to continue.
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>CONTINUE</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -597,7 +604,9 @@ class MemTask extends React.Component {
           <br />
           <br />
           <center>
-            Press the [<strong>SPACEBAR</strong>] to continue.
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>CONTINUE</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -637,8 +646,9 @@ class MemTask extends React.Component {
         <br />
         <br />
         <center>
-          Press [SPACEBAR] to submit your answer and start catelouging the
-          animals.
+          <button onClick={() => this.handleGlobalConf(3)}>
+            <strong>SUBMIT</strong>
+          </button>
           <br />
           <br />
           You will not allowed to move on unless you have adjusted the scale.
@@ -664,7 +674,9 @@ class MemTask extends React.Component {
         <br />
         <br />
         <center>
-          Press [SPACEBAR] to continue.
+          <button onClick={() => this.handleGlobalConf(3)}>
+            <strong>SUBMIT</strong>
+          </button>
           <br />
           <br />
           You will not allowed to move on unless you have adjusted the scale.
@@ -682,9 +694,9 @@ class MemTask extends React.Component {
   }
 
   quizBegin() {
-    document.removeEventListener("keyup", this._handleInstructKey);
+    /* document.removeEventListener("keyup", this._handleInstructKey);
     document.removeEventListener("keyup", this._handleBeginKey);
-    document.addEventListener("keyup", this._handleGlobalConfKey);
+    document.addEventListener("keyup", this._handleGlobalConfKey); */
     var initialValue = utils.randomInt(70, 80);
 
     console.log("Begining quiz");
@@ -703,8 +715,8 @@ class MemTask extends React.Component {
 
   taskBegin() {
     // remove access to left/right/space keys for the instructions
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
+    /*    document.removeEventListener("keyup", this._handleInstructKey);
+    document.removeEventListener("keyup", this._handleBeginKey); */
     // push to render fixation for the first trial
     setTimeout(
       function () {
@@ -1244,8 +1256,8 @@ class MemTask extends React.Component {
       this.state.taskScreen === false &&
       this.state.quizScreen === false
     ) {
-      document.addEventListener("keyup", this._handleInstructKey);
-      document.addEventListener("keyup", this._handleBeginKey);
+      /*   document.addEventListener("keyup", this._handleInstructKey);
+      document.addEventListener("keyup", this._handleBeginKey); */
       text = <div> {this.instructText(this.state.instructNum)}</div>;
       console.log("Page: " + this.state.instructNum);
     } else if (
@@ -1328,22 +1340,18 @@ class MemTask extends React.Component {
         <div className={style.boxStyle}>
           <br />
           <br />
-          <br />
-          <br />
           <center>Which animal was shown?</center>
           <br />
           <br />
           <br />
           <br />
-          <span className={style.choiceWord}>
+          <span className={style.choiceWord} onClick={() => this.handleResp(1)}>
             {this.state.choiceShownWordLeft}
           </span>
           &nbsp;or&nbsp;
-          <span className={style.choiceWord}>
+          <span className={style.choiceWord} onClick={() => this.handleResp(2)}>
             {this.state.choiceShownWordRight}
           </span>
-          <br />
-          <br />
           <br />
           <br />
           <br />
@@ -1361,8 +1369,6 @@ class MemTask extends React.Component {
         <div className={style.boxStyle}>
           <br />
           <br />
-          <br />
-          <br />
           <center>Which animal was shown?</center>
           <br />
           <br />
@@ -1375,8 +1381,6 @@ class MemTask extends React.Component {
           <span className={this.state.choiceFbRight}>
             {this.state.choiceShownWordRight}
           </span>
-          <br />
-          <br />
           <br />
           <br />
           <br />
@@ -1413,7 +1417,7 @@ class MemTask extends React.Component {
           <br />
           <br />
           <center>
-            Press [SPACEBAR] to continue.
+            <button onClick={() => this.handleConfResp(3)}>Next</button>
             <br />
             <br />
             You will not allowed to move on unless you have adjusted the scale.

@@ -60,6 +60,15 @@
   cursor: pointer;
 }
 
+span.word {
+  font-size: 30px;
+  font-family: "Lucida Console", monospace;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+  border-radius: 5px;
+}
+
 span.choiceWord {
   font-size: 30px;
   font-family: "Lucida Console", monospace;
@@ -67,6 +76,10 @@ span.choiceWord {
   text-align: center;
   padding: 20px;
   border-radius: 5px;
+}
+
+span.choiceWord:hover {
+  color: #87c1ff; /* Change text color on hover */
 }
 
 span.choiceWordCorrect {
@@ -100,7 +113,7 @@ span.choiceWordChosen {
 }
 
 img.instructStimDis {
-  width: 150px;
+  width: 8vw;
   height: auto;
   border-radius: 5px;
   border: 5px solid black;

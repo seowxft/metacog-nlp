@@ -251,7 +251,8 @@ class PerTut extends React.Component {
     }
   }
 
-  handleResp(keyPressed, timePressed) {
+  handleResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var respTime =
       timePressed -
       (this.state.trialTime + this.state.fixTime + this.state.stimTime);
@@ -311,7 +312,8 @@ class PerTut extends React.Component {
     );
   }
 
-  handleNextResp(keyPressed, timePressed) {
+  handleNextResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (whichButton === 3) {
       var rewFbTime =
@@ -338,7 +340,8 @@ class PerTut extends React.Component {
     }
   }
 
-  handleQuizResp(keyPressed, timePressed) {
+  handleQuizResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var quizNum = this.state.quizNum;
     var whichButton = keyPressed;
 
@@ -383,7 +386,7 @@ class PerTut extends React.Component {
     );
   }
 
-  // handle key keyPressed
+  /*   // handle key keyPressed
   _handleInstructKey = (event) => {
     var keyPressed;
 
@@ -454,14 +457,14 @@ class PerTut extends React.Component {
         break;
       default:
     }
-  };
+  }; */
 
   handleCallbackConf(callBackValue) {
     this.setState({ confValue: callBackValue });
   }
 
   // handle key keyPressed
-  _handleQuizKey = (event) => {
+  /*   _handleQuizKey = (event) => {
     var keyPressed;
     var timePressed;
 
@@ -488,7 +491,7 @@ class PerTut extends React.Component {
         break;
       default:
     }
-  };
+  }; */
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   /// INSTRUCTION TEXT ////
@@ -570,9 +573,9 @@ class PerTut extends React.Component {
           <strong>high charge</strong> for use.
           <br /> <br />
           <center>
-            Use the ← and → keys to navigate the pages.
-            <br />
-            <br />[<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
         <span className={style.astro}>
@@ -601,7 +604,12 @@ class PerTut extends React.Component {
           <br />
           <br />
           <center>
-            [<strong>←</strong>] [<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -613,15 +621,12 @@ class PerTut extends React.Component {
           As there are many new battery cards to go through, we will show you
           two cards at one time. You will have to choose the battery card which
           has <strong>the higher charge</strong>, i.e., the one with{" "}
-          <strong>more white dots</strong>.
+          <strong>more white dots</strong>. For instance:
         </span>
         <br />
         <br />
         <span>
           <center>
-            For instance:
-            <br />
-            <br />
             <DrawDotsEx.DrawDotsEx2
               dotRadius={this.state.dotRadius}
               dotDiffLeft={0}
@@ -638,7 +643,12 @@ class PerTut extends React.Component {
           <br />
           <br />
           <center>
-            [<strong>←</strong>] [<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -686,7 +696,12 @@ class PerTut extends React.Component {
           <br />
           <br />
           <center>
-            [<strong>←</strong>] [<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -719,11 +734,12 @@ class PerTut extends React.Component {
           <br />
           <br />
           <center>
-            Press [<strong>SPACEBAR</strong>] to begin the practice.
-          </center>
-          <br />
-          <center>
-            [<strong>←</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>BEGIN</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -756,9 +772,9 @@ class PerTut extends React.Component {
           <br />
           <br />
           <center>
-            Use the ← and → keys to navigate the pages.
-            <br />
-            <br />[<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -802,7 +818,12 @@ class PerTut extends React.Component {
         <br />
         <br />
         <center>
-          [<strong>←</strong>] [<strong>→</strong>]
+          <button onClick={() => this.handleInstruct(1)}>
+            <strong>← Back</strong>
+          </button>{" "}
+          <button onClick={() => this.handleInstruct(2)}>
+            <strong>Next →</strong>
+          </button>
         </center>
       </div>
     );
@@ -840,7 +861,12 @@ class PerTut extends React.Component {
         <br />
         <br />
         <center>
-          [<strong>←</strong>] [<strong>→</strong>]
+          <button onClick={() => this.handleInstruct(1)}>
+            <strong>← Back</strong>
+          </button>{" "}
+          <button onClick={() => this.handleInstruct(2)}>
+            <strong>Next →</strong>
+          </button>
         </center>
       </div>
     );
@@ -861,11 +887,12 @@ class PerTut extends React.Component {
         <br />
         <br />
         <center>
-          Press [<strong>SPACEBAR</strong>] to begin the quiz.
-        </center>
-        <br />
-        <center>
-          [<strong>←</strong>]
+          <button onClick={() => this.handleInstruct(1)}>
+            <strong>← Back</strong>
+          </button>{" "}
+          <button onClick={() => this.handleBegin(3)}>
+            <strong>BEGIN</strong>
+          </button>
         </center>
       </div>
     );
@@ -880,7 +907,9 @@ class PerTut extends React.Component {
         <br />
         <br />
         <center>
-          Press [<strong>SPACEBAR</strong>] to begin.
+          <button onClick={() => this.handleBegin(3)}>
+            <strong>BEGIN</strong>
+          </button>
         </center>
       </div>
     );
@@ -921,13 +950,16 @@ class PerTut extends React.Component {
         to inspect. What do you do?
         <br />
         <br />
-        [1] - I choose the battery card with the lower number of dots.
+        <button onClick={() => this.handleQuizResp(1)}>1</button> - I choose the
+        battery card with the lower number of dots.
         <br />
-        [2] - I choose the battery card with the higher number of dots.
+        <button onClick={() => this.handleQuizResp(2)}>2</button> - I choose the
+        battery card with the higher number of dots.
         <br />
-        [3] - I choose both battery cards when they have same number of dots.
+        <button onClick={() => this.handleQuizResp(3)}>3</button> - I choose
+        both battery cards when they have same number of dots.
         <br />
-        [4] - I am unsure.
+        <button onClick={() => this.handleQuizResp(4)}>4</button> - I am unsure.
       </div>
     );
 
@@ -939,13 +971,16 @@ class PerTut extends React.Component {
         confidence on the rating scale?
         <br />
         <br />
-        [1] - I would pick the left end of the scale (50% correct).
+        <button onClick={() => this.handleQuizResp(1)}>1</button> - I would pick
+        the left end of the scale (50% correct).
         <br />
-        [2] - I would pick the right end of the scale (100% correct).
+        <button onClick={() => this.handleQuizResp(2)}>2</button> - I would pick
+        the right end of the scale (100% correct).
         <br />
-        [3] - I would pick somwhere in between the ends of the scale.
+        <button onClick={() => this.handleQuizResp(3)}>3</button> - I would pick
+        somwhere in between the ends of the scale.
         <br />
-        [4] - I am unsure.
+        <button onClick={() => this.handleQuizResp(4)}>4</button> - I am unsure.
       </div>
     );
 
@@ -956,13 +991,16 @@ class PerTut extends React.Component {
         you rate your confidence on the rating scale?
         <br />
         <br />
-        [1] - I would pick the left end of the scale (50% correct).
+        <button onClick={() => this.handleQuizResp(1)}>1</button> - I would pick
+        the left end of the scale (50% correct).
         <br />
-        [2] - I would pick the right end of the scale (100% correct).
+        <button onClick={() => this.handleQuizResp(2)}>2</button> - I would pick
+        the right end of the scale (100% correct).
         <br />
-        [3] - I would pick somwhere in between the ends of the scale.
+        <button onClick={() => this.handleQuizResp(3)}>3</button> - I would pick
+        somwhere in between the ends of the scale.
         <br />
-        [4] - I am unsure.
+        <button onClick={() => this.handleQuizResp(4)}>4</button> - I am unsure.
       </div>
     );
 
@@ -973,13 +1011,16 @@ class PerTut extends React.Component {
         would you rate your confidence on the rating scale?
         <br />
         <br />
-        [1] - I would pick the left end of the scale (50% correct).
+        <button onClick={() => this.handleQuizResp(1)}>1</button> - I would pick
+        the left end of the scale (50% correct).
         <br />
-        [2] - I would pick the right end of the scale (100% correct).
+        <button onClick={() => this.handleQuizResp(2)}>2</button> - I would pick
+        the right end of the scale (100% correct).
         <br />
-        [3] - I would pick somwhere in between the ends of the scale.
+        <button onClick={() => this.handleQuizResp(3)}>3</button> - I would pick
+        somwhere in between the ends of the scale.
         <br />
-        [4] - I am unsure.
+        <button onClick={() => this.handleQuizResp(4)}>4</button> - I am unsure.
       </div>
     );
 
@@ -1032,9 +1073,9 @@ class PerTut extends React.Component {
 
   quizBegin() {
     // remove access to left/right/space keys for the instructions
-    document.removeEventListener("keyup", this._handleInstructKey);
+    /*     document.removeEventListener("keyup", this._handleInstructKey);
     document.removeEventListener("keyup", this._handleBeginKey);
-    document.addEventListener("keyup", this._handleQuizKey);
+    document.addEventListener("keyup", this._handleQuizKey); */
 
     // If I want to shuffle quiz answers?
 
@@ -1061,7 +1102,7 @@ class PerTut extends React.Component {
         trialTime: trialTime,
       });
     } else if (quizNum === this.state.quizNumTotal) {
-      document.removeEventListener("keyup", this._handleQuizKey);
+      //  document.removeEventListener("keyup", this._handleQuizKey);
       //end quiz, head back to instructions
       var quizTry = this.state.quizTry;
       var tutorialTry = this.state.tutorialTry;
@@ -1244,7 +1285,7 @@ class PerTut extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoice() {
-    document.addEventListener("keyup", this._handleRespKey);
+    //  document.addEventListener("keyup", this._handleRespKey);
     var stimTime =
       Math.round(performance.now()) -
       [this.state.trialTime + this.state.fixTime];
@@ -1259,7 +1300,7 @@ class PerTut extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-    document.removeEventListener("keyup", this._handleRespKey);
+    // document.removeEventListener("keyup", this._handleRespKey);
 
     this.setState({
       instructScreen: false,
@@ -1277,7 +1318,7 @@ class PerTut extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderCorFb() {
-    document.addEventListener("keyup", this._handleNextRespKey);
+    // document.addEventListener("keyup", this._handleNextRespKey);
 
     var respFbTime =
       Math.round(performance.now()) -
@@ -1404,8 +1445,8 @@ class PerTut extends React.Component {
   }
 
   redirectToNextTask() {
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
+    //  document.removeEventListener("keyup", this._handleInstructKey);
+    //  document.removeEventListener("keyup", this._handleBeginKey);
     this.props.navigate("/PerTask?PROLIFIC_PID=" + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
@@ -1439,8 +1480,8 @@ class PerTut extends React.Component {
     let text;
 
     if (this.state.instructScreen === true && this.state.taskScreen === false) {
-      document.addEventListener("keyup", this._handleInstructKey);
-      document.addEventListener("keyup", this._handleBeginKey);
+      //   document.addEventListener("keyup", this._handleInstructKey);
+      //   document.addEventListener("keyup", this._handleBeginKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
     } else if (
       this.state.instructScreen === false &&
