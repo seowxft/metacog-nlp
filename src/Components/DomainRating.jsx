@@ -26,7 +26,7 @@ class RatingDomain extends React.Component {
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 100;
+      condition = 1;
 
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {

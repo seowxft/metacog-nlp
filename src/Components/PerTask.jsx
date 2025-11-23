@@ -236,7 +236,8 @@ class PerTask extends React.Component {
     }
   }
 
-  handleGlobalConf(keyPressed, timePressed) {
+  handleGlobalConf(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (
       whichButton === 3 &&
@@ -258,7 +259,8 @@ class PerTask extends React.Component {
     }
   }
 
-  handleResp(keyPressed, timePressed) {
+  handleResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     //Check first whether it is a valid press
     var respTime =
       timePressed -
@@ -314,7 +316,8 @@ class PerTask extends React.Component {
     );
   }
 
-  handleConfResp(keyPressed, timePressed) {
+  handleConfResp(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (whichButton === 3 && this.state.confLevel !== null) {
       //  console.log("conf level: " + this.state.confLevel);
@@ -340,7 +343,7 @@ class PerTask extends React.Component {
       );
     }
   }
-
+  /* 
   // handle key keyPressed
   _handleInstructKey = (event) => {
     var keyPressed;
@@ -431,7 +434,7 @@ class PerTask extends React.Component {
       default:
     }
   };
-
+ */
   handleCallbackConf(callBackValue) {
     this.setState({ confLevel: callBackValue });
     //  console.log("Confidence is: " + callBackValue);
@@ -455,20 +458,16 @@ class PerTask extends React.Component {
           {this.state.blockNumTotal} sections with {this.state.trialNumPerBlock}{" "}
           sets of batteries each so that you can take breaks in between.
           <br /> <br />
-          If the battery on the <strong>left</strong> has higher charge (more
-          dots), <strong>press W</strong>.
-          <br /> <br />
-          If the battery on the <strong>right</strong> has higher charge (more
-          dots), <strong> press O</strong>.
+          Click on the battery card with the higher charge to select it.
           <br /> <br />
           Please respond quickly and to the best of your ability. This time, you{" "}
           <strong>will not</strong> be told whether your choice was correct or
           incorrect.
           <br /> <br />
           <center>
-            Use the ← and → keys to navigate the pages.
-            <br />
-            <br />[<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -490,10 +489,12 @@ class PerTask extends React.Component {
           <strong>£2 bonus</strong>!
           <br /> <br />
           <center>
-            When you are ready, please press the [<strong>SPACEBAR</strong>] to
-            start.
-            <br />
-            <br />[<strong>←</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>BEGIN</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -510,8 +511,9 @@ class PerTask extends React.Component {
           <br />
           <br />
           <center>
-            Press the [<strong>SPACEBAR</strong>] when you are ready to
-            continue.
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>Continue</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -527,7 +529,9 @@ class PerTask extends React.Component {
           <br />
           <br />
           <center>
-            Press the [<strong>SPACEBAR</strong>] to continue.
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>Continue</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -541,7 +545,9 @@ class PerTask extends React.Component {
           <br />
           <br />
           <center>
-            Press the [<strong>SPACEBAR</strong>] to continue.
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>Continue</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -581,12 +587,12 @@ class PerTask extends React.Component {
         <br />
         <br />
         <center>
-          Click or drag the indicator anywhere on the scale, or press [TAB] and
-          use the arrow keys.
+          Click or drag the indicator anywhere on the scale.
           <br />
           <br />
-          Press [SPACEBAR] to submit your answer and start sorting the battery
-          cards.
+          <button onClick={() => this.handleGlobalConf(3)}>
+            <strong>Submit & Continue</strong>
+          </button>
           <br />
           <br />
           You will not allowed to move on unless you have adjusted the scale.
@@ -612,7 +618,9 @@ class PerTask extends React.Component {
         <br />
         <br />
         <center>
-          Press [SPACEBAR] to continue.
+          <button onClick={() => this.handleGlobalConf(3)}>
+            <strong>Submit & Continue</strong>
+          </button>
           <br />
           <br />
           You will not allowed to move on unless you have adjusted the scale.
@@ -630,9 +638,9 @@ class PerTask extends React.Component {
   }
 
   quizBegin() {
-    document.removeEventListener("keyup", this._handleInstructKey);
+    /*     document.removeEventListener("keyup", this._handleInstructKey);
     document.removeEventListener("keyup", this._handleBeginKey);
-    document.addEventListener("keyup", this._handleGlobalConfKey);
+    document.addEventListener("keyup", this._handleGlobalConfKey); */
 
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
     var initialValue = utils.randomInt(60, 90);
@@ -656,8 +664,8 @@ class PerTask extends React.Component {
 
   taskBegin() {
     // remove access to left/right/space keys for the instructions
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
+    // document.removeEventListener("keyup", this._handleInstructKey);
+    // document.removeEventListener("keyup", this._handleBeginKey);
     // push to render fixation for the first trial
     setTimeout(
       function () {
@@ -812,7 +820,7 @@ class PerTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoice() {
-    document.addEventListener("keyup", this._handleRespKey);
+  //  document.addEventListener("keyup", this._handleRespKey);
     var stimTime =
       Math.round(performance.now()) -
       [this.state.trialTime + this.state.fixTime];
@@ -827,7 +835,7 @@ class PerTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-    document.removeEventListener("keyup", this._handleRespKey);
+  //  document.removeEventListener("keyup", this._handleRespKey);
 
     this.setState({
       //    instructScreen: false,
@@ -1033,8 +1041,8 @@ class PerTask extends React.Component {
   }
 
   redirectToNextTask() {
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
+    //  document.removeEventListener("keyup", this._handleInstructKey);
+    // document.removeEventListener("keyup", this._handleBeginKey);
 
     var condition = this.state.condition;
     var perCorrectPer = this.state.correctPer;
@@ -1076,8 +1084,8 @@ class PerTask extends React.Component {
       this.state.taskScreen === false &&
       this.state.quizScreen === false
     ) {
-      document.addEventListener("keyup", this._handleInstructKey);
-      document.addEventListener("keyup", this._handleBeginKey);
+      //  document.addEventListener("keyup", this._handleInstructKey);
+      //  document.addEventListener("keyup", this._handleBeginKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
       //    console.log("Page: " + this.state.instructNum);
     } else if (
@@ -1129,7 +1137,7 @@ class PerTask extends React.Component {
     ) {
       text = (
         <div className={style.boxStyle}>
-          <DrawBox />
+          <DrawBox onBoxClick={this.handleResp} />
         </div>
       );
     } else if (
@@ -1170,10 +1178,9 @@ class PerTask extends React.Component {
           <br />
           <br />
           <center>
-            Press [SPACEBAR] to continue.
-            <br />
-            <br />
-            You will not allowed to move on unless you have adjusted the scale.
+            <button onClick={() => this.handleConfResp(3)}>
+              <strong>Continue</strong>
+            </button>
           </center>
         </div>
       );

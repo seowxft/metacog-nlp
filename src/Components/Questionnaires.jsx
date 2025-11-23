@@ -11,7 +11,7 @@ import { PlainDark } from "survey-core/themes";
 import "survey-core/survey-core.css";
 import "./style/surveyStyle.css"; // Your custom styles
 
-import style from "./style/perTaskStyle.module.css";
+import style from "./style/questStyle.module.css";
 
 // Import your questionnaire JSON files
 import { aes } from "./quest/aes.jsx";
@@ -132,7 +132,7 @@ class Questionnaires extends React.Component {
     survey.onComplete.add(this.redirectToNextTask); // Attach the onComplete event handler
 
     //   this.timerCallback = this.timerCallback.bind(this);
-    this._handleBeginKey = this._handleBeginKey.bind(this);
+    this.handleBeginKey = this.handleBeginKey.bind(this);
   }
 
   // --- 3. Manage Event Listeners in Lifecycle Methods ---
@@ -154,8 +154,8 @@ class Questionnaires extends React.Component {
     this.setState({ questScreen: true, instructScreen: false });
   }
 
-  _handleBeginKey(event) {
-    if (event.keyCode === 32 && this.state.instructScreen) {
+  handleBeginKey(keypressed) {
+    if (keypressed === 3 && this.state.instructScreen) {
       // Spacebar
       this.startQuest();
     }
@@ -246,7 +246,7 @@ class Questionnaires extends React.Component {
               <br />
               <br />
               <center>
-                Please press [<strong>SPACEBAR</strong>] to begin.
+                <button onClick={() => this.handleBeginKey(3)}>BEGIN</button>
               </center>
             </div>
           </div>

@@ -109,3 +109,69 @@ export function ConfSliderEx2({ callBackValue, initialValue }) {
     </Box>
   );
 }
+
+export function ConfSliderEx3({ callBackValue, initialValue }) {
+  const [value, setValue] = React.useState(initialValue);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    //  console.log(newValue);
+    callBackValue(newValue);
+  };
+
+  return (
+    <Box sx={{ width: 600 }}>
+      <Box sx={{ width: 500 }}>
+        <ThemeProvider theme={theme}>
+          <Slider
+            color="primary"
+            aria-label="Always visible"
+            step={1}
+            marks={marks}
+            min={50}
+            max={100}
+            track={false}
+            valueLabelDisplay="on"
+            value={value}
+            onChange={handleChange}
+          />
+        </ThemeProvider>
+      </Box>
+      <span className={style.confTextLeft}>Complete guess</span>
+      <span className={style.confTextRight}>Absolutely certain</span>
+    </Box>
+  );
+}
+
+export function ConfSliderEx4({ callBackValue, initialValue }) {
+  const [value, setValue] = React.useState(initialValue);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    //  console.log(newValue);
+    callBackValue(newValue);
+  };
+
+  return (
+    <Box sx={{ width: 600 }}>
+      <Box sx={{ width: 500 }}>
+        <ThemeProvider theme={theme}>
+          <Slider
+            color="primary"
+            aria-label="Always visible"
+            step={1}
+            marks={marks}
+            min={50}
+            max={100}
+            track={false}
+            valueLabelDisplay="on"
+            value={value}
+            onChange={handleChange}
+          />
+        </ThemeProvider>
+      </Box>
+      <span className={style.confTextLeft}>Complete guess</span>
+      <span className={style.confTextRight}>Absolutely certain</span>
+    </Box>
+  );
+}

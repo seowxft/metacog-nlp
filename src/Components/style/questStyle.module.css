@@ -6,17 +6,13 @@
   text-align: center; /* Good for centering text content */
 }
 
-.boxStyle2 {
-  margin: 0px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 .boxStyle {
   margin: 0px;
-  vertical-align: baseline;
+  top: 70%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 100vh;
 }
 
 .confTextLeft {
@@ -31,7 +27,17 @@
   /* float: center; */
 }
 
+.confTextRight {
+  font-size: 16px;
+  font-family: "Lucida Console", monospace;
+  float: right;
+}
+
 .textFrame {
+  /*   display: flex;
+ /*    flex-direction: column; /* Stack children vertically */
+  /*    justify-content: center; /* Center children vertically */
+  /*   align-items: center; /* Center children horizontally */
   position: relative;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1;
@@ -60,76 +66,13 @@
   cursor: pointer;
 }
 
-span.word {
-  font-size: 30px;
-  font-family: "Lucida Console", monospace;
-  font-weight: bold;
-  text-align: center;
-  padding: 20px;
-  border-radius: 5px;
-}
-
-span.choiceWord {
-  font-size: 30px;
-  font-family: "Lucida Console", monospace;
-  font-weight: bold;
-  text-align: center;
-  padding: 20px;
-  border-radius: 5px;
-}
-
-span.choiceWord:hover {
-  color: #87c1ff; /* Change text color on hover */
-}
-
-span.choiceWordCorrect {
-  font-size: 30px;
-  font-family: "Lucida Console", monospace;
-  font-weight: bold;
-  text-align: center;
-  padding: 20px;
-  border-radius: 5px;
-  border: 5px solid green;
-}
-
-span.choiceWordWrong {
-  font-size: 30px;
-  font-family: "Lucida Console", monospace;
-  font-weight: bold;
-  text-align: center;
-  padding: 20px;
-  border-radius: 5px;
-  border: 5px solid red;
-}
-
-span.choiceWordChosen {
-  font-size: 30px;
-  font-family: "Lucida Console", monospace;
-  font-weight: bold;
-  text-align: center;
-  padding: 20px;
-  border-radius: 5px;
-  border: 5px solid #87c1ff;
-}
-
-img.instructStimDis {
-  width: 8vw;
-  height: auto;
-  border-radius: 5px;
-  border: 5px solid black;
-}
-
-img.stimDisHide {
-  display: none;
-}
-
 button {
   background-color: #000000;
   border-color: white;
   border-width: 2px;
   border-radius: 10px;
   color: white;
-  font-size: 16px;
+  font-size: 18px;
   padding: 12px 14px;
   margin: 4px 2px;
   cursor: pointer;
@@ -200,5 +143,5 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow: auto;
 }

@@ -17,6 +17,10 @@ var rightBoxStartX =
   (window.innerWidth - bufferFixWidWin) / 2 - squareWidth / 2 + boxDist;
 var rightBoxStartY = (window.innerHeight - bufferFix) / 2 - squareWidth / 2;
 
+// Define the default and hover colors
+const DEFAULT_COLOR = "white";
+const HIGHLIGHT_COLOR = "#87C1FF"; // Slightly lighter gray for highlight
+
 class DrawBox extends React.Component {
   constructor(props) {
     super(props);
@@ -26,8 +30,44 @@ class DrawBox extends React.Component {
       rightBoxStartX: rightBoxStartX,
       rightBoxStartY: rightBoxStartY,
       squareWidth: squareWidth,
+      leftBoxStroke: DEFAULT_COLOR,
+      rightBoxStroke: DEFAULT_COLOR,
     };
   }
+
+  // --- Hover Handlers ---
+  handleLeftHover = () => {
+    // Change cursor to pointer for better UX
+    document.body.style.cursor = "pointer";
+    this.setState({ leftBoxStroke: HIGHLIGHT_COLOR });
+  };
+
+  handleLeftLeave = () => {
+    // Reset cursor
+    document.body.style.cursor = "default";
+    this.setState({ leftBoxStroke: DEFAULT_COLOR });
+  };
+
+  handleRightHover = () => {
+    // Change cursor to pointer for better UX
+    document.body.style.cursor = "pointer";
+    this.setState({ rightBoxStroke: HIGHLIGHT_COLOR });
+  };
+
+  handleRightLeave = () => {
+    // Reset cursor
+    document.body.style.cursor = "default";
+    this.setState({ rightBoxStroke: DEFAULT_COLOR });
+  };
+
+  // --- NEW: Click Handler Method ---
+  handleRectClick = (boxKey) => {
+    // 3. Call the prop function passed down from the parent component
+    if (this.props.onBoxClick) {
+      // Pass 'left' or 'right' back to the parent to identify the choice
+      this.props.onBoxClick(boxKey);
+    }
+  };
 
   render() {
     let text;
@@ -45,7 +85,11 @@ class DrawBox extends React.Component {
               height={this.state.squareWidth}
               fill="black"
               strokeWidth={2.5} // border width
-              stroke="white" // border color
+              stroke={this.state.leftBoxStroke} // Use state for color
+              // Add Konva event handlers
+              onMouseEnter={this.handleLeftHover}
+              onMouseLeave={this.handleLeftLeave}
+              onClick={() => this.handleRectClick(1)}
             />
             <Rect
               x={this.state.rightBoxStartX}
@@ -53,14 +97,18 @@ class DrawBox extends React.Component {
               width={this.state.squareWidth}
               height={this.state.squareWidth}
               fill="black"
-              strokeWidth={2.5} // border width
-              stroke="white" // border color
+              strokeWidth={2.5} // border widthstroke={this.state.leftBoxStroke} // Use state for color
+              // Add Konva event handlers
+              stroke={this.state.rightBoxStroke}
+              onMouseEnter={this.handleRightHover}
+              onMouseLeave={this.handleRightLeave}
+              onClick={() => this.handleRectClick(2)}
             />
             <Text
               fill="white"
               x={this.state.leftBoxStartX}
               y={this.state.leftBoxStartY - 50}
-              text="Press W for left choice."
+              text="Click for left choice."
               fontSize={16}
               fontFamily="Lucida Console"
             />
@@ -68,7 +116,7 @@ class DrawBox extends React.Component {
               fill="white"
               x={this.state.rightBoxStartX}
               y={this.state.rightBoxStartY - 50}
-              text="Press O for right choice."
+              text="Click for right choice."
               fontSize={16}
               fontFamily="Lucida Console"
             />

@@ -5,7 +5,7 @@ var boxDist = 200; //distance between the boxes
 var squareWidth = 250;
 var bufferFix = 400;
 var bufferFixWidWin = 0; //50
-var bufferFixHeiWin = 200; //150
+var bufferFixHeiWin = 300; //150
 
 //left box
 var leftBoxStartX =
@@ -102,15 +102,6 @@ export const DrawFeedback = ({ choice, correct }) => {
           x={rightBoxStartX}
           y={rightBoxStartY - 50}
           text={rightText}
-          fontSize={18}
-          fontFamily="Lucida Console"
-        />
-
-        <Text
-          fill="white"
-          x={window.innerWidth / 2 - boxDist / 4 - squareWidth / 2}
-          y={window.innerHeight / 2 - squareWidth / 8}
-          text="Press the [SPACEBAR] to continue"
           fontSize={18}
           fontFamily="Lucida Console"
         />

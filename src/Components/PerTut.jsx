@@ -53,7 +53,7 @@ class PerTut extends React.Component {
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 100;
+      condition = 1;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
       console.log("DEBUG MODE: Using hardcoded values.");
@@ -202,16 +202,16 @@ class PerTut extends React.Component {
     } else if (
       whichButton === 1 &&
       curInstructNum >= 7 &&
-      curInstructNum <= 9
+      curInstructNum <= 10
     ) {
-      // from page 7 to 10, I can move back a page
+      // from page 7 to 11, I can move back a page
       this.setState({ instructNum: curInstructNum - 1 });
     } else if (
       whichButton === 2 &&
       curInstructNum >= 6 &&
-      curInstructNum <= 8
+      curInstructNum <= 9
     ) {
-      // from page 6 to 9, I can move forward a page
+      // from page 6 to 10, I can move forward a page
       this.setState({ instructNum: curInstructNum + 1 });
     }
   }
@@ -234,14 +234,14 @@ class PerTut extends React.Component {
         }.bind(this),
         0
       );
-    } else if (whichButton === 3 && curInstructNum === 9) {
+    } else if (whichButton === 3 && curInstructNum === 10) {
       setTimeout(
         function () {
           this.quizBegin();
         }.bind(this),
         0
       );
-    } else if (whichButton === 3 && curInstructNum === 10) {
+    } else if (whichButton === 3 && curInstructNum === 11) {
       setTimeout(
         function () {
           this.redirectToNextTask();
@@ -657,14 +657,8 @@ class PerTut extends React.Component {
     let instruct_text4 = (
       <div>
         <span>
-          You can select the battery card of your choice with a keypress.
-          <br />
-          <br />
-          If the battery card on the <strong>left</strong> has more charge,{" "}
-          <strong>press W</strong>.
-          <br />
-          If the battery card on the <strong>right</strong> has more charge,{" "}
-          <strong>press O</strong>.
+          You can select the battery card that has more charge with a click on
+          it.
           <br />
           <br />
           Your selected battery card will be outlined in{" "}
@@ -726,11 +720,7 @@ class PerTut extends React.Component {
           As a reminder:
           <br />
           <br />
-          <strong>Press W</strong> to choose the battery on the{" "}
-          <strong>left</strong>.
-          <br />
-          <strong>Press O</strong> to choose the battery on the{" "}
-          <strong>right</strong>.
+          Click on the battery card that has more charge.
           <br />
           <br />
           <center>
@@ -791,26 +781,9 @@ class PerTut extends React.Component {
         <br />
         <br />
         <center>
-          <ConfSliderEx.ConfSliderEx1
+          <ConfSliderEx.ConfSliderEx2
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={50}
-          />
-        </center>
-        <br />
-        <br />
-        <br />
-        If you are <strong>very sure</strong> that you made a correct judgement,
-        you should select a 100% chance of being correct, or the{" "}
-        <strong>right</strong> end of the scale. It means that you are
-        absolutely certain that your choice was correct.
-        <br />
-        <br />
-        <br />
-        <br />
-        <center>
-          <ConfSliderEx.ConfSliderEx1
-            callBackValue={this.handleCallbackConf.bind(this)}
-            initialValue={100}
           />
         </center>
         <br />
@@ -830,34 +803,22 @@ class PerTut extends React.Component {
 
     let instruct_text8 = (
       <div>
-        If you are <strong>somewhat sure</strong> that you made a correct
-        judgement, you should select a rating between the two ends of the scale.
+        If you are <strong>very sure</strong> that you made a correct judgement,
+        you should select a 100% chance of being correct, or the{" "}
+        <strong>right</strong> end of the scale. It means that you are
+        absolutely certain that your choice was correct.
         <br />
         <br />
         <br />
         <br />
         <center>
-          <ConfSliderEx.ConfSliderEx1
+          <ConfSliderEx.ConfSliderEx3
             callBackValue={this.handleCallbackConf.bind(this)}
-            initialValue={75}
+            initialValue={100}
           />
         </center>
         <br />
         <br />
-        <br />
-        <br />
-        You can use the slider by <strong>clicking any point</strong> along the
-        scale, or <strong>dragging the circle indicator</strong> along the
-        scale.
-        <br />
-        <br />
-        Alternatively, you can press [<strong>TAB</strong>] and use the{" "}
-        <strong>arrow</strong> keys to move the circle indicator.
-        <br />
-        <br />
-        During the main task, once you have selected your rating, you will have
-        to press the [<strong>SPACEBAR</strong>] to confirm it and move on to
-        the next set of battery cards.
         <br />
         <br />
         <center>
@@ -872,6 +833,43 @@ class PerTut extends React.Component {
     );
 
     let instruct_text9 = (
+      <div>
+        If you are <strong>somewhat sure</strong> that you made a correct
+        judgement, you should select a rating between the two ends of the scale.
+        <br />
+        <br />
+        <br />
+        <br />
+        <center>
+          <ConfSliderEx.ConfSliderEx4
+            callBackValue={this.handleCallbackConf.bind(this)}
+            initialValue={75}
+          />
+        </center>
+        <br />
+        <br />
+        You can use the slider by <strong>clicking any point</strong> along the
+        scale, or <strong>dragging the circle indicator</strong> along the
+        scale.
+        <br />
+        <br />
+        During the main task, once you have selected your rating, you will have
+        to press the [Continue] button to confirm it and move on to the next set
+        of battery cards.
+        <br />
+        <br />
+        <center>
+          <button onClick={() => this.handleInstruct(1)}>
+            <strong>← Back</strong>
+          </button>{" "}
+          <button onClick={() => this.handleInstruct(2)}>
+            <strong>Next →</strong>
+          </button>
+        </center>
+      </div>
+    );
+
+    let instruct_text10 = (
       <div>
         Before you begin, you have to pass a quick quiz to make sure that you
         have understood the key points of your task for today.
@@ -897,7 +895,7 @@ class PerTut extends React.Component {
       </div>
     );
 
-    let instruct_text10 = (
+    let instruct_text11 = (
       <div>
         Amazing! You scored {this.state.quizCorTotal}/{this.state.quizNumTotal}{" "}
         for the quiz.
@@ -935,6 +933,8 @@ class PerTut extends React.Component {
         return <div>{instruct_text9}</div>;
       case 10:
         return <div>{instruct_text10}</div>;
+      case 11:
+        return <div>{instruct_text11}</div>;
       default:
     }
   }
@@ -1042,8 +1042,8 @@ class PerTut extends React.Component {
 
   tutorBegin() {
     // remove access to left/right/space keys for the instructions
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
+    // document.removeEventListener("keyup", this._handleInstructKey);
+    // document.removeEventListener("keyup", this._handleBeginKey);
     //reset tutorial if need to do again
     this.setState({
       trialNum: 0,
@@ -1112,7 +1112,7 @@ class PerTut extends React.Component {
         this.setState({
           instructScreen: true,
           taskScreen: false,
-          instructNum: 10,
+          instructNum: 11,
           taskSection: "instruct",
         });
       } else if (quizCorTotal !== this.state.quizNumTotal && quizTry < 4) {
@@ -1520,7 +1520,7 @@ class PerTut extends React.Component {
     ) {
       text = (
         <div className={style.boxStyle}>
-          <DrawBox />
+          <DrawBox onBoxClick={this.handleResp} />
         </div>
       );
     } else if (
@@ -1544,6 +1544,9 @@ class PerTut extends React.Component {
             choice={this.state.choice}
             correct={this.state.correct}
           />
+          <button onClick={() => this.handleNextResp(3)}>
+            <strong>Continue</strong>
+          </button>
         </div>
       );
     } else if (
@@ -1556,7 +1559,7 @@ class PerTut extends React.Component {
           {this.quizText(this.state.quizNum)}
           <br />
           <br />
-          <center>Please use the top row number keys to respond.</center>
+          <center>Please use click on the number to respond.</center>
         </div>
       );
     }

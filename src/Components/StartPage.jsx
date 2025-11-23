@@ -30,7 +30,7 @@ class StartPage extends React.Component {
       date = 100; // Note: You might want a real date string here for debugging
       dateTime = 100;
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 2;
+      condition = 1;
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       // The rest of your logic remains the same

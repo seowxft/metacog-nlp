@@ -114,7 +114,8 @@ class Bonus extends React.Component {
   }
 
   // This handles instruction screen within the component USING KEYBOARD
-  handleInstruct(keyPressed, timePressed) {
+  handleInstruct(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var curInstructNum = this.state.instructNum;
     var ratingValue = this.state.ratingValue;
     var whichButton = keyPressed;
@@ -138,7 +139,7 @@ class Bonus extends React.Component {
     }
   }
 
-  // handle key keyPressed
+  /*  // handle key keyPressed
   _handleInstructKey = (event) => {
     var keyPressed;
     var timePressed;
@@ -153,7 +154,7 @@ class Bonus extends React.Component {
       default:
     }
   };
-
+ */
   handleCallbackConf(callBackValue) {
     this.setState({ ratingValue: callBackValue });
   }
@@ -192,6 +193,13 @@ class Bonus extends React.Component {
 
     alert("Thanks for your feedback!");
     event.preventDefault();
+
+    setTimeout(
+      function () {
+        this.redirectToNextTask();
+      }.bind(this),
+      0
+    );
   }
 
   renderRatingSave() {
@@ -310,8 +318,11 @@ class Bonus extends React.Component {
           />
           <br />
           <br />
-          <center></center>
-          Press the [SPACEBAR] to continue.
+          <center>
+            <button onClick={() => this.handleInstruct(3)}>
+              <strong>Continue</strong>
+            </button>
+          </center>
           <br /> <br />
           You will need to have moved the slider to continue.
         </center>
@@ -337,8 +348,11 @@ class Bonus extends React.Component {
           />
           <br />
           <br />
-          <center></center>
-          Press the [SPACEBAR] to continue.
+          <center>
+            <button onClick={() => this.handleInstruct(3)}>
+              <strong>Continue</strong>
+            </button>
+          </center>
           <br /> <br />
           You will need to have moved the slider to continue.
         </center>
@@ -351,7 +365,7 @@ class Bonus extends React.Component {
     let instruct_text2 = (
       <div>
         How much did you feel that your confidence in the first task [{FirstT}]
-        <strong>influenced</strong> your confidence on the second task [
+        &nbsp;<strong>influenced</strong> your confidence on the second task [
         {SecondT}]?
         <br />
         <br />
@@ -364,8 +378,11 @@ class Bonus extends React.Component {
           />
           <br />
           <br />
-          <center></center>
-          Press the [SPACEBAR] to continue.
+          <center>
+            <button onClick={() => this.handleInstruct(3)}>
+              <strong>Continue</strong>
+            </button>
+          </center>
           <br /> <br />
           You will need to have moved the slider to continue.
         </center>
@@ -390,22 +407,15 @@ class Bonus extends React.Component {
             <form onSubmit={this.handleSubmit}>
               <label>
                 <textarea
-                  placeholder=" Were the task instructions clear? Did you encounter any problems? Did you prefer to use the mouse or the keyboard to rate your confidence?"
+                  placeholder="Were the task instructions clear? Did you encounter any problems? Did you prefer to use the mouse or the keyboard to rate your confidence?"
                   value={this.state.feedback}
                   onChange={this.handleChange}
                 />
               </label>
               <br />
               <br />
-              <input type="submit" value="Submit" />
+              <input type="submit" value="Submit & Continue" />
             </form>
-          </center>
-          <br /> <br />
-          <center>
-            Press the button below to continue.
-            <br />
-            <br />
-            <button onClick={this.redirectToNextTask.bind(this)}>Next</button>
           </center>
         </span>
       </div>
@@ -426,7 +436,7 @@ class Bonus extends React.Component {
   }
 
   redirectToNextTask() {
-    document.removeEventListener("keyup", this._handleInstructKey);
+    //  document.removeEventListener("keyup", this._handleInstructKey);
     this.props.navigate(
       "/Questionnaires?PROLIFIC_PID=" + this.state.prolificID,
       {
@@ -452,7 +462,7 @@ class Bonus extends React.Component {
     let text;
 
     if (this.state.instructScreen === true) {
-      document.addEventListener("keyup", this._handleInstructKey);
+      //   document.addEventListener("keyup", this._handleInstructKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
     } else {
       console.log("ERROR CAN'T FIND THE RIGHT PAGE");
