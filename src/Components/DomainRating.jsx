@@ -82,6 +82,7 @@ class RatingDomain extends React.Component {
     this.instructText = this.instructText.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePaste = this.handlePaste.bind(this);
   }
 
   //for the submitting the text plus moving to next page
@@ -95,6 +96,11 @@ class RatingDomain extends React.Component {
       wordCount: wordCount,
       error: null,
     });
+  }
+
+  handlePaste(event) {
+    event.preventDefault();
+    alert("Pasting is not allowed in this field."); // Optional: Notify the user
   }
 
   handleSubmit(event) {
@@ -129,7 +135,7 @@ class RatingDomain extends React.Component {
 
   instructText(instructNum) {
     var explain;
-    if (this.state.domain[instructNum - 1] === "memory") {
+    if (this.state.domain[instructNum - 2] === "memory") {
       //if the curren domain is memory
       explain = (
         <span>
@@ -141,7 +147,7 @@ class RatingDomain extends React.Component {
           <br /> <br />
         </span>
       );
-    } else if (this.state.domain[instructNum - 1] === "perception") {
+    } else if (this.state.domain[instructNum - 2] === "perception") {
       explain = (
         <span>
           involve judging what you see. For example, deciding which image looks
@@ -156,15 +162,20 @@ class RatingDomain extends React.Component {
 
     let instruct_text1 = (
       <div>
-        Before we begin the tasks, please tell us a bit on how you usually do on
-        tasks that {explain}
+        Before we begin, please tell us a bit on how you usually solve tasks.
+        For example, when you face a difficult puzzle or challegning decision,
+        what do you do? Do you tend to trust a 'gut feeling', try to reason it
+        out, or something else?
+        <br />
+        <br />
         <center>
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
-                placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
+                placeholder={`Describe your typical approach. Can you give examples? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
+                onPaste={this.handlePaste}
               />
             </label>
             <br /> <br />
@@ -173,6 +184,8 @@ class RatingDomain extends React.Component {
             <br />
             {this.state.error}
           </form>
+          Please do not write any self-identifiying information (e.g., your
+          name, your address, etc.).
         </center>
       </div>
     );
@@ -187,6 +200,7 @@ class RatingDomain extends React.Component {
                 placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
+                onPaste={this.handlePaste}
               />
             </label>
             <br /> <br />
@@ -195,6 +209,33 @@ class RatingDomain extends React.Component {
             <br />
             {this.state.error}
           </form>
+          Please do not write any self-identifiying information (e.g., your
+          name, your address, etc.).
+        </center>
+      </div>
+    );
+
+    let instruct_text3 = (
+      <div>
+        How you usually do on tasks that {explain}
+        <center>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
+          Please do not write any self-identifiying information (e.g., your
+          name, your address, etc.).
         </center>
       </div>
     );
@@ -205,6 +246,8 @@ class RatingDomain extends React.Component {
         return <div>{instruct_text1}</div>;
       case 2:
         return <div>{instruct_text2}</div>;
+      case 3:
+        return <div>{instruct_text3}</div>;
       default:
     }
   }
@@ -255,13 +298,13 @@ class RatingDomain extends React.Component {
   nextPg() {
     var instructNum = this.state.instructNum;
     console.log(instructNum);
-    if (instructNum === 1) {
+    if ((instructNum === 1) | (instructNum === 2)) {
       //move to page 2
       this.setState({
         instructNum: this.state.instructNum + 1,
         selfKnowledge: [],
       });
-    } else if (instructNum === 2) {
+    } else if (instructNum === 3) {
       // move to real task!
       setTimeout(
         function () {

@@ -2,6 +2,7 @@ import React from "react";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 import * as staircase from "./PerStaircase.jsx";
+import * as staircaseEasy from "./PerStaircaseEasy.jsx";
 
 import DrawFix from "./drawassets/DrawFix.jsx";
 import DrawBox from "./drawassets/DrawBox.jsx";
@@ -27,6 +28,7 @@ import { DATABASE_URL } from "./config.jsx";
 // 3) Instructions to confidence rating
 // 4) Quiz on instructions
 // 5) If quiz fail once, bring to instructions on confidence, if fail twice, bring to the start of instructions
+//theres two staircases - easy and hard to get the starting dot diff for the different conditions
 
 class PerTut extends React.Component {
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +69,9 @@ class PerTut extends React.Component {
       perCorrectPer = this.props.state.perCorrectPer;
     }
 
-    var trialNumTotal = 4; //26
+    var trialNumTotal = 8; //26
+
+    var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 
     //the stim position
     var pracStimPos = Array(Math.round(trialNumTotal / 2))
@@ -100,6 +104,7 @@ class PerTut extends React.Component {
 
       //trial parameters
       trialNumTotal: trialNumTotal,
+      trialStaircaseSwitch: trialStaircaseSwitch,
       stimPosList: pracStimPos,
       respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
       tutorialTry: 1,
@@ -110,6 +115,7 @@ class PerTut extends React.Component {
       fixTime: 0,
       stimTime: 0,
       stimPos: 0,
+      staircaseCond: null,
       dotDiffLeft: 0,
       dotDiffRight: 0,
       dotDiffStim1: 0,
@@ -137,6 +143,8 @@ class PerTut extends React.Component {
 
       dotStairLeft: 0,
       dotStairRight: 0,
+      dotStairHard: null,
+      dotStairEasy: null,
 
       //quiz paramters
       quizTry: 1,
@@ -1150,21 +1158,35 @@ class PerTut extends React.Component {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
 
-    // run staircase
-    var s2 = staircase.staircase(
-      this.state.dotStair,
-      this.state.responseMatrix,
-      this.state.stairDir,
-      trialNum
-    );
+    // when it reaches half way point, use a differnt staircase
+    if (trialNum < this.state.trialStaircaseSwitch) {
+      // run staircase
+      var s2 = staircaseEasy.staircase(
+        this.state.dotStair,
+        this.state.responseMatrix,
+        this.state.stairDir,
+        trialNum
+      );
+
+      this.setState({
+        staircaseCond: "easy",
+      });
+    } else if (trialNum >= this.state.trialStaircaseSwitch) {
+      var s2 = staircase.staircase(
+        this.state.dotStair,
+        this.state.responseMatrix,
+        this.state.stairDir,
+        trialNum - this.state.trialStaircaseSwitch + 1
+      );
+
+      this.setState({
+        staircaseCond: "hard",
+      });
+    }
 
     var dotStair = s2.diff;
     var stairDir = s2.direction;
     var responseMatrix = s2.stepcount;
-
-    //  console.log("dotsStair: " + dotStair);
-    //  console.log("stairDir: " + stairDir);
-    //  console.log("responseMat: " + responseMatrix);
 
     var reversals;
     if (s2.reversal) {
@@ -1339,6 +1361,19 @@ class PerTut extends React.Component {
 
   renderTutorSave() {
     var prolificID = this.state.prolificID;
+    var trialNum = this.state.trialNum;
+
+    //before it switch to the difficult staircase, save the dotStairEasy level
+    if (trialNum == this.state.trialStaircaseSwitch - 1) {
+      this.setState({
+        dotStairEasy: this.state.dotStair,
+      });
+    } else if (trialNum == this.state.trialNumTotal) {
+      //before finish the hard one, save that too
+      this.setState({
+        dotStairHard: this.state.dotStair,
+      });
+    }
 
     let saveString = {
       prolificID: this.state.prolificID,
@@ -1373,7 +1408,10 @@ class PerTut extends React.Component {
       responseMatrix: this.state.responseMatrix,
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
+      staircaseCond: this.state.staircaseCond,
       dotStair: this.state.dotStair,
+      dotStairEasy: this.state.dotStairEasy,
+      dotStairHard: this.state.dotStairHard,
 
       dotStairLeft: this.state.dotStairLeft,
       dotStairRight: this.state.dotStairRight,
@@ -1454,7 +1492,8 @@ class PerTut extends React.Component {
         userID: this.state.userID,
         date: this.state.date,
         startTime: this.state.startTime,
-        dotStair: this.state.dotStair,
+        dotStairEasy: this.state.dotStairEasy,
+        dotStairHard: this.state.dotStairHard,
         memCorrectPer: this.state.memCorrectPer,
         perCorrectPer: this.state.perCorrectPer,
       },

@@ -2,6 +2,7 @@ import React from "react";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 import * as staircase from "./PerStaircase.jsx";
+import * as staircaseEasy from "./PerStaircaseEasy.jsx";
 
 import DrawFix from "./drawassets/DrawFix.jsx";
 import DrawBox from "./drawassets/DrawBox.jsx";
@@ -19,6 +20,7 @@ import { DATABASE_URL } from "./config.jsx";
 // THIS CODES THE TASK SESSION
 // 1) Pre task confidence ratings
 // 2) Task with trial by trial conf ratings
+// has easy and difficult blocks
 
 class PerTask extends React.Component {
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +38,9 @@ class PerTask extends React.Component {
       condition,
       dotStair,
       memCorrectPer,
-      perCorrectPer;
+      perCorrectPer,
+      dotStairEasy,
+      dotStairHard;
 
     var debug = true; // Still using manual flag for now
 
@@ -49,7 +53,9 @@ class PerTask extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
-      dotStair = 1;
+      dotStairEasy = 2;
+      dotStairHard = 1;
+
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -57,14 +63,20 @@ class PerTask extends React.Component {
       userID = this.props.state.userID;
       date = this.props.state.date;
       startTime = this.props.state.startTime;
-      dotStair = this.props.state.dotStair;
+      dotStairEasy = this.props.state.dotStairEasy;
+      dotStairHard = this.props.state.dotStairHard;
       memCorrectPer = this.props.state.memCorrectPer;
       perCorrectPer = this.props.state.perCorrectPer;
     }
 
-    var trialNumTotal = 2; //150
-    var blockNumTotal = 3;
+    // if
+    var trialNumTotal = 35; //should be 140, for 7 blocks of 40 trials
+    var blockNumTotal = 7; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
+
+    var condScrabble = ["easy", "hard", "easy", "hard", "easy", "hard"];
+    utils.shuffle(condScrabble);
+    var blockCondTotal = ["hard", ...condScrabble];
 
     //the stim position
     var stimPos = Array(Math.round(trialNumTotal / 2))
@@ -93,11 +105,15 @@ class PerTask extends React.Component {
       trialNumTotal: trialNumTotal,
       trialNumPerBlock: trialNumPerBlock,
       blockNumTotal: blockNumTotal,
+      blockCondTotal: blockCondTotal,
       stimPosList: stimPos,
       respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
 
       //trial by trial paramters
       blockNum: 1,
+      blockCond: null,
+      condEasyTrialNum: 0,
+      hardEasyTrialNum: 0,
       trialNum: 0,
       trialNumInBlock: 0,
       trialTime: 0,
@@ -120,6 +136,10 @@ class PerTask extends React.Component {
       correct: null,
       correctMat: [], //put correct in vector, to cal perf %
       correctPer: 0,
+      textTime: null,
+      selfKnowledge: [],
+      wordCount: 0,
+      minWordCount: 10,
 
       //dot paramters
       dotRadius: 5,
@@ -128,7 +148,9 @@ class PerTask extends React.Component {
       responseMatrix: [true, true],
       reversals: 0,
       stairDir: ["up", "up"],
-      dotStair: dotStair, //in log space; this is about 104 dots which is 70 dots shown for the first one
+      dotStair: null, //in log space; this is about 104 dots which is 70 dots shown for the first one
+      dotStairEasy: dotStairEasy,
+      dotStairHard: dotStairHard,
       dotStairLeft: 0,
       dotStairRight: 0,
 
@@ -162,6 +184,9 @@ class PerTask extends React.Component {
     this.handleInstruct = this.handleInstruct.bind(this);
     this.handleBegin = this.handleBegin.bind(this);
     this.handleResp = this.handleResp.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePaste = this.handlePaste.bind(this);
     this.handleConfResp = this.handleConfResp.bind(this);
     this.instructText = this.instructText.bind(this);
     this.quizText = this.quizText.bind(this);
@@ -183,6 +208,54 @@ class PerTask extends React.Component {
     }
   }
 
+  //for the submitting the text plus moving to next page
+  handleChange(event) {
+    var text = event.target.value;
+    var trimmedText = text.trim();
+    var wordCount = trimmedText ? trimmedText.split(/\s+/).length : 0;
+
+    this.setState({
+      selfKnowledge: text,
+      wordCount: wordCount,
+      error: null,
+    });
+  }
+
+  handlePaste(event) {
+    event.preventDefault();
+    alert("Pasting is not allowed in this field."); // Optional: Notify the user
+  }
+
+  handleSubmit(event) {
+    event.preventDefault(); // Always call this first!
+
+    // --- Validation Check ---
+    if (this.state.wordCount < this.state.minWordCount) {
+      this.setState({
+        error:
+          "Please write at least " +
+          this.state.minWordCount +
+          " words to continue.",
+      });
+      return; // Stop the submission
+    }
+    // --- End Validation ---
+    var timePressed = Math.round(performance.now());
+    var textTime = timePressed - this.state.sectionTime;
+
+    this.setState({
+      selfKnowledge: this.state.selfKnowledge,
+      textTime: textTime,
+    });
+
+    setTimeout(
+      function () {
+        this.renderRatingSave();
+      }.bind(this),
+      0
+    );
+  }
+
   handleBegin(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
@@ -195,23 +268,6 @@ class PerTask extends React.Component {
       setTimeout(
         function () {
           this.quizBegin();
-        }.bind(this),
-        10
-      );
-    } else if (whichButton === 3 && curInstructNum === 3) {
-      // continue after a block break
-      var blockNum = this.state.blockNum + 1;
-      this.setState({
-        instructScreen: false,
-        taskScreen: true,
-        taskSection: "iti",
-        trialNumInBlock: 0,
-        blockNum: blockNum,
-      });
-
-      setTimeout(
-        function () {
-          this.taskBegin();
         }.bind(this),
         10
       );
@@ -507,13 +563,28 @@ class PerTask extends React.Component {
           {this.state.blockNumTotal} blocks!
           <br />
           <br />
-          You can now pause for a break.
+          Has your experience changed? Have you developed any particular
+          strategy for making your decisions or on how you rate your confidence?
+          Please explain what cues or feelings you are uding to make these
+          judgements.
           <br />
           <br />
           <center>
-            <button onClick={() => this.handleBegin(3)}>
-              <strong>Continue</strong>
-            </button>
+            <form onSubmit={this.handleSubmit}>
+              <label>
+                <textarea
+                  placeholder={`${this.state.minWordCount} words minimum.`}
+                  value={this.state.selfKnowledge}
+                  onChange={this.handleChange}
+                  onPaste={this.handlePaste}
+                />
+              </label>
+              <br /> <br />
+              <input type="submit" value="Submit & Continue Task" />
+              <br />
+              <br />
+              {this.state.error}
+            </form>
           </center>
         </span>
       </div>
@@ -663,15 +734,28 @@ class PerTask extends React.Component {
   }
 
   taskBegin() {
-    // remove access to left/right/space keys for the instructions
-    // document.removeEventListener("keyup", this._handleInstructKey);
-    // document.removeEventListener("keyup", this._handleBeginKey);
+    var blockCond = this.state.blockCondTotal[this.state.blockNum - 1];
+    console.log(this.state.blockCondTotal);
+    console.log(blockCond);
+
+    if (blockCond == "easy") {
+      this.setState({
+        blockCond: blockCond,
+        dotStair: this.state.dotStairEasy,
+      });
+    } else if (blockCond == "hard") {
+      this.setState({
+        blockCond: blockCond,
+        dotStair: this.state.dotStairHard,
+      });
+    }
+
     // push to render fixation for the first trial
     setTimeout(
       function () {
         this.trialReset();
       }.bind(this),
-      0
+      10
     );
   }
 
@@ -690,25 +774,31 @@ class PerTask extends React.Component {
   trialReset() {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var trialNumInBlock = this.state.trialNumInBlock + 1;
-
     var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
 
-    //  console.log("NEW TRIAL");
-    // run staircase
-    var s2 = staircase.staircase(
-      this.state.dotStair,
-      this.state.responseMatrix,
-      this.state.stairDir,
-      trialNum
-    );
+    console.log(this.state.blockCond);
+    if (this.state.blockCond == "easy") {
+      var condEasyTrialNum = this.state.condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
+      // run staircase
+      var s2 = staircaseEasy.staircase(
+        this.state.dotStair,
+        this.state.responseMatrix,
+        this.state.stairDir,
+        condEasyTrialNum
+      );
+    } else if (this.state.blockCond == "hard") {
+      var hardEasyTrialNum = this.state.condEasyTrialNum + 1;
+      var s2 = staircase.staircase(
+        this.state.dotStair,
+        this.state.responseMatrix,
+        this.state.stairDir,
+        hardEasyTrialNum
+      );
+    }
 
     var dotStair = s2.diff;
     var stairDir = s2.direction;
     var responseMatrix = s2.stepcount;
-
-    //  console.log("dotsStair: " + dotStair);
-    //  console.log("stairDir: " + stairDir);
-    //  console.log("responseMat: " + responseMatrix);
 
     var reversals;
     if (s2.reversal) {
@@ -763,7 +853,6 @@ class PerTask extends React.Component {
       dotDiffStim1: Math.round(Math.exp(dotStair)),
       dotDiffStim2: 0,
       dotStair: dotStair,
-
       dotStairLeft: dotStairLeft,
       dotStairRight: dotStairRight,
       dotDiffLeft: dotDiffLeft,
@@ -810,6 +899,17 @@ class PerTask extends React.Component {
       fixTime: fixTime,
     });
 
+    //  console.log("trialNumInBlock Save: " + this.state.trialNumInBlock);
+    if (this.state.blockCond == "easy") {
+      this.setState({
+        dotStairEasy: this.state.dotStair,
+      });
+    } else if (this.state.blockCond == "hard") {
+      this.setState({
+        dotStairHard: this.state.dotStair,
+      });
+    }
+
     setTimeout(
       function () {
         this.renderChoice();
@@ -820,7 +920,7 @@ class PerTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoice() {
-  //  document.addEventListener("keyup", this._handleRespKey);
+    //  document.addEventListener("keyup", this._handleRespKey);
     var stimTime =
       Math.round(performance.now()) -
       [this.state.trialTime + this.state.fixTime];
@@ -835,7 +935,7 @@ class PerTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-  //  document.removeEventListener("keyup", this._handleRespKey);
+    //  document.removeEventListener("keyup", this._handleRespKey);
 
     this.setState({
       //    instructScreen: false,
@@ -880,8 +980,6 @@ class PerTask extends React.Component {
   renderTaskSave() {
     document.removeEventListener("keyup", this._handleConfRespKey);
 
-    //  console.log("trialNumInBlock Save: " + this.state.trialNumInBlock);
-
     var prolificID = this.state.prolificID;
 
     let saveString = {
@@ -894,6 +992,9 @@ class PerTask extends React.Component {
       sectionTime: this.state.sectionTime,
       trialNum: this.state.trialNum,
       blockNum: this.state.blockNum,
+      blockCond: this.state.blockCond,
+      condEasyTrialNum: this.state.condEasyTrialNum,
+      condHardEasyTrial: this.state.condHardTrialNum,
       trialNumInBlock: this.state.trialNumInBlock,
       trialTime: this.state.trialTime,
       fixTime: this.state.fixTime,
@@ -918,6 +1019,8 @@ class PerTask extends React.Component {
       responseMatrix: this.state.responseMatrix,
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
+      dotStairEasy: this.state.dotStairEasy,
+      dotStairHard: this.state.dotStairHard,
       dotStair: this.state.dotStair,
 
       dotStairLeft: this.state.dotStairLeft,
@@ -949,16 +1052,16 @@ class PerTask extends React.Component {
         //      console.log("REST TIME");
         setTimeout(
           function () {
-            this.restBlock();
+            this.restBlock(); // in between block
           }.bind(this),
           10
         );
       } else if (this.state.trialNum === this.state.trialNumTotal) {
-        // have reached the end of the task
+        // have reached the end of the task - but do last rating!
         //    console.log("END TASK");
         setTimeout(
           function () {
-            this.taskEnd();
+            this.restBlock();
           }.bind(this),
           10
         );
@@ -976,8 +1079,83 @@ class PerTask extends React.Component {
     }
   }
 
+  renderRatingSave() {
+    var prolificID = this.state.prolificID;
+    var task = "perception";
+
+    let saveString = {
+      prolificID: this.state.prolificID,
+      condition: this.state.condition,
+      task: task,
+      userID: this.state.userID,
+      date: this.state.date,
+      startTime: this.state.startTime,
+      section: this.state.section,
+      sectionTime: this.state.sectionTime,
+      quizState: this.state.quizState,
+      confInitial: this.state.confInitial,
+      confLevel: this.state.confLevel,
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
+    };
+
+    try {
+      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(saveString),
+      });
+    } catch (e) {
+      console.log("Cant post?");
+    }
+
+    //go back to the trials
+    setTimeout(
+      function () {
+        this.contBlock();
+      }.bind(this),
+      10
+    );
+  }
+
+  contBlock() {
+    // continue after a block break
+    var blockNum = this.state.blockNum + 1;
+
+    this.setState({
+      instructScreen: false,
+      taskScreen: true,
+      taskSection: "iti",
+      trialNumInBlock: 0,
+      blockNum: blockNum,
+      textTime: 0,
+      selfKnowledge: null,
+    });
+
+    if (this.state.trialNum === this.state.trialNumTotal) {
+      //end the task
+      setTimeout(
+        function () {
+          this.taskEnd();
+        }.bind(this),
+        10
+      );
+    } else {
+      //go back to the trials
+      setTimeout(
+        function () {
+          this.taskBegin();
+        }.bind(this),
+        10
+      );
+    }
+  }
+
   renderQuizSave() {
-    document.removeEventListener("keyup", this._handleGlobalConfKey);
+    //  document.removeEventListener("keyup", this._handleGlobalConfKey);
     var prolificID = this.state.prolificID;
     var task = "perception";
 
@@ -995,6 +1173,8 @@ class PerTask extends React.Component {
       //  confTime: this.state.confTime,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
     };
 
     try {
