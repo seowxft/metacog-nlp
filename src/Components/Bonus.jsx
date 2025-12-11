@@ -75,6 +75,10 @@ class Bonus extends React.Component {
       ratingInitial: 3,
       ratingValue: null,
       feedback: [],
+      textTime: null,
+      selfKnowledge: [],
+      wordCount: 0,
+      minWordCount: 10,
 
       // screen parameters
       instructScreen: true,
@@ -100,17 +104,38 @@ class Bonus extends React.Component {
 
     this.handleInstruct = this.handleInstruct.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeFb = this.handleChangeFb.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSubmitFb = this.handleSubmitFb.bind(this);
+    this.handlePaste = this.handlePaste.bind(this);
     //////////////////////////////////////////////////////////////////////////////////////////////
     //End constructor props
   }
 
   //for the feedback box
-  handleChange(event) {
+  handleChangeFb(event) {
     this.setState({
       feedback: event.target.value,
       section: "feedback",
     });
+  }
+
+  //for the submitting the text plus moving to next page
+  handleChange(event) {
+    var text = event.target.value;
+    var trimmedText = text.trim();
+    var wordCount = trimmedText ? trimmedText.split(/\s+/).length : 0;
+
+    this.setState({
+      selfKnowledge: text,
+      wordCount: wordCount,
+      error: null,
+    });
+  }
+
+  handlePaste(event) {
+    event.preventDefault();
+    alert("Pasting is not allowed in this field."); // Optional: Notify the user
   }
 
   // This handles instruction screen within the component USING KEYBOARD
@@ -120,10 +145,7 @@ class Bonus extends React.Component {
     var ratingValue = this.state.ratingValue;
     var whichButton = keyPressed;
 
-    //  console.log(curInstructNum);
-    //  console.log(ratingValue);
-
-    if (whichButton === 3 && curInstructNum < 4 && ratingValue !== null) {
+    if (whichButton === 3 && curInstructNum < 3 && ratingValue !== null) {
       var ratingTime = timePressed - this.state.sectionTime;
 
       this.setState({
@@ -139,27 +161,41 @@ class Bonus extends React.Component {
     }
   }
 
-  /*  // handle key keyPressed
-  _handleInstructKey = (event) => {
-    var keyPressed;
-    var timePressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        timePressed = Math.round(performance.now());
-        this.handleInstruct(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
- */
   handleCallbackConf(callBackValue) {
     this.setState({ ratingValue: callBackValue });
   }
 
   handleSubmit(event) {
+    event.preventDefault(); // Always call this first!
+
+    // --- Validation Check ---
+    if (this.state.wordCount < this.state.minWordCount) {
+      this.setState({
+        error:
+          "Please write at least " +
+          this.state.minWordCount +
+          " words to continue.",
+      });
+      return; // Stop the submission
+    }
+    // --- End Validation ---
+    var timePressed = Math.round(performance.now());
+    var textTime = timePressed - this.state.sectionTime;
+
+    this.setState({
+      selfKnowledge: this.state.selfKnowledge,
+      textTime: textTime,
+    });
+
+    setTimeout(
+      function () {
+        this.renderRatingSave();
+      }.bind(this),
+      0
+    );
+  }
+
+  handleSubmitFb(event) {
     var prolificID = this.state.prolificID;
 
     let feedback = {
@@ -208,21 +244,19 @@ class Bonus extends React.Component {
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
+      task: "end",
       userID: this.state.userID,
       date: this.state.date,
       startTime: this.state.startTime,
       section: this.state.section,
       sectionTime: this.state.sectionTime,
-      ratingTime: this.state.ratingTime,
-      ratingValue: this.state.ratingValue,
-      memBonus: this.state.memBonus,
-      perBonus: this.state.perBonus,
-      totalBonus: this.state.totalBonus,
-      feedback: null,
+      quizState: this.state.quizState,
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
     };
 
     try {
-      fetch(`${DATABASE_URL}/feedback/` + prolificID, {
+      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -244,41 +278,56 @@ class Bonus extends React.Component {
 
   nextPg() {
     var instructNum = this.state.instructNum;
-    if (instructNum === 1) {
-      //move to page 2
-      this.setState({
-        instructNum: this.state.instructNum + 1,
-        ratingInitial: 4,
-        ratingValue: null,
-        section: "insight2",
-      });
-    } else if (instructNum === 2) {
-      // move to page 3
-      this.setState({
-        instructNum: this.state.instructNum + 1,
-        ratingInitial: 3,
-        ratingValue: null,
-        section: "insight3",
-      });
-    } else {
-      //move to page 4
-      this.setState({
-        instructNum: this.state.instructNum + 1,
-        ratingInitial: null,
-        ratingValue: null,
-        section: "insight4",
-      });
-    }
+    console.log(instructNum);
+
+    //move to page 2
+    this.setState({
+      instructNum: this.state.instructNum + 1,
+      selfKnowledge: [],
+    });
   }
 
-  // To ask them for the valence rating of the noises
-  // before we start the task
+  renderRatingSaveFb() {
+    var prolificID = this.state.prolificID;
 
-  // This question is meant to be the insight qn when I have two tasks: How much did you feel that your confidence in the first task influenced
-  // your confidence on the second task?
+    let saveString = {
+      prolificID: this.state.prolificID,
+      condition: this.state.condition,
+      userID: this.state.userID,
+      date: this.state.date,
+      startTime: this.state.startTime,
+      section: this.state.section,
+      sectionTime: this.state.sectionTime,
+      memBonus: this.state.memBonus,
+      perBonus: this.state.perBonus,
+      totalBonus: this.state.totalBonus,
+      feedback: null,
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
+    };
 
-  //I change it here to reflect on their first vs end global rating
-  //lso need to change the slider x axis ticks if change back
+    try {
+      fetch(`${DATABASE_URL}/feedback/` + prolificID, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(saveString),
+      });
+    } catch (e) {
+      console.log("Cant post?");
+    }
+
+    setTimeout(
+      function () {
+        this.redirectToNextTask();
+      }.bind(this),
+      0
+    );
+  }
+
+  // Ask the second round of the self-knowledge questions
   instructText(instructNum) {
     var condition = this.state.condition;
     var FirstT;
@@ -288,14 +337,14 @@ class Bonus extends React.Component {
 
     if (condition === 1) {
       //perform the perception task first
-      FirstT = "comparing battery cards";
-      SecondT = "memorising animals";
+      FirstT = "comparing the battery cards";
+      SecondT = "recognising animals you saw before";
       FirstB = this.state.perBonus;
       SecondB = this.state.memBonus;
     } else {
       //perform the memory task first
-      SecondT = "comparing battery cards";
-      FirstT = "memorising animals";
+      SecondT = "comparing the battery cards";
+      FirstT = "recognising animals you saw before";
       SecondB = this.state.perBonus;
       FirstB = this.state.memBonus;
     }
@@ -305,26 +354,27 @@ class Bonus extends React.Component {
         Well done on completing both tasks!
         <br />
         <br />
-        Did you prefer to complete the first task [{FirstT}] over the second
-        task [{SecondT}]?
-        <br />
-        <br />
+        Now that you’ve completed both kinds of tasks, please describe how you
+        feel about your abilities. Did the first task ({FirstT}) feel easier or
+        harder than the second task ({SecondT})?
         <br />
         <br />
         <center>
-          <InsightSlider.InsightSlider1
-            callBackValue={this.handleCallbackConf.bind(this)}
-            initialValue={this.state.ratingInitial}
-          />
-          <br />
-          <br />
-          <center>
-            <button onClick={() => this.handleInstruct(3)}>
-              <strong>Continue</strong>
-            </button>
-          </center>
-          <br /> <br />
-          You will need to have moved the slider to continue.
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
         </center>
         <span className={style.astro}>
           <img src={this.state.astrodude} width={200} alt="astrodude" />
@@ -334,27 +384,27 @@ class Bonus extends React.Component {
 
     let instruct_text1 = (
       <div>
-        How much did you feel that your confidence <strong>changed</strong> from
-        completing the first task [{FirstT}] to finishing the second task [
-        {SecondT}]?
-        <br />
-        <br />
+        Do you feel more or less confident about your judgments now compared
+        with before you started? You can also mention anything you noticed about
+        what helps or hinders your ability to tell when you are right.
         <br />
         <br />
         <center>
-          <InsightSlider.InsightSlider2
-            callBackValue={this.handleCallbackConf.bind(this)}
-            initialValue={this.state.ratingInitial}
-          />
-          <br />
-          <br />
-          <center>
-            <button onClick={() => this.handleInstruct(3)}>
-              <strong>Continue</strong>
-            </button>
-          </center>
-          <br /> <br />
-          You will need to have moved the slider to continue.
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
         </center>
         <span className={style.astro}>
           <img src={this.state.astrodude} width={200} alt="astrodude" />
@@ -364,52 +414,24 @@ class Bonus extends React.Component {
 
     let instruct_text2 = (
       <div>
-        How much did you feel that your confidence in the first task [{FirstT}]
-        &nbsp;<strong>influenced</strong> your confidence on the second task [
-        {SecondT}]?
-        <br />
-        <br />
-        <br />
-        <br />
-        <center>
-          <InsightSlider.InsightSlider3
-            callBackValue={this.handleCallbackConf.bind(this)}
-            initialValue={this.state.ratingInitial}
-          />
-          <br />
-          <br />
-          <center>
-            <button onClick={() => this.handleInstruct(3)}>
-              <strong>Continue</strong>
-            </button>
-          </center>
-          <br /> <br />
-          You will need to have moved the slider to continue.
-        </center>
-        <span className={style.astro}>
-          <img src={this.state.astrodude} width={200} alt="astrodude" />
-        </span>
-      </div>
-    );
-
-    let instruct_text3 = (
-      <div>
         <span>
-          From the second task [{SecondT}], you earned a bonus of £{SecondB}.
+          From the first task [{FirstT}], you earned a bonus of £{FirstB}. From
+          the second task [{SecondT}], you earned a bonus of £{SecondB}.
           <br /> <br />
           We would love to hear any comments you have about the tasks you have
           completed.
           <br /> <br />
-          If you have any, please fill in the box below and click submit.
+          If you have any, please fill in the box below and click submit. If
+          not, leave the box empty and click the submit button.
           <br />
           <br />
           <center>
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={this.handleSubmitFb}>
               <label>
                 <textarea
                   placeholder="Were the task instructions clear? Did you encounter any problems? Did you prefer to use the mouse or the keyboard to rate your confidence?"
                   value={this.state.feedback}
-                  onChange={this.handleChange}
+                  onChange={this.handleChangeFb}
                 />
               </label>
               <br />
@@ -429,8 +451,6 @@ class Bonus extends React.Component {
         return <div>{instruct_text1}</div>;
       case 3:
         return <div>{instruct_text2}</div>;
-      case 4:
-        return <div>{instruct_text3}</div>;
       default:
     }
   }

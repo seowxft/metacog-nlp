@@ -70,7 +70,7 @@ class PerTut extends React.Component {
     }
 
     var trialNumTotal = 8; //26
-
+    var blockCondTotal = ["easy", "hard"];
     var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 
     //the stim position
@@ -104,18 +104,19 @@ class PerTut extends React.Component {
 
       //trial parameters
       trialNumTotal: trialNumTotal,
+      blockCondTotal: blockCondTotal,
       trialStaircaseSwitch: trialStaircaseSwitch,
       stimPosList: pracStimPos,
-      respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
+      //   respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
       tutorialTry: 1,
 
       //trial by trial paramters
       trialNum: 0,
+      blockCond: null,
       trialTime: 0,
       fixTime: 0,
       stimTime: 0,
       stimPos: 0,
-      staircaseCond: null,
       dotDiffLeft: 0,
       dotDiffRight: 0,
       dotDiffStim1: 0,
@@ -132,6 +133,8 @@ class PerTut extends React.Component {
       correctMat: [], //put correct in vector, to cal perf %
       correctPer: 0,
 
+      dotStairLeft: 0,
+      dotStairRight: 0,
       //dot paramters
       dotRadius: 5,
 
@@ -143,8 +146,18 @@ class PerTut extends React.Component {
 
       dotStairLeft: 0,
       dotStairRight: 0,
-      dotStairHard: null,
-      dotStairEasy: null,
+
+      correctMatEasy: [], //put correct in vector, to cal perf %
+      correctPerEasy: 0,
+      responseMatrixEasy: [true, true],
+
+      stairDirEasy: ["up", "up"],
+      dotStairEasy: 4.65,
+      correctMatHard: [], //put correct in vector, to cal perf %
+      correctPerHard: 0,
+      responseMatrixHard: [true, true],
+      stairDirHard: ["up", "up"],
+      dotStairHard: 4.65,
 
       //quiz paramters
       quizTry: 1,
@@ -227,15 +240,8 @@ class PerTut extends React.Component {
   handleBegin(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
+
     if (whichButton === 3 && curInstructNum === 5) {
-      this.setState({
-        trialNum: 1,
-        correctMat: [], //put correct in vector, to cal perf %
-        responseMatrix: [true, true],
-        reversals: 0,
-        stairDir: ["up", "up"],
-        dotStair: 4.65,
-      });
       setTimeout(
         function () {
           this.tutorBegin();
@@ -296,6 +302,40 @@ class PerTut extends React.Component {
       correct = 0;
     }
 
+    var correctPerHard;
+    var correctPerEasy;
+    var correctMatHard;
+    var correctMatEasy;
+    var responseMatrixHard;
+    var responseMatrixEasy;
+    var stairDirEasy;
+    var stairDirHard;
+
+    var blockCond = this.state.blockCond;
+    if (blockCond === "easy") {
+      correctMatEasy = this.state.correctMatEasy.concat(correct);
+      correctPerEasy =
+        Math.round((utils.getAvg(correctMatEasy) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixEasy = this.state.responseMatrixEasy.concat(response);
+      stairDirEasy = this.state.stateDir;
+
+      responseMatrixHard = this.state.responseMatrixHard;
+      correctPerHard = this.state.correctPerHard;
+      correctMatHard = this.state.correctMatHard;
+      stairDirHard = this.state.stairDirHard;
+    } else if (blockCond === "hard") {
+      correctMatHard = this.state.correctMatHard.concat(correct);
+      correctPerHard =
+        Math.round((utils.getAvg(correctMatHard) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixHard = this.state.responseMatrixHard.concat(response);
+      stairDirHard = this.state.stateDir;
+
+      responseMatrixEasy = this.state.responseMatrixEasy;
+      correctPerEasy = this.state.correctPerEasy;
+      correctMatEasy = this.state.correctMatEasy;
+      stairDirEasy = this.state.stairDirEasy;
+    }
+
     //  console.log("response: " + response);
     var correctMat = this.state.correctMat.concat(correct);
     var responseMatrix = this.state.responseMatrix.concat(response);
@@ -310,6 +350,16 @@ class PerTut extends React.Component {
       responseMatrix: responseMatrix,
       correctMat: correctMat,
       correctPer: correctPer,
+
+      responseMatrixEasy: responseMatrixEasy,
+      correctMatEasy: correctMatEasy,
+      correctPerEasy: correctPerEasy,
+      stairDirEasy: stairDirEasy,
+
+      responseMatrixHard: responseMatrixHard,
+      correctMatHard: correctMatHard,
+      correctPerHard: correctPerHard,
+      stairDirHard: stairDirHard,
     });
 
     setTimeout(
@@ -378,14 +428,6 @@ class PerTut extends React.Component {
       });
     }
 
-    //  console.log("Keypress: " + whichButton);
-    //  console.log("QuizTime: " + quizTime);
-    //  console.log("QuizNum: " + quizNum);
-    //  console.log("QuizCor: " + quizCor);
-    //  console.log("QuizCorTotal: " + quizCorTotal);
-    //  console.log("QuizAns: " + this.state.quizAns);
-    //  console.log("quizNumTotal: " + this.state.quizNumTotal);
-
     setTimeout(
       function () {
         this.renderQuizSave();
@@ -394,112 +436,9 @@ class PerTut extends React.Component {
     );
   }
 
-  /*   // handle key keyPressed
-  _handleInstructKey = (event) => {
-    var keyPressed;
-
-    switch (event.keyCode) {
-      case 37:
-        //    this is left arrow
-        keyPressed = 1;
-        this.handleInstruct(keyPressed);
-        break;
-      case 39:
-        //    this is right arrow
-        keyPressed = 2;
-        this.handleInstruct(keyPressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleBeginKey = (event) => {
-    var keyPressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        this.handleBegin(keyPressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-    var leftKey = this.state.respKeyCode[0];
-    var rightKey = this.state.respKeyCode[1];
-
-    switch (event.keyCode) {
-      case leftKey:
-        //    this is left choice
-        keyPressed = 1;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      case rightKey:
-        //    this is right choice
-        keyPressed = 2;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleNextRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        timePressed = Math.round(performance.now());
-        this.handleNextResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  }; */
-
   handleCallbackConf(callBackValue) {
     this.setState({ confValue: callBackValue });
   }
-
-  // handle key keyPressed
-  /*   _handleQuizKey = (event) => {
-    var keyPressed;
-    var timePressed;
-
-    switch (event.keyCode) {
-      case 49:
-        keyPressed = 1;
-        timePressed = Math.round(performance.now());
-        this.handleQuizResp(keyPressed, timePressed);
-        break;
-      case 50:
-        keyPressed = 2;
-        timePressed = Math.round(performance.now());
-        this.handleQuizResp(keyPressed, timePressed);
-        break;
-      case 51:
-        keyPressed = 3;
-        timePressed = Math.round(performance.now());
-        this.handleQuizResp(keyPressed, timePressed);
-        break;
-      case 52:
-        keyPressed = 4;
-        timePressed = Math.round(performance.now());
-        this.handleQuizResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  }; */
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   /// INSTRUCTION TEXT ////
@@ -1049,18 +988,10 @@ class PerTut extends React.Component {
   /// TASK TOGGLES ////
 
   tutorBegin() {
-    // remove access to left/right/space keys for the instructions
-    // document.removeEventListener("keyup", this._handleInstructKey);
-    // document.removeEventListener("keyup", this._handleBeginKey);
-    //reset tutorial if need to do again
     this.setState({
       trialNum: 0,
-      responseMatrix: [true, true],
-      reversals: 0,
-      stairDir: ["up", "up"],
-      dotStair: 4.65, //in log space; this is about 104 dots which is 70 dots shown for the first one});
-      // push to render fixation for the first trial
     });
+
     setTimeout(
       function () {
         this.trialReset();
@@ -1158,30 +1089,23 @@ class PerTut extends React.Component {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
 
-    // when it reaches half way point, use a differnt staircase
+    var blockCond;
     if (trialNum < this.state.trialStaircaseSwitch) {
-      // run staircase
+      blockCond = this.state.blockCondTotal[0];
       var s2 = staircaseEasy.staircase(
-        this.state.dotStair,
-        this.state.responseMatrix,
-        this.state.stairDir,
+        this.state.dotStairEasy,
+        this.state.responseMatrixEasy,
+        this.state.stairDirEasy,
         trialNum
       );
-
-      this.setState({
-        staircaseCond: "easy",
-      });
     } else if (trialNum >= this.state.trialStaircaseSwitch) {
+      blockCond = this.state.blockCondTotal[1];
       var s2 = staircase.staircase(
-        this.state.dotStair,
-        this.state.responseMatrix,
-        this.state.stairDir,
+        this.state.dotStairHard,
+        this.state.responseMatrixHard,
+        this.state.stairDirHard,
         trialNum - this.state.trialStaircaseSwitch + 1
       );
-
-      this.setState({
-        staircaseCond: "hard",
-      });
     }
 
     var dotStair = s2.diff;
@@ -1219,6 +1143,7 @@ class PerTut extends React.Component {
       taskScreen: true,
       taskSection: "iti",
       trialNum: trialNum,
+      blockCond: blockCond,
       fixTime: 0,
       stimTime: 0,
       responseKey: 0,
@@ -1235,6 +1160,7 @@ class PerTut extends React.Component {
       reversals: reversals,
       responseMatrix: responseMatrix,
       stairDir: stairDir,
+
       //Calculate the for the paramters for the stim
       dotDiffStim1: Math.round(Math.exp(dotStair)),
       dotDiffStim2: 0,
@@ -1361,14 +1287,14 @@ class PerTut extends React.Component {
 
   renderTutorSave() {
     var prolificID = this.state.prolificID;
-    var trialNum = this.state.trialNum;
+    var blockCond = this.state.blockCond;
 
     //before it switch to the difficult staircase, save the dotStairEasy level
-    if (trialNum == this.state.trialStaircaseSwitch - 1) {
+    if (blockCond == "easy") {
       this.setState({
         dotStairEasy: this.state.dotStair,
       });
-    } else if (trialNum == this.state.trialNumTotal) {
+    } else if (blockCond == "hard") {
       //before finish the hard one, save that too
       this.setState({
         dotStairHard: this.state.dotStair,
@@ -1403,14 +1329,21 @@ class PerTut extends React.Component {
       correct: this.state.correct,
       correctMat: this.state.correctMat,
       correctPer: this.state.correctPer,
-
-      // staircase parameters
       responseMatrix: this.state.responseMatrix,
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
-      staircaseCond: this.state.staircaseCond,
       dotStair: this.state.dotStair,
+
+      correctMatEasy: this.state.correctMatEasy,
+      correctPerEasy: this.state.correctPerEasy,
+      responseMatrixEasy: this.state.responseMatrixEasy,
+      stairDirEasy: this.state.stairDirEasy,
       dotStairEasy: this.state.dotStairEasy,
+
+      correctMatHard: this.state.correctMatHard,
+      correctPerHard: this.state.correctPerHard,
+      responseMatrixHard: this.state.responseMatrixHard,
+      stairDirHard: this.state.stairDirHard,
       dotStairHard: this.state.dotStairHard,
 
       dotStairLeft: this.state.dotStairLeft,

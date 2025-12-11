@@ -5,6 +5,7 @@ import * as utils from "./func/utils.jsx";
 import DrawFix from "./drawassets/DrawFix.jsx";
 import * as ConfSliderEx from "./drawassets/DrawConfSliderExample.jsx";
 import * as staircase from "./MemStaircase.jsx";
+import * as staircaseEasy from "./MemStaircaseEasy.jsx";
 
 import butterfly from "./ani-stim/butterfly.jpg";
 import ladybug from "./ani-stim/ladybug.jpg";
@@ -53,8 +54,7 @@ class MemTut extends React.Component {
       memCorrectPer,
       perCorrectPer,
       statePic,
-      stateWord,
-      trialNumTotal;
+      stateWord;
 
     var debug = true; // Still using manual flag for now
 
@@ -104,7 +104,7 @@ class MemTut extends React.Component {
         camel,
         buffalo,
       ];
-      trialNumTotal = 9; //26
+
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -117,7 +117,6 @@ class MemTut extends React.Component {
 
       statePic = this.props.state.statePic;
       stateWord = this.props.state.stateWord;
-      trialNumTotal = 26; //26
     }
 
     statePic = statePic.filter(function (val) {
@@ -127,6 +126,10 @@ class MemTut extends React.Component {
     stateWord = stateWord.filter(function (val) {
       return val !== undefined;
     });
+
+    var trialNumTotal = 10; //26
+    var blockCondTotal = ["easy", "hard"];
+    var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 
     //the stim position
     var choicePos = Array(Math.round(trialNumTotal / 2))
@@ -166,8 +169,10 @@ class MemTut extends React.Component {
 
       //trial parameters
       trialNumTotal: trialNumTotal,
+      blockCondTotal: blockCondTotal,
+      trialStaircaseSwitch: trialStaircaseSwitch,
 
-      respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
+      //  respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
 
       //trial by trial paramters
       trialNum: 0,
@@ -193,6 +198,18 @@ class MemTut extends React.Component {
       reversals: 0,
       stairDir: ["up", "up"],
       stimNum: 6,
+
+      correctMatEasy: [], //put correct in vector, to cal perf %
+      correctPerEasy: 0,
+      responseMatrixEasy: [true, true],
+      stairDirEasy: ["up", "up"],
+      stimNumEasy: 6,
+
+      correctMatHard: [], //put correct in vector, to cal perf %
+      correctPerHard: 0,
+      responseMatrixHard: [true, true],
+      stairDirHard: ["up", "up"],
+      stimNumHard: 6,
 
       //quiz paramters
       quizTry: 1,
@@ -274,20 +291,16 @@ class MemTut extends React.Component {
       // from page 6 to 10, I can move forward a page
       this.setState({ instructNum: curInstructNum + 1 });
     }
+
+    console.log(this.state.instructNum + 1);
   }
 
   handleBegin(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
+
     if (whichButton === 3 && curInstructNum === 6) {
-      this.setState({
-        trialNum: 1,
-        correctMat: [], //put correct in vector, to cal perf %
-        responseMatrix: [true, true],
-        reversals: 0,
-        stairDir: ["up", "up"],
-        stimNum: 6,
-      });
+      console.log("START TUTORIAL");
       setTimeout(
         function () {
           this.tutorBegin();
@@ -349,6 +362,40 @@ class MemTut extends React.Component {
       console.log("No response made!");
     }
 
+    var correctPerHard;
+    var correctPerEasy;
+    var correctMatHard;
+    var correctMatEasy;
+    var responseMatrixHard;
+    var responseMatrixEasy;
+    var stairDirEasy;
+    var stairDirHard;
+
+    var blockCond = this.state.blockCond;
+    if (blockCond === "easy") {
+      correctMatEasy = this.state.correctMatEasy.concat(correct);
+      correctPerEasy =
+        Math.round((utils.getAvg(correctMatEasy) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixEasy = this.state.responseMatrixEasy.concat(response);
+      stairDirEasy = this.state.stairDir;
+
+      responseMatrixHard = this.state.responseMatrixHard;
+      correctPerHard = this.state.correctPerHard;
+      correctMatHard = this.state.correctMatHard;
+      stairDirHard = this.state.stairDirHard;
+    } else if (blockCond === "hard") {
+      correctMatHard = this.state.correctMatHard.concat(correct);
+      correctPerHard =
+        Math.round((utils.getAvg(correctMatHard) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixHard = this.state.responseMatrixHard.concat(response);
+      stairDirHard = this.state.stairDir;
+
+      responseMatrixEasy = this.state.responseMatrixEasy;
+      correctPerEasy = this.state.correctPerEasy;
+      correctMatEasy = this.state.correctMatEasy;
+      stairDirEasy = this.state.stairDirEasy;
+    }
+
     console.log("response: " + response);
     var responseMatrix = this.state.responseMatrix.concat(response);
     var correctMat = this.state.correctMat.concat(correct);
@@ -363,6 +410,16 @@ class MemTut extends React.Component {
       correctMat: correctMat,
       correctPer: correctPer,
       responseMatrix: responseMatrix,
+
+      responseMatrixEasy: responseMatrixEasy,
+      correctMatEasy: correctMatEasy,
+      correctPerEasy: correctPerEasy,
+      stairDirEasy: stairDirEasy,
+
+      responseMatrixHard: responseMatrixHard,
+      correctMatHard: correctMatHard,
+      correctPerHard: correctPerHard,
+      stairDirHard: stairDirHard,
     });
 
     setTimeout(
@@ -448,79 +505,6 @@ class MemTut extends React.Component {
     );
   }
 
-  /*   // handle key keyPressed
-  _handleInstructKey = (event) => {
-    var keyPressed;
-
-    switch (event.keyCode) {
-      case 37:
-        //    this is left arrow
-        keyPressed = 1;
-        this.handleInstruct(keyPressed);
-        break;
-      case 39:
-        //    this is right arrow
-        keyPressed = 2;
-        this.handleInstruct(keyPressed);
-        break;
-      default:
-    }
-  }; */
-
-  // handle key keyPressed
-  /*   _handleBeginKey = (event) => {
-    var keyPressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        this.handleBegin(keyPressed);
-        break;
-      default:
-    }
-  }; */
-
-  // handle key keyPressed
-  /*   _handleRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-    var leftKey = this.state.respKeyCode[0];
-    var rightKey = this.state.respKeyCode[1];
-
-    switch (event.keyCode) {
-      case leftKey:
-        //    this is left choice
-        keyPressed = 1;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      case rightKey:
-        //    this is right choice
-        keyPressed = 2;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  }; */
-
-  /*   // handle key keyPressed
-  _handleNextRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        timePressed = Math.round(performance.now());
-        this.handleNextResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
- */
   handleCallbackConf(callBackValue) {
     this.setState({ confValue: callBackValue });
   }
@@ -1143,11 +1127,13 @@ class MemTut extends React.Component {
   /// TASK TOGGLES ////
 
   tutorBegin() {
-    // remove access to left/right/space keys for the instructions
-    //  document.removeEventListener("keyup", this._handleInstructKey);
-    // document.removeEventListener("keyup", this._handleBeginKey);
-
     // push to render fixation for the first trial
+    this.setState({
+      trialNum: 0,
+    });
+
+    console.log("TUTORIAL BEGINING");
+
     setTimeout(
       function () {
         this.trialReset();
@@ -1167,13 +1153,6 @@ class MemTut extends React.Component {
   }
 
   quizBegin() {
-    // remove access to left/right/space keys for the instructions
-    //  document.removeEventListener("keyup", this._handleInstructKey);
-    // document.removeEventListener("keyup", this._handleBeginKey);
-    // document.addEventListener("keyup", this._handleQuizKey);
-
-    // If I want to shuffle quiz answers?
-
     this.setState({
       instructScreen: false,
       taskScreen: true,
@@ -1244,13 +1223,36 @@ class MemTut extends React.Component {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var choicePos = this.state.choicePosList[trialNum - 1]; //shuffle the order for the choice
 
+    console.log(trialNum);
+    console.log(choicePos);
     // run staircase
-    var s2 = staircase.staircase(
-      this.state.stimNum,
-      this.state.responseMatrix,
-      this.state.stairDir,
-      trialNum
-    );
+    var blockCond;
+    var s2;
+    if (trialNum < this.state.trialStaircaseSwitch) {
+      console.log("in here easy");
+      console.log(this.state.stimNumEasy);
+      console.log(this.state.responseMatrixEasy);
+      console.log(this.state.stairDirEasy);
+
+      blockCond = this.state.blockCondTotal[0];
+      s2 = staircaseEasy.staircase(
+        this.state.stimNumEasy,
+        this.state.responseMatrixEasy,
+        this.state.stairDirEasy,
+        trialNum
+      );
+
+      console.log(blockCond);
+    } else if (trialNum >= this.state.trialStaircaseSwitch) {
+      console.log("in here hard");
+      blockCond = this.state.blockCondTotal[1];
+      s2 = staircase.staircase(
+        this.state.stimNumHard,
+        this.state.responseMatrixHard,
+        this.state.stairDirHard,
+        trialNum - this.state.trialStaircaseSwitch + 1
+      );
+    }
 
     var stimNum = s2.stimNum;
     var stairDir = s2.direction;
@@ -1330,6 +1332,7 @@ class MemTut extends React.Component {
       instructScreen: false,
       taskScreen: true,
       taskSection: "iti",
+      blockCond: blockCond,
       trialNum: trialNum,
       fixTime: 0,
       stimTime: 0,
@@ -1371,11 +1374,12 @@ class MemTut extends React.Component {
     console.log(this.state.trialNumTotal);
 
     if (trialNum < this.state.trialNumTotal + 1) {
+      console.log("START TRIAL");
       setTimeout(
         function () {
           this.renderFix();
         }.bind(this),
-        0
+        10
       );
     } else {
       // if the trials have reached the total trial number
@@ -1383,7 +1387,7 @@ class MemTut extends React.Component {
         function () {
           this.tutorEnd();
         }.bind(this),
-        0
+        10
       );
     }
   }
@@ -1558,6 +1562,20 @@ class MemTut extends React.Component {
   renderTutorSave() {
     var prolificID = this.state.prolificID;
 
+    var blockCond = this.state.blockCond;
+
+    //before it switch to the difficult staircase, save the dotStairEasy level
+    if (blockCond == "easy") {
+      this.setState({
+        stimNumEasy: this.state.stimNum,
+      });
+    } else if (blockCond == "hard") {
+      //before finish the hard one, save that too
+      this.setState({
+        stimNumHard: this.state.stimNum,
+      });
+    }
+
     //  var stimPickShown = this.state.stimPickShown.substring(0, 50);
     var stimShown = null;
     var stimPick = null;
@@ -1594,6 +1612,18 @@ class MemTut extends React.Component {
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
 
+      correctMatEasy: this.state.correctMatEasy,
+      correctPerEasy: this.state.correctPerEasy,
+      responseMatrixEasy: this.state.responseMatrixEasy,
+      stairDirEasy: this.state.stairDirEasy,
+      stimNumEasy: this.state.stimNumEasy,
+
+      correctMatHard: this.state.correctMatHard,
+      correctPerHard: this.state.correctPerHard,
+      responseMatrixHard: this.state.responseMatrixHard,
+      stairDirHard: this.state.stairDirHard,
+      stimNumHard: this.state.stimNumHard,
+
       stimPick: stimPick,
       stimWordPick: this.state.stimWordPick,
       stimShown: stimShown,
@@ -1604,6 +1634,7 @@ class MemTut extends React.Component {
       choiceShownWordRight: this.state.choiceShownWordRight,
     };
 
+    console.log("BEFORE TRIAL RESET");
     try {
       fetch(`${DATABASE_URL}/mem_tutorial_data/` + prolificID, {
         method: "POST",
@@ -1671,8 +1702,6 @@ class MemTut extends React.Component {
   }
 
   redirectToNextTask() {
-    // document.removeEventListener("keyup", this._handleInstructKey);
-    // document.removeEventListener("keyup", this._handleBeginKey);
     this.props.navigate("/MemTask?PROLIFIC_PID=" + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
@@ -1682,7 +1711,8 @@ class MemTut extends React.Component {
         startTime: this.state.startTime,
         statePic: this.state.statePic,
         stateWord: this.state.stateWord,
-        stimNum: this.state.stimNum,
+        stimNumEasy: this.state.stimNumEasy,
+        stimNumHard: this.state.stimNumHard,
         memCorrectPer: this.state.memCorrectPer,
         perCorrectPer: this.state.perCorrectPer,
       },
@@ -1722,11 +1752,7 @@ class MemTut extends React.Component {
     let text;
 
     if (this.state.instructScreen === true && this.state.taskScreen === false) {
-      //  document.addEventListener("keyup", this._handleInstructKey);
-      //  document.addEventListener("keyup", this._handleBeginKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
-      console.log("THIS SHOULD BE INSTRUCTION BLOCK");
-      console.log(this.state.instructNum);
     } else if (
       this.state.instructScreen === false &&
       this.state.taskScreen === true &&

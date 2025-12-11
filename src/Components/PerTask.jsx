@@ -36,7 +36,6 @@ class PerTask extends React.Component {
       date,
       startTime,
       condition,
-      dotStair,
       memCorrectPer,
       perCorrectPer,
       dotStairEasy,
@@ -107,13 +106,13 @@ class PerTask extends React.Component {
       blockNumTotal: blockNumTotal,
       blockCondTotal: blockCondTotal,
       stimPosList: stimPos,
-      respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
+      //  respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
 
       //trial by trial paramters
       blockNum: 1,
       blockCond: null,
       condEasyTrialNum: 0,
-      hardEasyTrialNum: 0,
+      condHardTrialNum: 0,
       trialNum: 0,
       trialNumInBlock: 0,
       trialTime: 0,
@@ -149,10 +148,20 @@ class PerTask extends React.Component {
       reversals: 0,
       stairDir: ["up", "up"],
       dotStair: null, //in log space; this is about 104 dots which is 70 dots shown for the first one
-      dotStairEasy: dotStairEasy,
-      dotStairHard: dotStairHard,
       dotStairLeft: 0,
       dotStairRight: 0,
+
+      correctMatEasy: [], //put correct in vector, to cal perf %
+      correctPerEasy: 0,
+      responseMatrixEasy: [true, true],
+      stairDirEasy: ["up", "up"],
+      dotStairEasy: dotStairEasy,
+
+      correctMatHard: [], //put correct in vector, to cal perf %
+      correctPerHard: 0,
+      responseMatrixHard: [true, true],
+      stairDirHard: ["up", "up"],
+      dotStairHard: dotStairHard,
 
       //quiz
       quizState: "pre",
@@ -348,6 +357,40 @@ class PerTask extends React.Component {
       correct = 0;
     }
 
+    var correctPerHard;
+    var correctPerEasy;
+    var correctMatHard;
+    var correctMatEasy;
+    var responseMatrixHard;
+    var responseMatrixEasy;
+    var stairDirEasy;
+    var stairDirHard;
+
+    var blockCond = this.state.blockCond;
+    if (blockCond === "easy") {
+      correctMatEasy = this.state.correctMatEasy.concat(correct);
+      correctPerEasy =
+        Math.round((utils.getAvg(correctMatEasy) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixEasy = this.state.responseMatrixEasy.concat(response);
+      stairDirEasy = this.state.stairDir;
+
+      responseMatrixHard = this.state.responseMatrixHard;
+      correctPerHard = this.state.correctPerHard;
+      correctMatHard = this.state.correctMatHard;
+      stairDirHard = this.state.stairDirHard;
+    } else if (blockCond === "hard") {
+      correctMatHard = this.state.correctMatHard.concat(correct);
+      correctPerHard =
+        Math.round((utils.getAvg(correctMatHard) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixHard = this.state.responseMatrixHard.concat(response);
+      stairDirHard = this.state.stairDir;
+
+      responseMatrixEasy = this.state.responseMatrixEasy;
+      correctPerEasy = this.state.correctPerEasy;
+      correctMatEasy = this.state.correctMatEasy;
+      stairDirEasy = this.state.stairDirEasy;
+    }
+
     //  console.log("response: " + response);
     var correctMat = this.state.correctMat.concat(correct);
     var responseMatrix = this.state.responseMatrix.concat(response);
@@ -362,6 +405,16 @@ class PerTask extends React.Component {
       responseMatrix: responseMatrix,
       correctMat: correctMat,
       correctPer: correctPer,
+
+      responseMatrixEasy: responseMatrixEasy,
+      correctMatEasy: correctMatEasy,
+      correctPerEasy: correctPerEasy,
+      stairDirEasy: stairDirEasy,
+
+      responseMatrixHard: responseMatrixHard,
+      correctMatHard: correctMatHard,
+      correctPerHard: correctPerHard,
+      stairDirHard: stairDirHard,
     });
 
     setTimeout(
@@ -399,105 +452,9 @@ class PerTask extends React.Component {
       );
     }
   }
-  /* 
-  // handle key keyPressed
-  _handleInstructKey = (event) => {
-    var keyPressed;
 
-    switch (event.keyCode) {
-      case 37:
-        //    this is left arrow
-        keyPressed = 1;
-        this.handleInstruct(keyPressed);
-        break;
-      case 39:
-        //    this is right arrow
-        keyPressed = 2;
-        this.handleInstruct(keyPressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleBeginKey = (event) => {
-    var keyPressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        this.handleBegin(keyPressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleGlobalConfKey = (event) => {
-    var keyPressed;
-    var timePressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        timePressed = Math.round(performance.now());
-        this.handleGlobalConf(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-    var leftKey = this.state.respKeyCode[0];
-    var rightKey = this.state.respKeyCode[1];
-
-    switch (event.keyCode) {
-      case leftKey:
-        //    this is left choice
-        keyPressed = 1;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      case rightKey:
-        //    this is right choice
-        keyPressed = 2;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleConfRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-
-    //    console.log("Confidence: " + this.state.confLevel);
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is enter
-        keyPressed = 3;
-        timePressed = Math.round(performance.now());
-        this.handleConfResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
- */
   handleCallbackConf(callBackValue) {
     this.setState({ confLevel: callBackValue });
-    //  console.log("Confidence is: " + callBackValue);
-
-    //  if (this.state.confLevel !== null) {
-    //    this.setState({ confMove: true });
-    //}
   }
 
   // To ask them for the valence rating of the noises
@@ -565,7 +522,7 @@ class PerTask extends React.Component {
           <br />
           Has your experience changed? Have you developed any particular
           strategy for making your decisions or on how you rate your confidence?
-          Please explain what cues or feelings you are uding to make these
+          Please explain what cues or feelings you are using to make these
           judgements.
           <br />
           <br />
@@ -666,7 +623,7 @@ class PerTask extends React.Component {
           </button>
           <br />
           <br />
-          You will not allowed to move on unless you have adjusted the scale.
+          You will not be able to move on unless you have adjusted the scale.
         </center>
       </div>
     );
@@ -694,7 +651,7 @@ class PerTask extends React.Component {
           </button>
           <br />
           <br />
-          You will not allowed to move on unless you have adjusted the scale.
+          You will not be able to move on unless you have adjusted the scale.
         </center>
       </div>
     );
@@ -709,16 +666,9 @@ class PerTask extends React.Component {
   }
 
   quizBegin() {
-    /*     document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
-    document.addEventListener("keyup", this._handleGlobalConfKey); */
-
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
     var initialValue = utils.randomInt(60, 90);
     var confTimeInitial = Math.round(performance.now());
-
-    //  console.log("Begining quiz");
-    //  console.log("initialValue: " + initialValue);
 
     this.setState({
       confInitial: initialValue,
@@ -781,18 +731,18 @@ class PerTask extends React.Component {
       var condEasyTrialNum = this.state.condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
       // run staircase
       var s2 = staircaseEasy.staircase(
-        this.state.dotStair,
-        this.state.responseMatrix,
-        this.state.stairDir,
+        this.state.dotStairEasy,
+        this.state.responseMatrixEasy,
+        this.state.stairDirEasy,
         condEasyTrialNum
       );
     } else if (this.state.blockCond == "hard") {
-      var hardEasyTrialNum = this.state.condEasyTrialNum + 1;
+      var condHardTrialNum = this.state.condHardTrialNum + 1;
       var s2 = staircase.staircase(
-        this.state.dotStair,
-        this.state.responseMatrix,
-        this.state.stairDir,
-        hardEasyTrialNum
+        this.state.dotStairHard,
+        this.state.responseMatrixHard,
+        this.state.stairDirHard,
+        condHardTrialNum
       );
     }
 
@@ -831,6 +781,8 @@ class PerTask extends React.Component {
       taskScreen: true,
       quizScreen: false,
       trialNum: trialNum,
+      condHardTrialNum: condHardTrialNum,
+      condEasyTrialNum: condEasyTrialNum,
       trialNumInBlock: trialNumInBlock,
       taskSection: "iti",
       fixTime: 0,
@@ -978,9 +930,22 @@ class PerTask extends React.Component {
   }
 
   renderTaskSave() {
-    document.removeEventListener("keyup", this._handleConfRespKey);
+    // document.removeEventListener("keyup", this._handleConfRespKey);
 
     var prolificID = this.state.prolificID;
+    var blockCond = this.state.blockCond;
+
+    //before it switch to the difficult staircase, save the dotStairEasy level
+    if (blockCond == "easy") {
+      this.setState({
+        dotStairEasy: this.state.dotStair,
+      });
+    } else if (blockCond == "hard") {
+      //before finish the hard one, save that too
+      this.setState({
+        dotStairHard: this.state.dotStair,
+      });
+    }
 
     let saveString = {
       prolificID: this.state.prolificID,
@@ -994,8 +959,9 @@ class PerTask extends React.Component {
       blockNum: this.state.blockNum,
       blockCond: this.state.blockCond,
       condEasyTrialNum: this.state.condEasyTrialNum,
-      condHardEasyTrial: this.state.condHardTrialNum,
+      condHardTrialNum: this.state.condHardTrialNum,
       trialNumInBlock: this.state.trialNumInBlock,
+
       trialTime: this.state.trialTime,
       fixTime: this.state.fixTime,
       stimTime: this.state.stimTime,
@@ -1019,9 +985,19 @@ class PerTask extends React.Component {
       responseMatrix: this.state.responseMatrix,
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
-      dotStairEasy: this.state.dotStairEasy,
-      dotStairHard: this.state.dotStairHard,
       dotStair: this.state.dotStair,
+
+      dotStairEasy: this.state.dotStairEasy,
+      correctMatEasy: this.state.correctMatEasy,
+      correctPerEasy: this.state.correctPerEasy,
+      responseMatrixEasy: this.state.responseMatrixEasy,
+      stairDirEasy: this.state.stairDirEasy,
+
+      dotStairHard: this.state.dotStairHard,
+      correctMatHard: this.state.correctMatHard,
+      correctPerHard: this.state.correctPerHard,
+      responseMatrixHard: this.state.responseMatrixHard,
+      stairDirHard: this.state.stairDirHard,
 
       dotStairLeft: this.state.dotStairLeft,
       dotStairRight: this.state.dotStairRight,
@@ -1361,6 +1337,9 @@ class PerTask extends React.Component {
             <button onClick={() => this.handleConfResp(3)}>
               <strong>Continue</strong>
             </button>
+            <br />
+            <br />
+            You will not be able to move on unless you have adjusted the scale.
           </center>
         </div>
       );

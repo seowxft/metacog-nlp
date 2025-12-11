@@ -6,6 +6,7 @@ import DrawFix from "./drawassets/DrawFix.jsx";
 import * as ConfSlider from "./drawassets/DrawConfSlider.jsx";
 import * as ConfSliderGlobal from "./drawassets/DrawConfSliderGlobal.jsx";
 import * as staircase from "./MemStaircase.jsx";
+import * as staircaseEasy from "./MemStaircaseEasy.jsx";
 
 import butterfly from "./ani-stim/butterfly.jpg";
 import ladybug from "./ani-stim/ladybug.jpg";
@@ -47,7 +48,8 @@ class MemTask extends React.Component {
       date,
       startTime,
       condition,
-      stimNum,
+      stimNumEasy,
+      stimNumHard,
       memCorrectPer,
       perCorrectPer,
       stateWord,
@@ -64,7 +66,8 @@ class MemTask extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
-      stimNum = 5;
+      stimNumEasy = 5;
+      stimNumHard = 8;
 
       ////////////////
       stateWord = [
@@ -109,7 +112,8 @@ class MemTask extends React.Component {
       userID = this.props.state.userID;
       date = this.props.state.date;
       startTime = this.props.state.startTime;
-      stimNum = this.props.state.stimNum;
+      stimNumEasy = this.props.state.stimNumEasy;
+      stimNumHard = this.props.state.stimNumHard;
       memCorrectPer = this.props.state.memCorrectPer;
       perCorrectPer = this.props.state.perCorrectPer;
 
@@ -125,9 +129,14 @@ class MemTask extends React.Component {
       return val !== undefined;
     });
 
-    var trialNumTotal = 6; //150
-    var blockNumTotal = 3;
+    // if
+    var trialNumTotal = 35; //should be 140, for 7 blocks of 40 trials
+    var blockNumTotal = 7; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
+
+    var condScrabble = ["easy", "hard", "easy", "hard", "easy", "hard"];
+    utils.shuffle(condScrabble);
+    var blockCondTotal = ["hard", ...condScrabble];
 
     //the choice position
     var choicePos = Array(Math.round(trialNumTotal / 2))
@@ -157,8 +166,9 @@ class MemTask extends React.Component {
       trialNumTotal: trialNumTotal,
       trialNumPerBlock: trialNumPerBlock,
       blockNumTotal: blockNumTotal,
+      blockCondTotal: blockCondTotal,
       choicePosList: choicePos,
-      respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
+      // respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
 
       // stimuli
       stateWord: stateWord,
@@ -168,6 +178,8 @@ class MemTask extends React.Component {
       blockNum: 1,
       trialNum: 0,
       trialNumInBlock: 0,
+      condEasyTrialNum: 0,
+      condHardTrialNum: 0,
       trialTime: 0,
       fixTime: 0,
       stimTime: 0,
@@ -184,11 +196,28 @@ class MemTask extends React.Component {
       correctMat: [], //put correct in vector, to cal perf %
       correctPer: 0,
 
+      textTime: null,
+      selfKnowledge: [],
+      wordCount: 0,
+      minWordCount: 10,
+
       // staircase parameters
       responseMatrix: [true, true],
       reversals: 0,
       stairDir: ["up", "up"],
-      stimNum: stimNum,
+      stimNum: null,
+
+      correctMatEasy: [], //put correct in vector, to cal perf %
+      correctPerEasy: 0,
+      responseMatrixEasy: [true, true],
+      stairDirEasy: ["up", "up"],
+      stimNumEasy: stimNumEasy,
+
+      correctMatHard: [], //put correct in vector, to cal perf %
+      correctPerHard: 0,
+      responseMatrixHard: [true, true],
+      stairDirHard: ["up", "up"],
+      stimNumHard: stimNumHard,
 
       //quiz
       quizState: "pre",
@@ -221,6 +250,9 @@ class MemTask extends React.Component {
     this.handleInstruct = this.handleInstruct.bind(this);
     this.handleBegin = this.handleBegin.bind(this);
     this.handleResp = this.handleResp.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handlePaste = this.handlePaste.bind(this);
     this.handleConfResp = this.handleConfResp.bind(this);
     this.instructText = this.instructText.bind(this);
     this.quizText = this.quizText.bind(this);
@@ -293,6 +325,54 @@ class MemTask extends React.Component {
         0
       );
     }
+  }
+
+  //for the submitting the text plus moving to next page
+  handleChange(event) {
+    var text = event.target.value;
+    var trimmedText = text.trim();
+    var wordCount = trimmedText ? trimmedText.split(/\s+/).length : 0;
+
+    this.setState({
+      selfKnowledge: text,
+      wordCount: wordCount,
+      error: null,
+    });
+  }
+
+  handlePaste(event) {
+    event.preventDefault();
+    alert("Pasting is not allowed in this field."); // Optional: Notify the user
+  }
+
+  handleSubmit(event) {
+    event.preventDefault(); // Always call this first!
+
+    // --- Validation Check ---
+    if (this.state.wordCount < this.state.minWordCount) {
+      this.setState({
+        error:
+          "Please write at least " +
+          this.state.minWordCount +
+          " words to continue.",
+      });
+      return; // Stop the submission
+    }
+    // --- End Validation ---
+    var timePressed = Math.round(performance.now());
+    var textTime = timePressed - this.state.sectionTime;
+
+    this.setState({
+      selfKnowledge: this.state.selfKnowledge,
+      textTime: textTime,
+    });
+
+    setTimeout(
+      function () {
+        this.renderRatingSave();
+      }.bind(this),
+      0
+    );
   }
 
   handleGlobalConf(keyPressed) {
@@ -401,103 +481,9 @@ class MemTask extends React.Component {
       );
     }
   }
-  /* 
-  // handle key keyPressed
-  _handleInstructKey = (event) => {
-    var keyPressed;
 
-    switch (event.keyCode) {
-      case 37:
-        //    this is left arrow
-        keyPressed = 1;
-        this.handleInstruct(keyPressed);
-        break;
-      case 39:
-        //    this is right arrow
-        keyPressed = 2;
-        this.handleInstruct(keyPressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleBeginKey = (event) => {
-    var keyPressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        this.handleBegin(keyPressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleGlobalConfKey = (event) => {
-    var keyPressed;
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        this.handleGlobalConf(keyPressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-    var leftKey = this.state.respKeyCode[0];
-    var rightKey = this.state.respKeyCode[1];
-
-    switch (event.keyCode) {
-      case leftKey:
-        //    this is left choice
-        keyPressed = 1;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      case rightKey:
-        //    this is right choice
-        keyPressed = 2;
-        timePressed = Math.round(performance.now());
-        this.handleResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
-
-  // handle key keyPressed
-  _handleConfRespKey = (event) => {
-    var keyPressed;
-    var timePressed;
-
-    console.log("Confidence: " + this.state.confLevel);
-
-    switch (event.keyCode) {
-      case 32:
-        //    this is enter
-        keyPressed = 3;
-        timePressed = Math.round(performance.now());
-        this.handleConfResp(keyPressed, timePressed);
-        break;
-      default:
-    }
-  };
- */
   handleCallbackConf(callBackValue) {
     this.setState({ confLevel: callBackValue });
-    //  console.log("Confidence is: " + callBackValue);
-
-    //  if (this.state.confLevel !== null) {
-    //    this.setState({ confMove: true });
-    //}
   }
 
   // To ask them for the valence rating of the noises
@@ -514,11 +500,7 @@ class MemTask extends React.Component {
           with {this.state.trialNumPerBlock} sets of animals each so that you
           can take breaks in between.
           <br /> <br />
-          If the animal on the <strong>left</strong> was shown previously,{" "}
-          <strong>press W</strong>.
-          <br /> <br />
-          If the animal on the <strong>right</strong> was shown previously,{" "}
-          <strong> press O</strong>.
+          Click on the description of the animal shown previously.
           <br /> <br />
           Please respond quickly and to the best of your ability. This time, you{" "}
           <strong>will not</strong> be told whether your choice was correct or
@@ -567,13 +549,28 @@ class MemTask extends React.Component {
           {this.state.blockNumTotal} blocks!
           <br />
           <br />
-          You can now pause for a break.
+          Has your experience changed? Have you developed any particular
+          strategy for making your decisions or on how you rate your confidence?
+          Please explain what cues or feelings you are using to make these
+          judgements.
           <br />
           <br />
           <center>
-            <button onClick={() => this.handleBegin(3)}>
-              <strong>CONTINUE</strong>
-            </button>
+            <form onSubmit={this.handleSubmit}>
+              <label>
+                <textarea
+                  placeholder={`${this.state.minWordCount} words minimum.`}
+                  value={this.state.selfKnowledge}
+                  onChange={this.handleChange}
+                  onPaste={this.handlePaste}
+                />
+              </label>
+              <br /> <br />
+              <input type="submit" value="Submit & Continue Task" />
+              <br />
+              <br />
+              {this.state.error}
+            </form>
           </center>
         </span>
       </div>
@@ -651,7 +648,7 @@ class MemTask extends React.Component {
           </button>
           <br />
           <br />
-          You will not allowed to move on unless you have adjusted the scale.
+          You will not be able to move on unless you have adjusted the scale.
         </center>
       </div>
     );
@@ -679,7 +676,7 @@ class MemTask extends React.Component {
           </button>
           <br />
           <br />
-          You will not allowed to move on unless you have adjusted the scale.
+          You will not be able to move on unless you have adjusted the scale.
         </center>
       </div>
     );
@@ -694,9 +691,6 @@ class MemTask extends React.Component {
   }
 
   quizBegin() {
-    /* document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
-    document.addEventListener("keyup", this._handleGlobalConfKey); */
     var initialValue = utils.randomInt(70, 80);
 
     console.log("Begining quiz");
@@ -714,10 +708,24 @@ class MemTask extends React.Component {
   }
 
   taskBegin() {
-    // remove access to left/right/space keys for the instructions
-    /*    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey); */
     // push to render fixation for the first trial
+    var blockCond = this.state.blockCondTotal[this.state.blockNum - 1];
+
+    console.log(this.state.blockCondTotal);
+    console.log(blockCond);
+
+    if (blockCond == "easy") {
+      this.setState({
+        blockCond: blockCond,
+        stimNum: this.state.stimNumEasy,
+      });
+    } else if (blockCond == "hard") {
+      this.setState({
+        blockCond: blockCond,
+        stimNum: this.state.stimNumHard,
+      });
+    }
+
     setTimeout(
       function () {
         this.trialReset();
@@ -745,13 +753,26 @@ class MemTask extends React.Component {
     var choicePos = this.state.choicePosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
 
     console.log("NEW TRIAL");
-    // run staircase
-    var s2 = staircase.staircase(
-      this.state.stimNum,
-      this.state.responseMatrix,
-      this.state.stairDir,
-      trialNum
-    );
+
+    console.log(this.state.blockCond);
+    if (this.state.blockCond == "easy") {
+      var condEasyTrialNum = this.state.condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
+      // run staircase
+      var s2 = staircaseEasy.staircase(
+        this.state.stimNumEasy,
+        this.state.responseMatrixEasy,
+        this.state.stairDirEasy,
+        condEasyTrialNum
+      );
+    } else if (this.state.blockCond == "hard") {
+      var condHardTrialNum = this.state.condHardTrialNum + 1;
+      var s2 = staircase.staircase(
+        this.state.stimNumHard,
+        this.state.responseMatrixHard,
+        this.state.stairDirHard,
+        condHardTrialNum
+      );
+    }
 
     var stimNum = s2.stimNum;
     var stairDir = s2.direction;
@@ -833,6 +854,8 @@ class MemTask extends React.Component {
       taskScreen: true,
       quizScreen: false,
       trialNum: trialNum,
+      condHardTrialNum: condHardTrialNum,
+      condEasyTrialNum: condEasyTrialNum,
       trialNumInBlock: trialNumInBlock,
       taskSection: "iti",
       fixTime: 0,
@@ -1039,6 +1062,8 @@ class MemTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       trialNum: this.state.trialNum,
+      condEasyTrialNum: this.state.condEasyTrialNum,
+      condHardTrialNum: this.state.condHardTrialNum,
       blockNum: this.state.blockNum,
       trialNumInBlock: this.state.trialNumInBlock,
       choicePos: this.state.choicePos,
@@ -1065,6 +1090,18 @@ class MemTask extends React.Component {
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
       stimNum: this.state.stimNum,
+
+      stimNumEasy: this.state.stimNumEasy,
+      correctMatEasy: this.state.correctMatEasy,
+      correctPerEasy: this.state.correctPerEasy,
+      responseMatrixEasy: this.state.responseMatrixEasy,
+      stairDirEasy: this.state.stairDirEasy,
+
+      stimNumHard: this.state.stimNumHard,
+      correctMatHard: this.state.correctMatHard,
+      correctPerHard: this.state.correctPerHard,
+      responseMatrixHard: this.state.responseMatrixHard,
+      stairDirHard: this.state.stairDirHard,
 
       stimPick: stimPick,
       stimWordPick: this.state.stimWordPick,
@@ -1107,11 +1144,10 @@ class MemTask extends React.Component {
           10
         );
       } else if (this.state.trialNum === this.state.trialNumTotal) {
-        // have reached the end of the task
-        console.log("END TASK");
+        // have reached the end of the task but give meta feeling rating one more time
         setTimeout(
           function () {
-            this.taskEnd();
+            this.restBlock();
           }.bind(this),
           10
         );
@@ -1126,6 +1162,80 @@ class MemTask extends React.Component {
       );
     } else {
       console.log("ERROR I HAVENT ACCOUNTED FOR");
+    }
+  }
+
+  renderRatingSave() {
+    var prolificID = this.state.prolificID;
+    var task = "memory";
+
+    let saveString = {
+      prolificID: this.state.prolificID,
+      condition: this.state.condition,
+      task: task,
+      userID: this.state.userID,
+      date: this.state.date,
+      startTime: this.state.startTime,
+      section: this.state.section,
+      sectionTime: this.state.sectionTime,
+      quizState: this.state.quizState,
+      confInitial: this.state.confInitial,
+      confLevel: this.state.confLevel,
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
+    };
+
+    try {
+      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(saveString),
+      });
+    } catch (e) {
+      console.log("Cant post?");
+    }
+
+    //go back to the trials
+    setTimeout(
+      function () {
+        this.contBlock();
+      }.bind(this),
+      10
+    );
+  }
+
+  contBlock() {
+    // continue after a block break
+    var blockNum = this.state.blockNum + 1;
+    this.setState({
+      instructScreen: false,
+      taskScreen: true,
+      taskSection: "iti",
+      trialNumInBlock: 0,
+      blockNum: blockNum,
+      textTime: 0,
+      selfKnowledge: null,
+    });
+
+    if (this.state.trialNum === this.state.trialNumTotal) {
+      //end the task
+      setTimeout(
+        function () {
+          this.taskEnd();
+        }.bind(this),
+        10
+      );
+    } else {
+      //go back to the trials
+      setTimeout(
+        function () {
+          this.taskBegin();
+        }.bind(this),
+        10
+      );
     }
   }
 
@@ -1146,6 +1256,9 @@ class MemTask extends React.Component {
       quizState: this.state.quizState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
+
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
     };
 
     try {
@@ -1420,7 +1533,7 @@ class MemTask extends React.Component {
             <button onClick={() => this.handleConfResp(3)}>Next</button>
             <br />
             <br />
-            You will not allowed to move on unless you have adjusted the scale.
+            You will not be able to move on unless you have adjusted the scale.
           </center>
         </div>
       );

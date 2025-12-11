@@ -139,22 +139,24 @@ class RatingDomain extends React.Component {
       //if the curren domain is memory
       explain = (
         <span>
-          involve remembering what you just saw. For example, in remembering
+          involve remembering what you just saw? For example, in remembering
           items you studied earlier.
           <br /> <br />
           How good do you think your are at remembering things accurately or
-          knowing when a memory feels correct?
+          knowing when a memory feels correct? What strategies do you use to
+          remember things?
           <br /> <br />
         </span>
       );
     } else if (this.state.domain[instructNum - 2] === "perception") {
       explain = (
         <span>
-          involve judging what you see. For example, deciding which image looks
+          involve judging what you see? For example, deciding which image looks
           stronger or clearer.
           <br /> <br />
           How good do you think you are at noticing small visual details or
-          deciding when you are right you spotted the detail?
+          deciding when you are right you spotted the detail? What strategies do
+          you use to notice things?
           <br /> <br />
         </span>
       );
