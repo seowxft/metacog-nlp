@@ -35,8 +35,9 @@ class StartPage extends React.Component {
     } else {
       // The rest of your logic remains the same
 
-      prolificID = this.props.state.prolificID;
       userID = Math.floor(100000 + Math.random() * 900000);
+      prolificID = userID;
+      // prolificID = this.props.state.prolificID;// change this back for prolific
       dateTime = new Date().toLocaleString();
       var currentDate = new Date();
       var dateString = currentDate.getDate();

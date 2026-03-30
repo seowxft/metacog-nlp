@@ -69,7 +69,7 @@ class PerTut extends React.Component {
       perCorrectPer = this.props.state.perCorrectPer;
     }
 
-    var trialNumTotal = 26; //26
+    var trialNumTotal = 4; //26
     var blockCondTotal = ["easy", "hard"];
     var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 

@@ -130,7 +130,7 @@ class MemTask extends React.Component {
     });
 
     // if
-    var trialNumTotal = 140; //should be 140, for 7 blocks of 20 trials
+    var trialNumTotal = 35; //should be 140, for 7 blocks of 20 trials
     var blockNumTotal = 7; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
