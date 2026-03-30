@@ -129,7 +129,7 @@ class RatingDomain extends React.Component {
       function () {
         this.renderRatingSave();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -272,6 +272,8 @@ class RatingDomain extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       quizState: this.state.quizState,
+      confInitial: null,
+      confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
     };
@@ -293,7 +295,7 @@ class RatingDomain extends React.Component {
       function () {
         this.nextPg();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -312,7 +314,7 @@ class RatingDomain extends React.Component {
         function () {
           this.redirectToTarget();
         }.bind(this),
-        10
+        10,
       );
     }
   }

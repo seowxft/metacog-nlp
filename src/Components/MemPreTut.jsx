@@ -248,14 +248,14 @@ class MemPreTut extends React.Component {
         function () {
           this.preTutorBegin();
         }.bind(this),
-        0
+        0,
       );
     } else if (whichButton === 3 && curInstructNum === 6) {
       setTimeout(
         function () {
           this.redirectToNextTask();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -305,7 +305,7 @@ class MemPreTut extends React.Component {
       function () {
         this.ifCorrect();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -354,7 +354,7 @@ class MemPreTut extends React.Component {
       function () {
         this.renderChoiceFb();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -380,7 +380,7 @@ class MemPreTut extends React.Component {
         function () {
           this.renderPreTutorSave();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -687,7 +687,7 @@ class MemPreTut extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -859,7 +859,7 @@ class MemPreTut extends React.Component {
         function () {
           this.renderFix();
         }.bind(this),
-        0
+        0,
       );
     } else if (stimNumLeft === 0) {
       // if the trials have finished all the picutres below 100 trials
@@ -867,7 +867,7 @@ class MemPreTut extends React.Component {
         function () {
           this.preTutorEnd();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -887,7 +887,7 @@ class MemPreTut extends React.Component {
       function () {
         this.renderStimChoice();
       }.bind(this),
-      this.state.fixTimeLag
+      this.state.fixTimeLag,
     );
   }
 
@@ -937,7 +937,7 @@ class MemPreTut extends React.Component {
       function () {
         this.renderCorFb();
       }.bind(this),
-      this.state.respFbTimeLag
+      this.state.respFbTimeLag,
     );
   }
 
@@ -1025,7 +1025,6 @@ class MemPreTut extends React.Component {
 
       statePicArray: statePicArray,
       stateWordArray: this.state.stateWordArray,
-
       stimPick: stimPick,
       stimWordPick: this.state.stimWordPick,
       stimShown: stimShown,
@@ -1053,7 +1052,7 @@ class MemPreTut extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      10
+      10,
     );
   }
 
@@ -1097,7 +1096,7 @@ class MemPreTut extends React.Component {
     for (let i = 0; i < number; i++) {
       const imageSrc = imageArray[i];
       imageElements.push(
-        <img key={i} className={style.instructStimDis} src={imageSrc} alt="" />
+        <img key={i} className={style.instructStimDis} src={imageSrc} alt="" />,
       );
     }
     return imageElements;
@@ -1133,7 +1132,7 @@ class MemPreTut extends React.Component {
             {this.renderImages(
               this.state.stimNum,
               this.state.stimShown,
-              style.stimDisHide
+              style.stimDisHide,
             )}
           </center>
         </div>

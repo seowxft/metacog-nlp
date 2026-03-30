@@ -15,19 +15,19 @@ import style from "./style/questStyle.module.css";
 
 // Import your questionnaire JSON files
 import { aes } from "./quest/aes.jsx";
-import { audit } from "./quest/audit.jsx";
-import { bis11 } from "./quest/bis.jsx";
-import { eat26 } from "./quest/eat.jsx";
+//import { audit } from "./quest/audit.jsx";
+//import { bis11 } from "./quest/bis.jsx";
+//import { eat26 } from "./quest/eat.jsx";
 import { gse } from "./quest/gse.jsx";
-import { lsas } from "./quest/lsas.jsx";
-import { ocir } from "./quest/ocir.jsx";
+//import { lsas } from "./quest/lsas.jsx";
+//import { ocir } from "./quest/ocir.jsx";
 import { rse } from "./quest/rse.jsx";
 import { sds } from "./quest/sds.jsx";
-import { ssms } from "./quest/ssms.jsx";
+//import { ssms } from "./quest/ssms.jsx";
 import { staiy2 } from "./quest/staiy2.jsx";
 import { demo } from "./quest/demo.jsx";
-import { icar1 } from "./quest/icar1.jsx";
-import { icar2 } from "./quest/icar2.jsx";
+//import { icar1 } from "./quest/icar1.jsx";
+//import { icar2 } from "./quest/icar2.jsx";
 
 //import { DATABASE_URL } from "./config.jsx";
 
@@ -57,32 +57,8 @@ class Questionnaires extends React.Component {
       startTime = this.props.state.startTime;
     }
 
-    let quizLabel = [
-      "AES",
-      "AUDIT",
-      "BIS11",
-      "EAT26",
-      "LSAS",
-      "OCIR",
-      "SDS",
-      "SSMS",
-      "STAIY2",
-      "RSE",
-      "GSE",
-    ];
-    let allQuizText = [
-      aes,
-      audit,
-      bis11,
-      eat26,
-      lsas,
-      ocir,
-      sds,
-      ssms,
-      staiy2,
-      rse,
-      gse,
-    ];
+    let quizLabel = ["AES", "SDS", "STAIY2", "RSE", "GSE"];
+    let allQuizText = [aes, sds, staiy2, rse, gse];
 
     // Shuffle the quizzes and labels together
     utils.shuffleSame(allQuizText, quizLabel);
@@ -91,8 +67,8 @@ class Questionnaires extends React.Component {
     const surveyPages = [
       { questions: demo },
       ...allQuizText.map((quiz) => ({ questions: quiz })), // Map each quiz to a page object
-      { questions: icar1 },
-      { questions: icar2 },
+      //   { questions: icar1 },
+      //   { questions: icar2 },
     ];
 
     const surveyJson = {

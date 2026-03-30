@@ -1592,6 +1592,7 @@ class MemTut extends React.Component {
       tutorialTry: this.state.tutorialTry,
       choicePos: this.state.choicePos,
       choiceCor: this.state.choiceCor,
+      
       trialTime: this.state.trialTime,
       fixTime: this.state.fixTime,
       stimTime: this.state.stimTime,

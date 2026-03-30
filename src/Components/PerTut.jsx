@@ -246,21 +246,21 @@ class PerTut extends React.Component {
         function () {
           this.tutorBegin();
         }.bind(this),
-        0
+        0,
       );
     } else if (whichButton === 3 && curInstructNum === 10) {
       setTimeout(
         function () {
           this.quizBegin();
         }.bind(this),
-        0
+        0,
       );
     } else if (whichButton === 3 && curInstructNum === 11) {
       setTimeout(
         function () {
           this.redirectToNextTask();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -366,7 +366,7 @@ class PerTut extends React.Component {
       function () {
         this.renderChoiceFb();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -393,7 +393,7 @@ class PerTut extends React.Component {
         function () {
           this.renderTutorSave();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -432,7 +432,7 @@ class PerTut extends React.Component {
       function () {
         this.renderQuizSave();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -996,7 +996,7 @@ class PerTut extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -1096,7 +1096,7 @@ class PerTut extends React.Component {
         this.state.dotStairEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-        trialNum
+        trialNum,
       );
     } else if (trialNum >= this.state.trialStaircaseSwitch) {
       blockCond = this.state.blockCondTotal[1];
@@ -1104,7 +1104,7 @@ class PerTut extends React.Component {
         this.state.dotStairHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
-        trialNum - this.state.trialStaircaseSwitch + 1
+        trialNum - this.state.trialStaircaseSwitch + 1,
       );
     }
 
@@ -1180,7 +1180,7 @@ class PerTut extends React.Component {
         function () {
           this.renderFix();
         }.bind(this),
-        0
+        0,
       );
     } else {
       // if the trials have reached the total trial number
@@ -1188,7 +1188,7 @@ class PerTut extends React.Component {
         function () {
           this.tutorEnd();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -1208,7 +1208,7 @@ class PerTut extends React.Component {
       function () {
         this.renderStim();
       }.bind(this),
-      this.state.fixTimeLag
+      this.state.fixTimeLag,
     );
   }
 
@@ -1227,7 +1227,7 @@ class PerTut extends React.Component {
       function () {
         this.renderChoice();
       }.bind(this),
-      this.state.stimTimeLag
+      this.state.stimTimeLag,
     );
   }
 
@@ -1260,7 +1260,7 @@ class PerTut extends React.Component {
       function () {
         this.renderCorFb();
       }.bind(this),
-      this.state.respFbTimeLag
+      this.state.respFbTimeLag,
     );
   }
 
@@ -1367,7 +1367,7 @@ class PerTut extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      10
+      10,
     );
   }
 
@@ -1411,7 +1411,7 @@ class PerTut extends React.Component {
       function () {
         this.quizReset();
       }.bind(this),
-      10
+      10,
     );
   }
 

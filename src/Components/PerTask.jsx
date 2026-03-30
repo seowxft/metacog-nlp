@@ -261,7 +261,7 @@ class PerTask extends React.Component {
       function () {
         this.renderRatingSave();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -278,7 +278,7 @@ class PerTask extends React.Component {
         function () {
           this.quizBegin();
         }.bind(this),
-        10
+        10,
       );
     } else if (whichButton === 3 && curInstructNum === 4) {
       this.setState({
@@ -289,14 +289,14 @@ class PerTask extends React.Component {
         function () {
           this.quizBegin();
         }.bind(this),
-        10
+        10,
       );
     } else if (whichButton === 3 && curInstructNum === 5) {
       setTimeout(
         function () {
           this.redirectToNextTask();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -319,7 +319,7 @@ class PerTask extends React.Component {
         function () {
           this.renderQuizSave();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -421,7 +421,7 @@ class PerTask extends React.Component {
       function () {
         this.renderChoiceFb();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -448,7 +448,7 @@ class PerTask extends React.Component {
         function () {
           this.renderTaskSave();
         }.bind(this),
-        10
+        10,
       );
     }
   }
@@ -705,7 +705,7 @@ class PerTask extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      10
+      10,
     );
   }
 
@@ -734,7 +734,7 @@ class PerTask extends React.Component {
         this.state.dotStairEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-        condEasyTrialNum
+        condEasyTrialNum,
       );
     } else if (this.state.blockCond == "hard") {
       var condHardTrialNum = this.state.condHardTrialNum + 1;
@@ -742,7 +742,7 @@ class PerTask extends React.Component {
         this.state.dotStairHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
-        condHardTrialNum
+        condHardTrialNum,
       );
     }
 
@@ -815,7 +815,7 @@ class PerTask extends React.Component {
       function () {
         this.renderFix();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -836,7 +836,7 @@ class PerTask extends React.Component {
       function () {
         this.renderStim();
       }.bind(this),
-      this.state.fixTimeLag
+      this.state.fixTimeLag,
     );
   }
 
@@ -866,7 +866,7 @@ class PerTask extends React.Component {
       function () {
         this.renderChoice();
       }.bind(this),
-      this.state.stimTimeLag
+      this.state.stimTimeLag,
     );
   }
 
@@ -899,7 +899,7 @@ class PerTask extends React.Component {
       function () {
         this.renderConfScale();
       }.bind(this),
-      this.state.respFbTimeLag
+      this.state.respFbTimeLag,
     );
   }
 
@@ -1030,7 +1030,7 @@ class PerTask extends React.Component {
           function () {
             this.restBlock(); // in between block
           }.bind(this),
-          10
+          10,
         );
       } else if (this.state.trialNum === this.state.trialNumTotal) {
         // have reached the end of the task - but do last rating!
@@ -1039,7 +1039,7 @@ class PerTask extends React.Component {
           function () {
             this.restBlock();
           }.bind(this),
-          10
+          10,
         );
       }
     } else if (this.state.trialNumInBlock !== this.state.trialNumPerBlock) {
@@ -1048,7 +1048,7 @@ class PerTask extends React.Component {
         function () {
           this.trialReset();
         }.bind(this),
-        10
+        10,
       );
     } else {
       console.log("ERROR I HAVENT ACCOUNTED FOR");
@@ -1093,7 +1093,7 @@ class PerTask extends React.Component {
       function () {
         this.contBlock();
       }.bind(this),
-      10
+      10,
     );
   }
 
@@ -1117,7 +1117,7 @@ class PerTask extends React.Component {
         function () {
           this.taskEnd();
         }.bind(this),
-        10
+        10,
       );
     } else {
       //go back to the trials
@@ -1125,7 +1125,7 @@ class PerTask extends React.Component {
         function () {
           this.taskBegin();
         }.bind(this),
-        10
+        10,
       );
     }
   }
@@ -1173,7 +1173,7 @@ class PerTask extends React.Component {
         function () {
           this.taskBegin();
         }.bind(this),
-        10
+        10,
       );
     } else if (this.state.quizState === "post") {
       //return to instructions

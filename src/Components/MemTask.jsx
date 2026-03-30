@@ -287,7 +287,7 @@ class MemTask extends React.Component {
         function () {
           this.quizBegin();
         }.bind(this),
-        10
+        10,
       );
     } else if (whichButton === 3 && curInstructNum === 3) {
       // continue after a block break
@@ -304,7 +304,7 @@ class MemTask extends React.Component {
         function () {
           this.taskBegin();
         }.bind(this),
-        10
+        10,
       );
     } else if (whichButton === 3 && curInstructNum === 4) {
       this.setState({
@@ -315,14 +315,14 @@ class MemTask extends React.Component {
         function () {
           this.quizBegin();
         }.bind(this),
-        10
+        10,
       );
     } else if (whichButton === 3 && curInstructNum === 5) {
       setTimeout(
         function () {
           this.redirectToNextTask();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -371,7 +371,7 @@ class MemTask extends React.Component {
       function () {
         this.renderRatingSave();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -386,7 +386,7 @@ class MemTask extends React.Component {
         function () {
           this.renderQuizSave();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -449,7 +449,7 @@ class MemTask extends React.Component {
       function () {
         this.renderChoiceFb();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -477,7 +477,7 @@ class MemTask extends React.Component {
         function () {
           this.renderTaskSave();
         }.bind(this),
-        10
+        10,
       );
     }
   }
@@ -730,7 +730,7 @@ class MemTask extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -762,7 +762,7 @@ class MemTask extends React.Component {
         this.state.stimNumEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-        condEasyTrialNum
+        condEasyTrialNum,
       );
     } else if (this.state.blockCond == "hard") {
       var condHardTrialNum = this.state.condHardTrialNum + 1;
@@ -770,7 +770,7 @@ class MemTask extends React.Component {
         this.state.stimNumHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
-        condHardTrialNum
+        condHardTrialNum,
       );
     }
 
@@ -898,7 +898,7 @@ class MemTask extends React.Component {
       function () {
         this.renderFix();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -919,7 +919,7 @@ class MemTask extends React.Component {
       function () {
         this.renderStim();
       }.bind(this),
-      this.state.fixTimeLag
+      this.state.fixTimeLag,
     );
   }
 
@@ -938,7 +938,7 @@ class MemTask extends React.Component {
       function () {
         this.renderEncode();
       }.bind(this),
-      this.state.stimTimeLag
+      this.state.stimTimeLag,
     );
   }
 
@@ -959,7 +959,7 @@ class MemTask extends React.Component {
       function () {
         this.renderChoice();
       }.bind(this),
-      this.state.encodeTimeLag
+      this.state.encodeTimeLag,
     );
   }
 
@@ -1012,7 +1012,7 @@ class MemTask extends React.Component {
       function () {
         this.renderConfScale();
       }.bind(this),
-      this.state.respFbTimeLag
+      this.state.respFbTimeLag,
     );
   }
 
@@ -1065,6 +1065,8 @@ class MemTask extends React.Component {
       condEasyTrialNum: this.state.condEasyTrialNum,
       condHardTrialNum: this.state.condHardTrialNum,
       blockNum: this.state.blockNum,
+      blockCond: this.state.blockCond,
+
       trialNumInBlock: this.state.trialNumInBlock,
       choicePos: this.state.choicePos,
       choiceCor: this.state.choiceCor,
@@ -1141,7 +1143,7 @@ class MemTask extends React.Component {
           function () {
             this.restBlock();
           }.bind(this),
-          10
+          10,
         );
       } else if (this.state.trialNum === this.state.trialNumTotal) {
         // have reached the end of the task but give meta feeling rating one more time
@@ -1149,7 +1151,7 @@ class MemTask extends React.Component {
           function () {
             this.restBlock();
           }.bind(this),
-          10
+          10,
         );
       }
     } else if (this.state.trialNumInBlock !== this.state.trialNumPerBlock) {
@@ -1158,7 +1160,7 @@ class MemTask extends React.Component {
         function () {
           this.trialReset();
         }.bind(this),
-        10
+        10,
       );
     } else {
       console.log("ERROR I HAVENT ACCOUNTED FOR");
@@ -1203,7 +1205,7 @@ class MemTask extends React.Component {
       function () {
         this.contBlock();
       }.bind(this),
-      10
+      10,
     );
   }
 
@@ -1226,7 +1228,7 @@ class MemTask extends React.Component {
         function () {
           this.taskEnd();
         }.bind(this),
-        10
+        10,
       );
     } else {
       //go back to the trials
@@ -1234,7 +1236,7 @@ class MemTask extends React.Component {
         function () {
           this.taskBegin();
         }.bind(this),
-        10
+        10,
       );
     }
   }
@@ -1256,7 +1258,6 @@ class MemTask extends React.Component {
       quizState: this.state.quizState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
-
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
     };
@@ -1281,7 +1282,7 @@ class MemTask extends React.Component {
         function () {
           this.taskBegin();
         }.bind(this),
-        10
+        10,
       );
     } else if (this.state.quizState === "post") {
       //return to instructions
@@ -1354,7 +1355,7 @@ class MemTask extends React.Component {
     for (let i = 0; i < number; i++) {
       const imageSrc = imageArray[i];
       imageElements.push(
-        <img key={i} className={className} src={imageSrc} alt="" />
+        <img key={i} className={className} src={imageSrc} alt="" />,
       );
     }
     return imageElements;
@@ -1403,7 +1404,7 @@ class MemTask extends React.Component {
             {this.renderImages(
               this.state.stimNum,
               this.state.stimShown,
-              style.stimDisHide
+              style.stimDisHide,
             )}
           </center>
           <br />
@@ -1425,7 +1426,7 @@ class MemTask extends React.Component {
             {this.renderImages(
               this.state.stimNum,
               this.state.stimShown,
-              style.instructStimDis
+              style.instructStimDis,
             )}
           </center>
           <br />
