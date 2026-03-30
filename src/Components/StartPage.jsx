@@ -19,7 +19,7 @@ class StartPage extends React.Component {
     survey.applyTheme(LayeredDarkPanelless); // Apply your chosen theme
 
     // --- Declare variables OUTSIDE the if/else ---
-    let userID, prolificID, date, dateTime, startTime, condition;
+    let userID, prolificID, startTime, condition;
 
     var debug = false; // Still using manual flag for now
 
@@ -27,8 +27,8 @@ class StartPage extends React.Component {
       // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
-      date = 100; // Note: You might want a real date string here for debugging
-      dateTime = 100;
+      var date = 100; // Note: You might want a real date string here for debugging
+      var dateTime = 100;
       startTime = 100; // Note: You might want a real timestamp for debugging
       condition = 1;
       console.log("DEBUG MODE: Using hardcoded values.");
@@ -39,11 +39,14 @@ class StartPage extends React.Component {
       prolificID = userID;
       // prolificID = this.props.state.prolificID;// change this back for prolific
       dateTime = new Date().toLocaleString();
-      var currentDate = new Date();
-      var dateString = currentDate.getDate();
-      var month = currentDate.getMonth();
-      var year = currentDate.getFullYear();
-      date = dateString + "-" + (month + 1) + "-" + year;
+
+      const currentDate = new Date();
+      const d = currentDate.getDate();
+      const m = currentDate.getMonth() + 1;
+      const y = currentDate.getFullYear();
+      // Using backticks ensures this is treated as a String
+      const dateString = `${d}-${m}-${y}`;
+
       startTime = currentDate.toTimeString();
       if (userID % 2 === 0) {
         condition = 1;

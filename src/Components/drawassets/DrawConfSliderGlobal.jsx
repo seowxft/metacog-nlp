@@ -23,28 +23,20 @@ const marks = [
     label: "0",
   },
   {
-    value: 25,
-    label: "25",
+    value: 35,
+    label: "35",
   },
   {
-    value: 50,
-    label: "50",
+    value: 70,
+    label: "70",
   },
   {
-    value: 75,
-    label: "75",
+    value: 105,
+    label: "105",
   },
   {
-    value: 100,
-    label: "100",
-  },
-  {
-    value: 125,
-    label: "125",
-  },
-  {
-    value: 150,
-    label: "150",
+    value: 140,
+    label: "140",
   },
 ];
 
@@ -67,7 +59,7 @@ export function ConfSliderGlobal({ callBackValue, initialValue }) {
             step={1}
             marks={marks}
             min={0}
-            max={150}
+            max={140}
             track={false}
             valueLabelDisplay="on"
             value={value}

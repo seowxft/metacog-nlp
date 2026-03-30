@@ -429,6 +429,40 @@ class MemTask extends React.Component {
       console.log("No response made!");
     }
 
+    var correctPerHard;
+    var correctPerEasy;
+    var correctMatHard;
+    var correctMatEasy;
+    var responseMatrixHard;
+    var responseMatrixEasy;
+    var stairDirEasy;
+    var stairDirHard;
+
+    var blockCond = this.state.blockCond;
+    if (blockCond === "easy") {
+      correctMatEasy = this.state.correctMatEasy.concat(correct);
+      correctPerEasy =
+        Math.round((utils.getAvg(correctMatEasy) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixEasy = this.state.responseMatrixEasy.concat(response);
+      stairDirEasy = this.state.stairDir;
+
+      responseMatrixHard = this.state.responseMatrixHard;
+      correctPerHard = this.state.correctPerHard;
+      correctMatHard = this.state.correctMatHard;
+      stairDirHard = this.state.stairDirHard;
+    } else if (blockCond === "hard") {
+      correctMatHard = this.state.correctMatHard.concat(correct);
+      correctPerHard =
+        Math.round((utils.getAvg(correctMatHard) + Number.EPSILON) * 100) / 100; //2 dec pl
+      responseMatrixHard = this.state.responseMatrixHard.concat(response);
+      stairDirHard = this.state.stairDir;
+
+      responseMatrixEasy = this.state.responseMatrixEasy;
+      correctPerEasy = this.state.correctPerEasy;
+      correctMatEasy = this.state.correctMatEasy;
+      stairDirEasy = this.state.stairDirEasy;
+    }
+
     console.log("response: " + response);
     var correctMat = this.state.correctMat.concat(correct);
     var responseMatrix = this.state.responseMatrix.concat(response);
