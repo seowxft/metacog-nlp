@@ -1291,6 +1291,7 @@ class MemTask extends React.Component {
       startTime: this.state.startTime,
       section: this.state.section,
       sectionTime: this.state.sectionTime,
+      blockNum: null,
       quizState: this.state.quizState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
