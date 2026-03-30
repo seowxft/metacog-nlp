@@ -40,12 +40,12 @@ class StartPage extends React.Component {
       // prolificID = this.props.state.prolificID;// change this back for prolific
       dateTime = new Date().toLocaleString();
 
-      const currentDate = new Date();
-      const d = currentDate.getDate();
-      const m = currentDate.getMonth() + 1;
-      const y = currentDate.getFullYear();
+      var currentDate = new Date();
+      var d = currentDate.getDate();
+      var m = currentDate.getMonth() + 1;
+      var y = currentDate.getFullYear();
       // Using backticks ensures this is treated as a String
-      const dateString = `${d}-${m}-${y}`;
+      var dateString = `${d}-${m}-${y}`;
 
       startTime = currentDate.toTimeString();
       if (userID % 2 === 0) {
