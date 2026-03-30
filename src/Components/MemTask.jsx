@@ -751,26 +751,27 @@ class MemTask extends React.Component {
     var trialNumInBlock = this.state.trialNumInBlock + 1;
 
     var choicePos = this.state.choicePosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
-
+    var condEasyTrialNum = this.state.condEasyTrialNum;
+    var condHardTrialNum = this.state.condHardTrialNum;
     console.log("NEW TRIAL");
 
     console.log(this.state.blockCond);
     if (this.state.blockCond == "easy") {
-      var condEasyTrialNum = this.state.condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
+      var condEasyTrialNum2 = condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
       // run staircase
       var s2 = staircaseEasy.staircase(
         this.state.stimNumEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-        condEasyTrialNum,
+        condEasyTrialNum2,
       );
     } else if (this.state.blockCond == "hard") {
-      var condHardTrialNum = this.state.condHardTrialNum + 1;
+      var condHardTrialNum2 = condHardTrialNum + 1;
       var s2 = staircase.staircase(
         this.state.stimNumHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
-        condHardTrialNum,
+        condHardTrialNum2,
       );
     }
 
@@ -1181,8 +1182,8 @@ class MemTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       quizState: this.state.quizState,
-      confInitial: this.state.confInitial,
-      confLevel: this.state.confLevel,
+      confInitial: null,
+      confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
     };

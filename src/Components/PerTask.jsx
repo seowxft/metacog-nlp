@@ -725,24 +725,26 @@ class PerTask extends React.Component {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var trialNumInBlock = this.state.trialNumInBlock + 1;
     var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
+    var condEasyTrialNum = this.state.condEasyTrialNum;
+    var condHardTrialNum = this.state.condHardTrialNum;
 
     console.log(this.state.blockCond);
     if (this.state.blockCond == "easy") {
-      var condEasyTrialNum = this.state.condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
+      var condEasyTrialNum2 = condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
       // run staircase
       var s2 = staircaseEasy.staircase(
         this.state.dotStairEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-        condEasyTrialNum,
+        condEasyTrialNum2,
       );
     } else if (this.state.blockCond == "hard") {
-      var condHardTrialNum = this.state.condHardTrialNum + 1;
+      var condHardTrialNum2 = condHardTrialNum + 1;
       var s2 = staircase.staircase(
         this.state.dotStairHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
-        condHardTrialNum,
+        condHardTrialNum2,
       );
     }
 
@@ -1069,8 +1071,8 @@ class PerTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       quizState: this.state.quizState,
-      confInitial: this.state.confInitial,
-      confLevel: this.state.confLevel,
+      confInitial: null,
+      confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
     };
