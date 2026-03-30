@@ -32,7 +32,7 @@ class Bonus extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -40,7 +40,7 @@ class Bonus extends React.Component {
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 100;
+      condition = 1;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
       console.log("DEBUG MODE: Using hardcoded values.");
@@ -156,7 +156,7 @@ class Bonus extends React.Component {
         function () {
           this.renderRatingSave();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -191,7 +191,7 @@ class Bonus extends React.Component {
       function () {
         this.renderRatingSave();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -234,7 +234,7 @@ class Bonus extends React.Component {
       function () {
         this.redirectToNextTask();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -272,7 +272,7 @@ class Bonus extends React.Component {
       function () {
         this.nextPg();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -323,7 +323,7 @@ class Bonus extends React.Component {
       function () {
         this.redirectToNextTask();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -467,7 +467,7 @@ class Bonus extends React.Component {
           date: this.state.date,
           startTime: this.state.startTime,
         },
-      }
+      },
     );
 
     //    console.log("UserID: " + this.state.userID);

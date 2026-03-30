@@ -47,7 +47,7 @@ class PerTut extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -69,7 +69,7 @@ class PerTut extends React.Component {
       perCorrectPer = this.props.state.perCorrectPer;
     }
 
-    var trialNumTotal = 8; //26
+    var trialNumTotal = 26; //26
     var blockCondTotal = ["easy", "hard"];
     var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 

@@ -14,7 +14,7 @@ class EndPage extends React.Component {
 
     let userID, prolificID, date, startTime, condition;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -22,7 +22,7 @@ class EndPage extends React.Component {
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 100;
+      condition = 1;
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -169,7 +169,7 @@ class EndPage extends React.Component {
                 className={style.link}
                 onClick={() => {
                   this.openInNewTab(
-                    "https://www.nhs.uk/conditions/stress-anxiety-depression/mental-health-helplines/"
+                    "https://www.nhs.uk/conditions/stress-anxiety-depression/mental-health-helplines/",
                   );
                 }}
               >

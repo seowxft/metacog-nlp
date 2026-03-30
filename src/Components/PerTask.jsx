@@ -41,7 +41,7 @@ class PerTask extends React.Component {
       dotStairEasy,
       dotStairHard;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -49,7 +49,7 @@ class PerTask extends React.Component {
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 100;
+      condition = 1;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
       dotStairEasy = 2;
@@ -69,7 +69,7 @@ class PerTask extends React.Component {
     }
 
     // if
-    var trialNumTotal = 35; //should be 140, for 7 blocks of 40 trials
+    var trialNumTotal = 140; //should be 140, for 7 blocks of 20 trials
     var blockNumTotal = 7; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
@@ -730,21 +730,21 @@ class PerTask extends React.Component {
 
     console.log(this.state.blockCond);
     if (this.state.blockCond == "easy") {
-      var condEasyTrialNum2 = condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
+      condEasyTrialNum = condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
       // run staircase
       var s2 = staircaseEasy.staircase(
         this.state.dotStairEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-        condEasyTrialNum2,
+        condEasyTrialNum,
       );
     } else if (this.state.blockCond == "hard") {
-      var condHardTrialNum2 = condHardTrialNum + 1;
+      condHardTrialNum = condHardTrialNum + 1;
       var s2 = staircase.staircase(
         this.state.dotStairHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
-        condHardTrialNum2,
+        condHardTrialNum,
       );
     }
 
@@ -1070,6 +1070,7 @@ class PerTask extends React.Component {
       startTime: this.state.startTime,
       section: this.state.section,
       sectionTime: this.state.sectionTime,
+      blockNum: this.state.blockNum,
       quizState: this.state.quizState,
       confInitial: null,
       confLevel: null,

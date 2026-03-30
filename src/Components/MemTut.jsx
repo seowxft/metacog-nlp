@@ -56,7 +56,7 @@ class MemTut extends React.Component {
       statePic,
       stateWord;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -64,7 +64,7 @@ class MemTut extends React.Component {
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
-      condition = 100;
+      condition = 1;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
 
@@ -127,7 +127,7 @@ class MemTut extends React.Component {
       return val !== undefined;
     });
 
-    var trialNumTotal = 10; //26
+    var trialNumTotal = 26; //26
     var blockCondTotal = ["easy", "hard"];
     var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 

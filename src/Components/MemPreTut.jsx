@@ -93,8 +93,7 @@ class MemPreTut extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = true; // Still using manual flag for now
-    var cutStim = 4; // if reduce the stim to pass this section faster
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -106,6 +105,7 @@ class MemPreTut extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
+      var cutStim = 4; // if reduce the stim to pass this section faster
       stateWord = stateWord.slice(0, cutStim);
       statePic = statePic.slice(0, cutStim);
       console.log("DEBUG MODE: Using hardcoded values.");

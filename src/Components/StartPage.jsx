@@ -21,7 +21,7 @@ class StartPage extends React.Component {
     // --- Declare variables OUTSIDE the if/else ---
     let userID, prolificID, date, dateTime, startTime, condition;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
