@@ -1350,6 +1350,8 @@ class PerTut extends React.Component {
       dotStairRight: this.state.dotStairRight,
     };
 
+    console.log(saveString);
+
     try {
       fetch(`${DATABASE_URL}/per_tutorial_data/` + prolificID, {
         method: "POST",

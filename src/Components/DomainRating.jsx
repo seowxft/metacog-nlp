@@ -40,6 +40,7 @@ class RatingDomain extends React.Component {
 
     var domain = ["memory", "perception"];
     utils.shuffle(domain);
+    var finalDomain = ["general", ...domain];
 
     this.state = {
       // demo paramters
@@ -48,7 +49,7 @@ class RatingDomain extends React.Component {
       userID: userID,
       date: date,
       startTime: startTime,
-      domain: domain,
+      domain: finalDomain,
 
       //section paramters
       sectionTime: sectionTime,
