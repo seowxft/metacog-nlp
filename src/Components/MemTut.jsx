@@ -127,7 +127,7 @@ class MemTut extends React.Component {
       return val !== undefined;
     });
 
-    var trialNumTotal = 4; //26
+    var trialNumTotal = 26; //26
     var blockCondTotal = ["easy", "hard"];
     var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 
