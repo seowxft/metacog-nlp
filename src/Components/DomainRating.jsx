@@ -136,7 +136,7 @@ class RatingDomain extends React.Component {
 
   instructText(instructNum) {
     var explain;
-    if (this.state.domain[instructNum - 2] === "memory") {
+    if (this.state.domain[instructNum - 1] === "memory") {
       //if the curren domain is memory
       explain = (
         <span>
@@ -149,7 +149,7 @@ class RatingDomain extends React.Component {
           <br /> <br />
         </span>
       );
-    } else if (this.state.domain[instructNum - 2] === "perception") {
+    } else if (this.state.domain[instructNum - 1] === "perception") {
       explain = (
         <span>
           involve judging what you see? For example, deciding which image looks

@@ -1310,6 +1310,7 @@ class PerTut extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       tutorialTry: this.state.tutorialTry,
+      blockCond: this.state.blockCond,
       trialNum: this.state.trialNum,
       trialTime: this.state.trialTime,
       fixTime: this.state.fixTime,

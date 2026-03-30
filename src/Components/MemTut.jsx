@@ -305,21 +305,21 @@ class MemTut extends React.Component {
         function () {
           this.tutorBegin();
         }.bind(this),
-        0
+        0,
       );
     } else if (whichButton === 3 && curInstructNum === 11) {
       setTimeout(
         function () {
           this.quizBegin();
         }.bind(this),
-        0
+        0,
       );
     } else if (whichButton === 3 && curInstructNum === 12) {
       setTimeout(
         function () {
           this.redirectToNextTask();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -426,7 +426,7 @@ class MemTut extends React.Component {
       function () {
         this.renderChoiceFb();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -454,7 +454,7 @@ class MemTut extends React.Component {
         function () {
           this.renderTutorSave();
         }.bind(this),
-        0
+        0,
       );
     }
   }
@@ -501,7 +501,7 @@ class MemTut extends React.Component {
       function () {
         this.renderQuizSave();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -616,7 +616,7 @@ class MemTut extends React.Component {
             {this.renderImages(
               this.state.stateNum,
               this.state.statePic,
-              style.instructStimDis
+              style.instructStimDis,
             )}
           </center>
         </span>
@@ -1138,7 +1138,7 @@ class MemTut extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      0
+      0,
     );
   }
 
@@ -1239,7 +1239,7 @@ class MemTut extends React.Component {
         this.state.stimNumEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-        trialNum
+        trialNum,
       );
 
       console.log(blockCond);
@@ -1250,7 +1250,7 @@ class MemTut extends React.Component {
         this.state.stimNumHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
-        trialNum - this.state.trialStaircaseSwitch + 1
+        trialNum - this.state.trialStaircaseSwitch + 1,
       );
     }
 
@@ -1379,7 +1379,7 @@ class MemTut extends React.Component {
         function () {
           this.renderFix();
         }.bind(this),
-        10
+        10,
       );
     } else {
       // if the trials have reached the total trial number
@@ -1387,7 +1387,7 @@ class MemTut extends React.Component {
         function () {
           this.tutorEnd();
         }.bind(this),
-        10
+        10,
       );
     }
   }
@@ -1407,7 +1407,7 @@ class MemTut extends React.Component {
       function () {
         this.renderStim();
       }.bind(this),
-      this.state.fixTimeLag
+      this.state.fixTimeLag,
     );
   }
 
@@ -1426,7 +1426,7 @@ class MemTut extends React.Component {
       function () {
         this.renderEncode();
       }.bind(this),
-      this.state.stimTimeLag
+      this.state.stimTimeLag,
     );
   }
 
@@ -1447,7 +1447,7 @@ class MemTut extends React.Component {
       function () {
         this.renderChoice();
       }.bind(this),
-      this.state.encodeTimeLag
+      this.state.encodeTimeLag,
     );
   }
 
@@ -1499,7 +1499,7 @@ class MemTut extends React.Component {
       function () {
         this.renderCorFb();
       }.bind(this),
-      this.state.respFbTimeLag
+      this.state.respFbTimeLag,
     );
   }
 
@@ -1590,9 +1590,10 @@ class MemTut extends React.Component {
       sectionTime: this.state.sectionTime,
       trialNum: this.state.trialNum,
       tutorialTry: this.state.tutorialTry,
+      blockCond: this.state.blockCond,
       choicePos: this.state.choicePos,
       choiceCor: this.state.choiceCor,
-      
+
       trialTime: this.state.trialTime,
       fixTime: this.state.fixTime,
       stimTime: this.state.stimTime,
@@ -1653,7 +1654,7 @@ class MemTut extends React.Component {
       function () {
         this.trialReset();
       }.bind(this),
-      10
+      10,
     );
   }
 
@@ -1698,7 +1699,7 @@ class MemTut extends React.Component {
       function () {
         this.quizReset();
       }.bind(this),
-      10
+      10,
     );
   }
 
@@ -1742,7 +1743,7 @@ class MemTut extends React.Component {
     for (let i = 0; i < number; i++) {
       const imageSrc = imageArray[i];
       imageElements.push(
-        <img key={i} className={className} src={imageSrc} alt="" />
+        <img key={i} className={className} src={imageSrc} alt="" />,
       );
     }
     return imageElements;
@@ -1788,7 +1789,7 @@ class MemTut extends React.Component {
             {this.renderImages(
               this.state.stimNum,
               this.state.stimShown,
-              style.instructStimDis
+              style.instructStimDis,
             )}
           </center>
           <br />
