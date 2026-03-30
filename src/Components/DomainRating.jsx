@@ -35,7 +35,6 @@ class RatingDomain extends React.Component {
       userID = this.props.state.userID;
       date = this.props.state.date;
       startTime = this.props.state.startTime;
-      stimNum = this.props.state.stimNum;
     }
 
     var domain = ["memory", "perception"];
