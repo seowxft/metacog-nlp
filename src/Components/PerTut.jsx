@@ -317,7 +317,7 @@ class PerTut extends React.Component {
       correctPerEasy =
         Math.round((utils.getAvg(correctMatEasy) + Number.EPSILON) * 100) / 100; //2 dec pl
       responseMatrixEasy = this.state.responseMatrixEasy.concat(response);
-      stairDirEasy = this.state.stateDir;
+      stairDirEasy = this.state.stairDir;
 
       responseMatrixHard = this.state.responseMatrixHard;
       correctPerHard = this.state.correctPerHard;
@@ -328,7 +328,7 @@ class PerTut extends React.Component {
       correctPerHard =
         Math.round((utils.getAvg(correctMatHard) + Number.EPSILON) * 100) / 100; //2 dec pl
       responseMatrixHard = this.state.responseMatrixHard.concat(response);
-      stairDirHard = this.state.stateDir;
+      stairDirHard = this.state.stairDir;
 
       responseMatrixEasy = this.state.responseMatrixEasy;
       correctPerEasy = this.state.correctPerEasy;
