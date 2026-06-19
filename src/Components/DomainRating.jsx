@@ -63,6 +63,8 @@ class RatingDomain extends React.Component {
       // screen parameters
       instructScreen: true,
       instructNum: 1, //start from 1
+      // --- MOUSE TRACKING STATE ---
+      mouseMovements: [],
 
       debug: debug,
     };
