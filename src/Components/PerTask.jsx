@@ -1070,7 +1070,7 @@ class PerTask extends React.Component {
       dotStairLeft: this.state.dotStairLeft,
       dotStairRight: this.state.dotStairRight,
 
-      moveMovements: compressedMovements,
+      mouseMovements: compressedMovements,
     };
 
     try {
@@ -1224,6 +1224,7 @@ class PerTask extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      mouseMovements: null,
     };
 
     try {
