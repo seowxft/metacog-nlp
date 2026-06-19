@@ -477,6 +477,16 @@ class MemTask extends React.Component {
       responseMatrix: responseMatrix,
       correctMat: correctMat,
       correctPer: correctPer,
+
+      responseMatrixEasy: responseMatrixEasy,
+      correctMatEasy: correctMatEasy,
+      correctPerEasy: correctPerEasy,
+      stairDirEasy: stairDirEasy,
+
+      responseMatrixHard: responseMatrixHard,
+      correctMatHard: correctMatHard,
+      correctPerHard: correctPerHard,
+      stairDirHard: stairDirHard,
     });
 
     setTimeout(

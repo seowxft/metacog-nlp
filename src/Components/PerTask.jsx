@@ -69,7 +69,11 @@ class PerTask extends React.Component {
     }
 
     // if
+<<<<<<< Updated upstream
     var trialNumTotal = 140; //should be 140, for 7 blocks of 20 trials
+=======
+    var trialNumTotal = 35; //should be 140, for 7 blocks of 20 trials
+>>>>>>> Stashed changes
     var blockNumTotal = 7; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
@@ -733,18 +737,31 @@ class PerTask extends React.Component {
       condEasyTrialNum = condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
       // run staircase
       var s2 = staircaseEasy.staircase(
+<<<<<<< Updated upstream
         this.state.dotStairEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
+=======
+        this.state.dotStair,
+        this.state.responseMatrix,
+        this.state.stairDir,
+>>>>>>> Stashed changes
         condEasyTrialNum,
       );
     } else if (this.state.blockCond == "hard") {
       condHardTrialNum = condHardTrialNum + 1;
       var s2 = staircase.staircase(
+<<<<<<< Updated upstream
         this.state.dotStairHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
         condHardTrialNum,
+=======
+        this.state.dotStair,
+        this.state.responseMatrix,
+        this.state.stairDir,
+        hardEasyTrialNum,
+>>>>>>> Stashed changes
       );
     }
 
