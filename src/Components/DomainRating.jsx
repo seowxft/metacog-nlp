@@ -353,6 +353,7 @@ class RatingDomain extends React.Component {
       this.setState({
         instructNum: this.state.instructNum + 1,
         selfKnowledge: [],
+        mouseMovements: [],
       });
     } else if (instructNum === 3) {
       // move to real task!
