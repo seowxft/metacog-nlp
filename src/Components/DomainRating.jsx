@@ -293,6 +293,18 @@ class RatingDomain extends React.Component {
     console.log("this.state.domain: " + this.state.domain);
     console.log("task:" + task);
 
+    // OPTION A: Downsample to every Nth coordinate to reduce payload size drastically
+    var sampleRate = 3; // Keep 1 out of every 3 recorded movements
+    var downsampledMovements = this.state.mouseMovements.filter(
+      (_, index) => index % sampleRate === 0,
+    );
+
+    // OPTION B: Compression shorthand instead of JSON.stringify (saves tons of characters)
+    // Instead of [{"x":12,"y":34,"t":56}], turns it into "12,34,56|14,35,70"
+    var compressedMovements = downsampledMovements
+      .map((m) => `${m.x},${m.y},${m.t}`)
+      .join("|");
+
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
@@ -309,7 +321,7 @@ class RatingDomain extends React.Component {
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
       // --- ADDED TRACKING KEY ---
-      mouseMovements: JSON.stringify(this.state.mouseMovements),
+      mouseMovements: compressedMovements,
     };
 
     try {
