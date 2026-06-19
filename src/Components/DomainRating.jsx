@@ -83,6 +83,35 @@ class RatingDomain extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
+
+    // --- Bind Mouse Tracker Event Handler ---
+    this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
+    this.ticking = false; // Performance flag for requestAnimationFrame
+  }
+
+  // --- MOUSE TRACKING EVENT HANDLER ---
+  handleGlobalMouseMove(event) {
+    if (!this.ticking) {
+      window.requestAnimationFrame(() => {
+        // Calculate timestamp relative to the section starting time
+        const relativeTime = Math.round(
+          performance.now() - this.state.sectionTime,
+        );
+
+        const currentCoord = {
+          x: event.clientX,
+          y: event.clientY,
+          t: relativeTime,
+        };
+
+        this.setState((prevState) => ({
+          mouseMovements: [...prevState.mouseMovements, currentCoord],
+        }));
+
+        this.ticking = false;
+      });
+      this.ticking = true;
+    }
   }
 
   //for the submitting the text plus moving to next page
@@ -277,6 +306,8 @@ class RatingDomain extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      // --- ADDED TRACKING KEY ---
+      mouseMovements: JSON.stringify(this.state.mouseMovements),
     };
 
     try {
@@ -322,6 +353,13 @@ class RatingDomain extends React.Component {
 
   componentDidMount() {
     window.scrollTo(0, 0);
+    // --- Attach mouse listener when screen loads ---
+    window.addEventListener("mousemove", this.handleGlobalMouseMove);
+  }
+
+  componentWillUnmount() {
+    // --- Clean up listener to prevent catastrophic memory leaks ---
+    window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
   redirectToTarget() {
