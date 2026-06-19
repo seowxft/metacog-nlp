@@ -1144,6 +1144,7 @@ class PerTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      mouseMovements: null,
     };
 
     try {
