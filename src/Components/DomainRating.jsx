@@ -171,7 +171,7 @@ class RatingDomain extends React.Component {
           involve remembering what you just saw? For example, in remembering
           items you studied earlier.
           <br /> <br />
-          How good do you think your are at remembering things accurately or
+          How good do you think you are at remembering things accurately or
           knowing when a memory feels correct? What strategies do you use to
           remember things?
           <br /> <br />
