@@ -798,7 +798,7 @@ class PerTask extends React.Component {
         this.state.dotStair,
         this.state.responseMatrix,
         this.state.stairDir,
-        hardEasyTrialNum,
+        condEasyTrialNum,
       );
     }
 
