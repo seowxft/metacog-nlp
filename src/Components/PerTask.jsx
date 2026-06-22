@@ -210,6 +210,7 @@ class PerTask extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
     //End constructor props
   }
+
   // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
   handleGlobalMouseMove(event) {
     // Check condition: Track ONLY if active trial screen is mounted
@@ -229,6 +230,8 @@ class PerTask extends React.Component {
         else if (this.state.taskSection === "choice") sectionTag = "c";
         else if (this.state.taskSection === "choiceFeedback") sectionTag = "fb";
         else if (this.state.taskSection === "confidence") sectionTag = "conf";
+        else if (this.state.taskSection === "rating") sectionTag = "r";
+        else if (this.state.taskSection === "break") sectionTag = "b";
 
         const currentCoord = {
           x: event.clientX,
@@ -724,6 +727,7 @@ class PerTask extends React.Component {
       instructScreen: false,
       taskScreen: false,
       taskSection: "rating",
+      mouseMovements: [],
     });
   }
 
@@ -1129,6 +1133,17 @@ class PerTask extends React.Component {
     var prolificID = this.state.prolificID;
     var task = "perception";
 
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var downsampledMovements = this.state.mouseMovements.filter(
+      (_, index) => index % sampleRate === 0,
+    );
+
+    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
+    var compressedMovements = downsampledMovements
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
@@ -1144,7 +1159,7 @@ class PerTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
-      mouseMovements: null,
+      mouseMovements: compressedMovements,
     };
 
     try {
@@ -1181,6 +1196,7 @@ class PerTask extends React.Component {
       blockNum: blockNum,
       textTime: 0,
       selfKnowledge: null,
+      mouseMovements: [],
     });
 
     if (this.state.trialNum === this.state.trialNumTotal) {
@@ -1207,6 +1223,17 @@ class PerTask extends React.Component {
     var prolificID = this.state.prolificID;
     var task = "perception";
 
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var downsampledMovements = this.state.mouseMovements.filter(
+      (_, index) => index % sampleRate === 0,
+    );
+
+    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
+    var compressedMovements = downsampledMovements
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
@@ -1224,7 +1251,7 @@ class PerTask extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
-      mouseMovements: null,
+      mouseMovements: compressedMovements,
     };
 
     try {
@@ -1257,6 +1284,7 @@ class PerTask extends React.Component {
         quizScreen: false,
         instructNum: 5,
         taskSection: null,
+        mouseMovements: [],
       });
     }
   }
@@ -1267,6 +1295,7 @@ class PerTask extends React.Component {
       instructNum: 3,
       taskScreen: false,
       taskSection: "break",
+      mouseMovements: [],
     });
   }
 

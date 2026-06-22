@@ -232,6 +232,9 @@ class MemTask extends React.Component {
 
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
+
+      // --- MOUSE TRACKING STATE ---
+      mouseMovements: [],
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,8 +259,51 @@ class MemTask extends React.Component {
     this.handleConfResp = this.handleConfResp.bind(this);
     this.instructText = this.instructText.bind(this);
     this.quizText = this.quizText.bind(this);
+
+    // --- Bind Mouse Tracker Event Handler ---
+    this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
+    this.ticking = false; // Performance flag for requestAnimationFrame
     //////////////////////////////////////////////////////////////////////////////////////////////
     //End constructor props
+  }
+
+  // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
+  handleGlobalMouseMove(event) {
+    // Check condition: Track ONLY if active trial screen is mounted
+    if (this.state.taskScreen && !this.ticking) {
+      window.requestAnimationFrame(() => {
+        // Calculate timestamp relative to when this specific individual trial began
+        const relativeTime = Math.round(
+          performance.now() - this.state.trialTime,
+        );
+
+        // Maps section keys to short IDs to keep character count down
+        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
+        let sectionTag = "unmapped";
+        if (this.state.taskSection === "iti") sectionTag = "i";
+        else if (this.state.taskSection === "fixation") sectionTag = "f";
+        else if (this.state.taskSection === "stimulus") sectionTag = "s";
+        else if (this.state.taskSection === "choice") sectionTag = "c";
+        else if (this.state.taskSection === "choiceFeedback") sectionTag = "fb";
+        else if (this.state.taskSection === "confidence") sectionTag = "conf";
+        else if (this.state.taskSection === "rating") sectionTag = "r";
+        else if (this.state.taskSection === "break") sectionTag = "b";
+
+        const currentCoord = {
+          x: event.clientX,
+          y: event.clientY,
+          t: relativeTime,
+          p: sectionTag, // 'p' for Phase property
+        };
+
+        this.setState((prevState) => ({
+          mouseMovements: [...prevState.mouseMovements, currentCoord],
+        }));
+
+        this.ticking = false;
+      });
+      this.ticking = true;
+    }
   }
 
   // This handles instruction screen within the component USING KEYBOARD
@@ -736,6 +782,7 @@ class MemTask extends React.Component {
 
   quizBegin() {
     var initialValue = utils.randomInt(70, 80);
+    var confTimeInitial = Math.round(performance.now());
 
     console.log("Begining quiz");
     console.log("initialValue: " + initialValue);
@@ -743,11 +790,14 @@ class MemTask extends React.Component {
     this.setState({
       confInitial: initialValue,
       confLevel: null,
+      confTimeInitial: confTimeInitial,
+      confTime: null,
       //  confMove: null,
       quizScreen: true,
       instructScreen: false,
       taskScreen: false,
       taskSection: "rating",
+      mouseMovements: [],
     });
   }
 
@@ -937,6 +987,7 @@ class MemTask extends React.Component {
       choiceFbRight: style.choiceWord,
       choiceFbRewLeft: style.choiceWord,
       choiceFbRewRight: style.choiceWord,
+      mouseMovements: [],
     });
 
     setTimeout(
@@ -1093,6 +1144,17 @@ class MemTask extends React.Component {
 
     console.log("trialNumInBlock Save: " + this.state.trialNumInBlock);
 
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var downsampledMovements = this.state.mouseMovements.filter(
+      (_, index) => index % sampleRate === 0,
+    );
+
+    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
+    var compressedMovements = downsampledMovements
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
     var prolificID = this.state.prolificID;
     //  var stimPickShown = this.state.stimPickShown.substring(0, 50);
     var stimShown = null;
@@ -1159,6 +1221,8 @@ class MemTask extends React.Component {
       choiceShownWordStim2: this.state.choiceShownWordStim2,
       choiceShownWordLeft: this.state.choiceShownWordLeft,
       choiceShownWordRight: this.state.choiceShownWordRight,
+
+      mouseMovements: compressedMovements,
     };
 
     try {
@@ -1216,6 +1280,17 @@ class MemTask extends React.Component {
     var prolificID = this.state.prolificID;
     var task = "memory";
 
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var downsampledMovements = this.state.mouseMovements.filter(
+      (_, index) => index % sampleRate === 0,
+    );
+
+    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
+    var compressedMovements = downsampledMovements
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
@@ -1231,6 +1306,7 @@ class MemTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      mouseMovements: compressedMovements,
     };
 
     try {
@@ -1266,6 +1342,7 @@ class MemTask extends React.Component {
       blockNum: blockNum,
       textTime: 0,
       selfKnowledge: null,
+      mouseMovements: [],
     });
 
     if (this.state.trialNum === this.state.trialNumTotal) {
@@ -1292,6 +1369,17 @@ class MemTask extends React.Component {
     var prolificID = this.state.prolificID;
     var task = "memory";
 
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var downsampledMovements = this.state.mouseMovements.filter(
+      (_, index) => index % sampleRate === 0,
+    );
+
+    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
+    var compressedMovements = downsampledMovements
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
@@ -1307,6 +1395,7 @@ class MemTask extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      mouseMovements: compressedMovements,
     };
 
     try {
@@ -1339,6 +1428,7 @@ class MemTask extends React.Component {
         quizScreen: false,
         instructNum: 5,
         taskSection: null,
+        mouseMovements: [],
       });
     }
   }
@@ -1349,6 +1439,7 @@ class MemTask extends React.Component {
       instructNum: 3,
       taskScreen: false,
       taskSection: "break",
+      mouseMovements: [],
     });
   }
 
@@ -1395,6 +1486,14 @@ class MemTask extends React.Component {
     this.setState({
       statePic: statePic,
     });
+
+    // --- Attach mouse listener when screen loads ---
+    window.addEventListener("mousemove", this.handleGlobalMouseMove);
+  }
+
+  componentWillUnmount() {
+    // --- Clean up listener to prevent catastrophic memory leaks ---
+    window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
   renderImages(number, imageArray, className) {
