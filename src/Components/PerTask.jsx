@@ -1010,14 +1010,23 @@ class PerTask extends React.Component {
 
     // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var downsampledMovements = this.state.mouseMovements.filter(
-      (_, index) => index % sampleRate === 0,
-    );
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
 
-    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
-    var compressedMovements = downsampledMovements
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
+    }
 
     let saveString = {
       prolificID: this.state.prolificID,
@@ -1135,14 +1144,23 @@ class PerTask extends React.Component {
 
     // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var downsampledMovements = this.state.mouseMovements.filter(
-      (_, index) => index % sampleRate === 0,
-    );
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
 
-    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
-    var compressedMovements = downsampledMovements
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
+    }
 
     let saveString = {
       prolificID: this.state.prolificID,
@@ -1225,14 +1243,23 @@ class PerTask extends React.Component {
 
     // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var downsampledMovements = this.state.mouseMovements.filter(
-      (_, index) => index % sampleRate === 0,
-    );
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
 
-    // Compressed string template outputs format: "x,y,t,phase|x,y,t,phase"
-    var compressedMovements = downsampledMovements
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
+    }
 
     let saveString = {
       prolificID: this.state.prolificID,

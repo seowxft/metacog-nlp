@@ -93,7 +93,7 @@ class Questionnaires extends React.Component {
       // Tracking variables
       shuffledQuizLabels: quizLabel,
 
-      // Object mapping page names to coordinate arrays: { "DEMO": [...], "AES": [...] }
+      // Object mapping page names to coordinate arrays: { "demo": [...], "AES": [...] }
       mouseMovements: {},
 
       currentPageName: "demo",
@@ -196,17 +196,32 @@ class Questionnaires extends React.Component {
     survey.setValue("qnTimeStart", this.state.qnStart);
     survey.setValue("qnTimeEnd", qnEnd);
 
-    // --- Downsample & Compress Mouse Movements Per Page ---
+    // --- Downsample, Compress, and Failsafe Cap Per Page ---
     const sampleRate = 3; // Keep 1 out of every 3 points
+    const maxTotalChars = 9000; // Safe budget for DB text column limit (10000)
+    const pages = Object.keys(this.state.mouseMovements);
+    const maxCharsPerPage = Math.floor(maxTotalChars / (pages.length || 1));
+
     const compressedMovements = {};
 
-    Object.keys(this.state.mouseMovements).forEach((pageName) => {
+    pages.forEach((pageName) => {
       const pageArray = this.state.mouseMovements[pageName] || [];
 
-      compressedMovements[pageName] = pageArray
+      let pageString = pageArray
         .filter((_, index) => index % sampleRate === 0)
         .map((m) => `${m.x},${m.y},${m.t}`)
         .join("|");
+
+      // --- FAILSAFE: Truncate if page string exceeds equal share limit ---
+      if (pageString.length > maxCharsPerPage) {
+        pageString = pageString.substring(0, maxCharsPerPage);
+        const lastPipe = pageString.lastIndexOf("|");
+        if (lastPipe !== -1) {
+          pageString = pageString.substring(0, lastPipe);
+        }
+      }
+
+      compressedMovements[pageName] = pageString;
     });
 
     // Save compressed mouse movements object directly into survey data payload
