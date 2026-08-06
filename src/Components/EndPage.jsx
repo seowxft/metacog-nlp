@@ -97,28 +97,37 @@ class EndPage extends React.Component {
     }
   }
   // handle key keyPressed
-  _handleInstructKey = (event) => {
-    var keyPressed;
+  handleInstruct(keyPressed) {
+    var curInstructNum = this.state.instructNum;
+    var whichButton = keyPressed;
 
-    switch (event.keyCode) {
-      case 37:
-        //    this is left arrow
-        keyPressed = 1;
-        this.handleInstruct(keyPressed);
-        break;
-      case 39:
-        //    this is right arrow
-        keyPressed = 2;
-        this.handleInstruct(keyPressed);
-        break;
-      case 32:
-        //    this is spacebar
-        keyPressed = 3;
-        this.handleInstruct(keyPressed);
-        break;
-      default:
+    if (whichButton === 1 && curInstructNum >= 2) {
+      this.setState({ instructNum: curInstructNum - 1 });
+    } else if (whichButton === 2 && curInstructNum >= 1) {
+      this.setState({ instructNum: curInstructNum + 1 });
     }
-  };
+    console.log(this.state.instructNum + 1);
+  }
+
+  handleSubmit(keyPressed) {
+    var curInstructNum = this.state.instructNum;
+    var whichButton = keyPressed;
+
+    if (whichButton === 3 && curInstructNum === 3) {
+      console.log("Submit to Prolific");
+      setTimeout(
+        function () {
+          this.redirectToEnd();
+        }.bind(this),
+        0,
+      );
+    }
+  }
+
+  redirectToEnd() {
+    alert("You will now be redirected to Prolific's validation page.");
+    window.location = "https://app.prolific.co/submissions/complete?cc=XXXXX"; //this will the prolific validation code
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   /// INSTRUCTION TEXT ////
@@ -142,9 +151,9 @@ class EndPage extends React.Component {
           <br />
           <br />
           <center>
-            Use the ← and → keys to navigate the pages.
-            <br />
-            <br />[<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
         <span className={style.astro}>
@@ -212,7 +221,12 @@ class EndPage extends React.Component {
           </ul>
           <br /> <br />
           <center>
-            [<strong>←</strong>] [<strong>→</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>{" "}
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -221,18 +235,24 @@ class EndPage extends React.Component {
     let instruct_text3 = (
       <div>
         <span>
-          You have finished the study!
+          You have finished the study! Please click the 'Submit to prolific'
+          button to complete the task.
           <br />
           <br />
-          <br />
-          Please send a message to us on Proflic that you have completed the
-          task.
+          If you encounter any issues, please send a message to us on Proflic
+          that you have completed the task.
           <br />
           <br />
           You may close the tab.
           <br /> <br />
           <center>
-            [<strong>←</strong>]
+            <button onClick={() => this.handleInstruct(1)}>
+              <strong>← Back</strong>
+            </button>
+            <br />
+            <button onClick={() => this.handleSubmit(3)}>
+              <strong>Submit to prolific</strong>
+            </button>
           </center>
         </span>
       </div>
@@ -260,20 +280,11 @@ class EndPage extends React.Component {
     document.body.style.overflow = "hidden";
   }
 
-  // redirectToEnd() {
-  //   alert("You will now be redirected to Prolific's validation page.");
-  //   document.removeEventListener("keyup", this._handleInstructKey);
-  //   window.location =
-  //     "https://app.prolific.co/submissions/complete?cc=C1FUHKFG"; //this will the prolific validation code
-  // }
-
   ///////////////////////////////////////////////////////////////
   render() {
     let text;
     if (this.state.instructScreen === true) {
-      document.addEventListener("keyup", this._handleInstructKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
-      //  console.log(this.state.instructNum);
     } else {
       return null;
     }

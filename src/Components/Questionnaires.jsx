@@ -13,40 +13,32 @@ import "./style/surveyStyle.css"; // Your custom styles
 
 import style from "./style/questStyle.module.css";
 
-// Import your questionnaire JSON files
+// Import questionnaire JSON files
 import { aes } from "./quest/aes.jsx";
-//import { audit } from "./quest/audit.jsx";
-//import { bis11 } from "./quest/bis.jsx";
-//import { eat26 } from "./quest/eat.jsx";
 import { gse } from "./quest/gse.jsx";
-//import { lsas } from "./quest/lsas.jsx";
-//import { ocir } from "./quest/ocir.jsx";
 import { rse } from "./quest/rse.jsx";
 import { sds } from "./quest/sds.jsx";
-//import { ssms } from "./quest/ssms.jsx";
 import { staiy2 } from "./quest/staiy2.jsx";
 import { demo } from "./quest/demo.jsx";
-//import { icar1 } from "./quest/icar1.jsx";
-//import { icar2 } from "./quest/icar2.jsx";
 
-//import { DATABASE_URL } from "./config.jsx";
+import { DATABASE_URL } from "./config.jsx";
+
+///////////NOTE TO ADD MORE CATCH QUESTIONS BEFORE DEPLOYING!!!
 
 class Questionnaires extends React.Component {
   constructor(props) {
     super(props);
 
     const sectionTime = Math.round(performance.now());
-    // --- Declare variables OUTSIDE the if/else ---
     let userID, prolificID, date, startTime, condition;
 
-    var debug = true; // Still using manual flag for now
+    var debug = true; // Set flag as needed
 
     if (debug === true) {
-      // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
-      date = 100; // Note: You might want a real date string here for debugging
-      startTime = 100; // Note: You might want a real timestamp for debugging
+      date = "100";
+      startTime = 100;
       condition = 1;
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
@@ -63,12 +55,13 @@ class Questionnaires extends React.Component {
     // Shuffle the quizzes and labels together
     utils.shuffleSame(allQuizText, quizLabel);
 
-    // Create the pages array for the survey
+    // Build pages array with explicit page names for tracking
     const surveyPages = [
-      { questions: demo },
-      ...allQuizText.map((quiz) => ({ questions: quiz })), // Map each quiz to a page object
-      //   { questions: icar1 },
-      //   { questions: icar2 },
+      { name: "DEMO", questions: demo },
+      ...allQuizText.map((quiz, idx) => ({
+        name: quizLabel[idx],
+        questions: quiz,
+      })),
     ];
 
     const surveyJson = {
@@ -77,9 +70,9 @@ class Questionnaires extends React.Component {
       pages: surveyPages,
     };
 
-    const survey = new Model(surveyJson); // Create an instance of the Model
-    survey.applyTheme(PlainDark); // Apply your chosen theme
-    // --- 2. Set the Initial State ---
+    const survey = new Model(surveyJson);
+    survey.applyTheme(PlainDark);
+
     this.state = {
       // User and session info
       prolificID,
@@ -93,55 +86,106 @@ class Questionnaires extends React.Component {
       qnTime: sectionTime,
       qnTotal: quizLabel.length,
 
-      // Control screens
+      // Display screens
       instructScreen: true,
       questScreen: false,
 
-      // Store shuffled labels for the timer callback
+      // Tracking variables
       shuffledQuizLabels: quizLabel,
 
-      debug: debug,
-    };
-    // Bind methods to `this`
-    this.survey = survey;
-    this.redirectToNextTask = this.redirectToNextTask.bind(this);
-    survey.onComplete.add(this.redirectToNextTask); // Attach the onComplete event handler
+      // Object mapping page names to coordinate arrays: { "DEMO": [...], "AES": [...] }
+      mouseMovements: {},
 
-    //   this.timerCallback = this.timerCallback.bind(this);
+      currentPageName: "DEMO",
+      pageStartTime: sectionTime,
+
+      debug,
+    };
+
+    this.survey = survey;
+    this.ticking = false;
+
+    // Bind instance methods
     this.handleBeginKey = this.handleBeginKey.bind(this);
+    this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.onComplete = this.onComplete.bind(this);
+    this.redirectToNextTask = this.redirectToNextTask.bind(this);
+
+    // Attach SurveyJS event listeners
+    survey.onComplete.add(this.onComplete);
+    survey.onCurrentPageChanged.add(this.handlePageChange);
   }
 
-  // --- 3. Manage Event Listeners in Lifecycle Methods ---
   componentDidMount() {
     window.scrollTo(0, 0);
-    //document.body.style.overflow = "auto";
-    // Add listener only when the component mounts
-    document.addEventListener("keyup", this._handleBeginKey);
-    console.log("Reload?");
+    window.addEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
   componentWillUnmount() {
-    // Clean up the listener when the component is removed
-    document.removeEventListener("keyup", this._handleBeginKey);
+    window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
-  startQuest() {
-    // Simply update the state to show the survey
-    this.setState({ questScreen: true, instructScreen: false });
-  }
+  // --- Mouse Movement Handler (Stores array per active page key) ---
+  handleGlobalMouseMove(event) {
+    if (this.state.questScreen && !this.ticking) {
+      window.requestAnimationFrame(() => {
+        const now = Math.round(performance.now());
+        const relativePageTime = now - this.state.pageStartTime;
+        const activePage = this.state.currentPageName;
 
-  handleBeginKey(keypressed) {
-    if (keypressed === 3 && this.state.instructScreen) {
-      // Spacebar
-      this.startQuest();
+        const currentCoord = {
+          x: event.clientX,
+          y: event.clientY,
+          t: relativePageTime, // Relative time spent on current page (ms)
+        };
+
+        this.setState((prevState) => {
+          const existingPageMovements =
+            prevState.mouseMovements[activePage] || [];
+
+          return {
+            mouseMovements: {
+              ...prevState.mouseMovements,
+              [activePage]: [...existingPageMovements, currentCoord],
+            },
+          };
+        });
+
+        this.ticking = false;
+      });
+      this.ticking = true;
     }
   }
 
-  // --- 4. SurveyJS Callback Methods ---
-  /*   onComplete(survey) {
-    /*     const qnEnd = Math.round(performance.now());
+  // --- Page Change Event Handler ---
+  handlePageChange(sender) {
+    const activePage = sender.currentPage;
+    const pageName = activePage ? activePage.name : "unknown";
+    const qnTime = Math.round(performance.now());
+    const qnRT = qnTime - this.state.qnTime;
 
-    // Add final data to the survey results
+    // Log reaction time and finish time for previous page into SurveyJS data
+    sender.setValue("PgFinish_" + this.state.currentPageName, qnTime);
+    sender.setValue("PgRT_" + this.state.currentPageName, qnRT);
+
+    this.setState({
+      currentPageName: pageName,
+      pageStartTime: qnTime,
+      qnTime,
+    });
+  }
+
+  // --- On Survey Completion / Save Data ---
+  onComplete(survey) {
+    const qnEnd = Math.round(performance.now());
+    const qnRT = qnEnd - this.state.qnTime;
+
+    // Log reaction time for the final page
+    survey.setValue("PgFinish_" + this.state.currentPageName, qnEnd);
+    survey.setValue("PgRT_" + this.state.currentPageName, qnRT);
+
+    // Set metadata fields
     survey.setValue("prolificID", this.state.prolificID);
     survey.setValue("condition", this.state.condition);
     survey.setValue("userID", this.state.userID);
@@ -152,38 +196,58 @@ class Questionnaires extends React.Component {
     survey.setValue("qnTimeStart", this.state.qnStart);
     survey.setValue("qnTimeEnd", qnEnd);
 
+    // --- Downsample & Compress Mouse Movements Per Page ---
+    const sampleRate = 3; // Keep 1 out of every 3 points
+    const compressedMovements = {};
+
+    Object.keys(this.state.mouseMovements).forEach((pageName) => {
+      const pageArray = this.state.mouseMovements[pageName] || [];
+
+      compressedMovements[pageName] = pageArray
+        .filter((_, index) => index % sampleRate === 0)
+        .map((m) => `${m.x},${m.y},${m.t}`)
+        .join("|");
+    });
+
+    // Save compressed mouse movements object directly into survey data payload
+    survey.setValue("mouseMovements", compressedMovements);
+
     const resultAsString = JSON.stringify(survey.data);
-    console.log("Survey results:", resultAsString); */
 
-  // TODO: Send data to the database
-  // fetch(...)
+    fetch(`${DATABASE_URL}/psych_quiz/` + this.state.prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: resultAsString,
+    })
+      .then(() => {
+        this.redirectToNextTask();
+      })
+      .catch((err) => {
+        console.error("Error saving survey data:", err);
+        // Navigate onward even if POST fails so participant is not stuck
+        this.redirectToNextTask();
+      });
+  }
 
-  /*   this.redirectToNextTask();
-  } 
+  startQuest() {
+    const now = Math.round(performance.now());
+    this.setState({
+      questScreen: true,
+      instructScreen: false,
+      pageStartTime: now,
+      qnStart: now,
+      qnTime: now,
+    });
+  }
 
-  timerCallback(survey) {
-    const page = survey.pages.indexOf(survey.currentPage);
-    let quizText = "";
-
-    if (page === 0) {
-      quizText = "demo";
-    } else if (page > 0 && page <= this.state.shuffledQuizLabels.length) {
-      // Use the shuffled labels array
-      quizText = this.state.shuffledQuizLabels[page - 1];
-    } else if (page === this.state.shuffledQuizLabels.length + 1) {
-      quizText = "IQ_text"; // Corresponds to icar1
-    } else {
-      quizText = "IQ_image"; // Corresponds to icar2
+  handleBeginKey(keypressed) {
+    if (keypressed === 3 && this.state.instructScreen) {
+      this.startQuest();
     }
-
-    const qnTime = Math.round(performance.now());
-    const qnRT = qnTime - this.state.qnTime;
-
-    survey.setValue(`PgFinish_${quizText}`, qnTime);
-    survey.setValue(`PgRT_${quizText}`, qnRT);
-
-    this.setState({ qnTime: qnTime });
-  }  */
+  }
 
   redirectToNextTask() {
     this.props.navigate("/End?PROLIFIC_PID=" + this.state.prolificID, {
@@ -197,14 +261,10 @@ class Questionnaires extends React.Component {
     });
   }
 
-  // --- 5. Render Method ---
   render() {
     let text;
 
-    if (
-      this.state.instructScreen === true &&
-      this.state.questScreen === false
-    ) {
+    if (this.state.instructScreen && !this.state.questScreen) {
       text = (
         <>
           <div className={style.bg} />
@@ -228,10 +288,7 @@ class Questionnaires extends React.Component {
           </div>
         </>
       );
-    } else if (
-      this.state.instructScreen === false &&
-      this.state.questScreen === true
-    ) {
+    } else if (!this.state.instructScreen && this.state.questScreen) {
       text = (
         <div>
           <Survey model={this.survey} />
