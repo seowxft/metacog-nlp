@@ -14,7 +14,7 @@ class EndPage extends React.Component {
 
     let userID, prolificID, date, startTime, condition;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
