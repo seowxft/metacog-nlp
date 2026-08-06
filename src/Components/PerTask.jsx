@@ -41,7 +41,7 @@ class PerTask extends React.Component {
       dotStairEasy,
       dotStairHard;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -145,7 +145,7 @@ class PerTask extends React.Component {
       dotRadius: 5,
 
       // staircase parameters
-      responseMatrix: [true, true],
+      responseMatrix: [],
       reversals: 0,
       stairDir: ["up", "up"],
       dotStair: null, //in log space; this is about 104 dots which is 70 dots shown for the first one
@@ -154,13 +154,13 @@ class PerTask extends React.Component {
 
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
-      responseMatrixEasy: [true, true],
+      responseMatrixEasy: [],
       stairDirEasy: ["up", "up"],
       dotStairEasy: dotStairEasy,
 
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
-      responseMatrixHard: [true, true],
+      responseMatrixHard: [],
       stairDirHard: ["up", "up"],
       dotStairHard: dotStairHard,
 
@@ -777,46 +777,41 @@ class PerTask extends React.Component {
     var condHardTrialNum = this.state.condHardTrialNum;
 
     console.log(this.state.blockCond);
-    if (this.state.blockCond == "easy") {
-      condEasyTrialNum = condEasyTrialNum + 1; //trialNum is 0, so it starts from 1
-      // run staircase
-      var s2 = staircaseEasy.staircase(
-        this.state.dotStairEasy,
+    var stimNum = this.state.stimNum;
+    var stairDir = this.state.stairDir;
+    var responseMatrix = this.state.responseMatrix;
+    var s2; // Declare s2 outside the if/else block
+
+    if (this.state.blockCond === "easy") {
+      condEasyTrialNum = condEasyTrialNum + 1;
+      s2 = staircaseEasy.staircase(
+        this.state.stimNumEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
-
-        this.state.dotStair,
-        this.state.responseMatrix,
-        this.state.stairDir,
-
         condEasyTrialNum,
       );
-    } else if (this.state.blockCond == "hard") {
+      stimNum = s2.stimNum;
+      stairDir = s2.direction;
+      responseMatrix = s2.stepcount;
+    } else if (this.state.blockCond === "hard") {
       condHardTrialNum = condHardTrialNum + 1;
-      var s2 = staircase.staircase(
-        this.state.dotStairHard,
+      s2 = staircase.staircase(
+        this.state.stimNumHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
         condHardTrialNum,
-
-        this.state.dotStair,
-        this.state.responseMatrix,
-        this.state.stairDir,
-        condEasyTrialNum,
       );
+
+      stimNum = s2.stimNum;
+      stairDir = s2.direction;
+      responseMatrix = s2.stepcount;
     }
 
-    var dotStair = s2.diff;
-    var stairDir = s2.direction;
-    var responseMatrix = s2.stepcount;
+    //  console.log("dotsStair: " + choiceCor);
+    //  console.log("stairDir: " + stairDir);
+    //  console.log("responseMat: " + responseMatrix);
 
-    var reversals;
-    if (s2.reversal) {
-      // Check for reversal. If true, add one to reversals variable
-      reversals = 1;
-    } else {
-      reversals = 0;
-    }
+    var reversals = s2 && s2.reversal ? 1 : 0;
 
     var dotDiffLeft;
     var dotDiffRight;

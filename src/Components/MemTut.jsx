@@ -56,7 +56,7 @@ class MemTut extends React.Component {
       statePic,
       stateWord;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -194,20 +194,20 @@ class MemTut extends React.Component {
       correctPer: 0,
 
       // staircase parameters
-      responseMatrix: [true, true],
+      responseMatrix: [],
       reversals: 0,
       stairDir: ["up", "up"],
       stimNum: 6,
 
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
-      responseMatrixEasy: [true, true],
+      responseMatrixEasy: [],
       stairDirEasy: ["up", "up"],
       stimNumEasy: 6,
 
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
-      responseMatrixHard: [true, true],
+      responseMatrixHard: [],
       stairDirHard: ["up", "up"],
       stimNumHard: 6,
 
@@ -1225,9 +1225,15 @@ class MemTut extends React.Component {
 
     console.log(trialNum);
     console.log(choicePos);
+
+    var stimNum = this.state.stimNum;
+    var stairDir = this.state.stairDir;
+    var responseMatrix = this.state.responseMatrix;
+
     // run staircase
     var blockCond;
     var s2;
+
     if (trialNum < this.state.trialStaircaseSwitch) {
       console.log("in here easy");
       console.log(this.state.stimNumEasy);
@@ -1235,40 +1241,40 @@ class MemTut extends React.Component {
       console.log(this.state.stairDirEasy);
 
       blockCond = this.state.blockCondTotal[0];
+
       s2 = staircaseEasy.staircase(
         this.state.stimNumEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
         trialNum,
       );
+      stimNum = s2.stimNum;
+      stairDir = s2.direction;
+      responseMatrix = s2.stepcount;
 
       console.log(blockCond);
     } else if (trialNum >= this.state.trialStaircaseSwitch) {
       console.log("in here hard");
       blockCond = this.state.blockCondTotal[1];
+
       s2 = staircase.staircase(
         this.state.stimNumHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
         trialNum - this.state.trialStaircaseSwitch + 1,
       );
-    }
 
-    var stimNum = s2.stimNum;
-    var stairDir = s2.direction;
-    var responseMatrix = s2.stepcount;
+      stimNum = s2.stimNum;
+      stairDir = s2.direction;
+      responseMatrix = s2.stepcount;
+    }
 
     console.log("stimNum: " + stimNum);
     console.log("stairDir: " + stairDir);
     console.log("responseMat: " + responseMatrix);
 
-    var reversals;
-    if (s2.reversal) {
-      // Check for reversal. If true, add one to reversals variable
-      reversals = 1;
-    } else {
-      reversals = 0;
-    }
+    var reversals = s2 && s2.reversal ? 1 : 0;
+
     // shuffle the  list of stimuli
     var stim = this.state.statePic;
     var stimWord = this.state.stateWord;

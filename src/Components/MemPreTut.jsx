@@ -93,7 +93,7 @@ class MemPreTut extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -105,7 +105,7 @@ class MemPreTut extends React.Component {
       condition = 100;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
-      
+
       var cutStim = 4; // if reduce the stim to pass this section faster
       stateWord = stateWord.slice(0, cutStim);
       statePic = statePic.slice(0, cutStim);

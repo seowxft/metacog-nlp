@@ -10,8 +10,12 @@ function checkReversal(dir) {
 }
 
 export function staircase(stimNum, prevTrialPerf, dir, trialNum) {
-  var back1 = prevTrialPerf[prevTrialPerf.length - 1]; // Last trial
-  var back2 = prevTrialPerf[prevTrialPerf.length - 2]; // Two trials ago
+  // Create a copy of prevTrialPerf so array mutations for the staircase counter
+  // do not corrupt the raw data array saved in React state / database
+  var stepcount = prevTrialPerf.slice();
+
+  var back1 = stepcount[stepcount.length - 1]; // Last trial
+  var back2 = stepcount[stepcount.length - 2]; // Two trials ago
   var reverse = false; // Initialize reversal to false
 
   if (back1) {
@@ -19,13 +23,13 @@ export function staircase(stimNum, prevTrialPerf, dir, trialNum) {
     if (back2) {
       // AND two trials ago were correct
 
-      //plus one stimuli
+      // plus one stimuli
       stimNum += 1;
 
-      // changes the last trial to incorrect
+      // changes the last trial to incorrect in the local tracker
       // so if previous two trials were correct and the staircase increased difficulty
       // it needs two more trials again before it lowers again in value
-      prevTrialPerf[prevTrialPerf.length - 1] = false;
+      stepcount[stepcount.length - 1] = false;
 
       dir[0] = dir[1]; // Set the direction two trials ago to the direction one trial ago
       dir[1] = "up"; // Set the direction one trial ago to up
@@ -34,7 +38,7 @@ export function staircase(stimNum, prevTrialPerf, dir, trialNum) {
     // If the last trial was correct and two trials ago were wrong, do nothing.
   } // If the last trial was wrong
   else {
-    //minus one stimuli
+    // minus one stimuli
     stimNum -= 2;
 
     dir[0] = dir[1]; // Set the direction two trials ago to the direction one trial ago
@@ -45,14 +49,14 @@ export function staircase(stimNum, prevTrialPerf, dir, trialNum) {
   // Set limits on stimNum, minimum 2 pictures
   if (stimNum <= 2) stimNum = 2;
 
-  // Set limits on stimNum, maximum 14 pictures? (i will need 15 stim, always have to minus one for the 2AFC)
+  // Set limits on stimNum, maximum 14 pictures
   if (stimNum >= 14) stimNum = 14;
 
   var output = {
     stimNum: stimNum,
     direction: dir,
     reversal: reverse,
-    stepcount: prevTrialPerf,
+    stepcount: stepcount,
   };
 
   return output;

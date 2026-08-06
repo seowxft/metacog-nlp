@@ -1,5 +1,4 @@
-// two down one up staircase - but easy version.
-//this basically makes it easier by ALOT after one incorrect
+// two down one up staircase to reach about 70%
 
 // Note that we only call check_reversal when there was a step up or step down
 function checkReversal(dir) {
@@ -11,8 +10,12 @@ function checkReversal(dir) {
 }
 
 export function staircase(dotDiff, prevTrialPerf, dir, trialNum) {
-  var back1 = prevTrialPerf[prevTrialPerf.length - 1]; // Last trial
-  var back2 = prevTrialPerf[prevTrialPerf.length - 2]; // Two trials ago
+  // Create a copy of prevTrialPerf so array mutations for the staircase counter
+  // do not corrupt the raw data array saved in React state / database
+  var stepcount = prevTrialPerf.slice();
+
+  var back1 = stepcount[stepcount.length - 1]; // Last trial
+  var back2 = stepcount[stepcount.length - 2]; // Two trials ago
   var reverse = false; // Initialize reversal to false
 
   if (back1) {
@@ -26,10 +29,10 @@ export function staircase(dotDiff, prevTrialPerf, dir, trialNum) {
       else if (trialNum > 11) dotDiff -= 0.1;
       // for next 5 trials of the practice
 
-      // changes the last trial to incorrect
+      // changes the last trial to incorrect in the local tracker
       // so if previous two trials were correct and the staircase increased difficulty
       // it needs two more trials again before it lowers again in value
-      prevTrialPerf[prevTrialPerf.length - 1] = false;
+      stepcount[stepcount.length - 1] = false;
 
       dir[0] = dir[1]; // Set the direction two trials ago to the direction one trial ago
       dir[1] = "up"; // Set the direction one trial ago to up
@@ -50,16 +53,14 @@ export function staircase(dotDiff, prevTrialPerf, dir, trialNum) {
     reverse = checkReversal(dir); // Check if there was a reversal in direction as a result of the step up
   }
 
-  // Set limits on dots_diff s.t. it remains in the range of [0,50] inclusive
-  //if (dots_diff >= 4.25)
-  //  dots_diff = 4.25;
+  // Set limits on dots_diff s.t. it remains in the range of [1, 50] inclusive
   if (dotDiff <= 1) dotDiff = 1;
 
   var output = {
     diff: dotDiff,
     direction: dir,
     reversal: reverse,
-    stepcount: prevTrialPerf,
+    stepcount: stepcount,
   };
 
   return output;

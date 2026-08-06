@@ -47,7 +47,7 @@ class PerTut extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -139,7 +139,7 @@ class PerTut extends React.Component {
       dotRadius: 5,
 
       // staircase parameters
-      responseMatrix: [true, true],
+      responseMatrix: [],
       reversals: 0,
       stairDir: ["up", "up"],
       dotStair: 4.65, //in log space; this is about 104 dots which is 70 dots shown for the first one
@@ -149,13 +149,13 @@ class PerTut extends React.Component {
 
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
-      responseMatrixEasy: [true, true],
+      responseMatrixEasy: [],
 
       stairDirEasy: ["up", "up"],
       dotStairEasy: 4.65,
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
-      responseMatrixHard: [true, true],
+      responseMatrixHard: [],
       stairDirHard: ["up", "up"],
       dotStairHard: 4.65,
 
@@ -1089,36 +1089,54 @@ class PerTut extends React.Component {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
 
+    var stimNum = this.state.stimNum;
+    var stairDir = this.state.stairDir;
+    var responseMatrix = this.state.responseMatrix;
+
+    // run staircase
     var blockCond;
+    var s2;
+
     if (trialNum < this.state.trialStaircaseSwitch) {
+      console.log("in here easy");
+      console.log(this.state.stimNumEasy);
+      console.log(this.state.responseMatrixEasy);
+      console.log(this.state.stairDirEasy);
+
       blockCond = this.state.blockCondTotal[0];
-      var s2 = staircaseEasy.staircase(
-        this.state.dotStairEasy,
+
+      s2 = staircaseEasy.staircase(
+        this.state.stimNumEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
         trialNum,
       );
+      stimNum = s2.stimNum;
+      stairDir = s2.direction;
+      responseMatrix = s2.stepcount;
+
+      console.log(blockCond);
     } else if (trialNum >= this.state.trialStaircaseSwitch) {
+      console.log("in here hard");
       blockCond = this.state.blockCondTotal[1];
-      var s2 = staircase.staircase(
-        this.state.dotStairHard,
+
+      s2 = staircase.staircase(
+        this.state.stimNumHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
         trialNum - this.state.trialStaircaseSwitch + 1,
       );
+
+      stimNum = s2.stimNum;
+      stairDir = s2.direction;
+      responseMatrix = s2.stepcount;
     }
 
-    var dotStair = s2.diff;
-    var stairDir = s2.direction;
-    var responseMatrix = s2.stepcount;
+    console.log("stimNum: " + stimNum);
+    console.log("stairDir: " + stairDir);
+    console.log("responseMat: " + responseMatrix);
 
-    var reversals;
-    if (s2.reversal) {
-      // Check for reversal. If true, add one to reversals variable
-      reversals = 1;
-    } else {
-      reversals = 0;
-    }
+    var reversals = s2 && s2.reversal ? 1 : 0;
 
     var dotDiffLeft;
     var dotDiffRight;
