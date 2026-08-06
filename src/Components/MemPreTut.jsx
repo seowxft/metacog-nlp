@@ -93,7 +93,7 @@ class MemPreTut extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---

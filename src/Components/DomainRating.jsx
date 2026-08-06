@@ -18,7 +18,7 @@ class RatingDomain extends React.Component {
     // --- Declare variables OUTSIDE the if/else ---
     let userID, prolificID, date, startTime, condition;
 
-    var debug = true; // Still using manual flag for now
+    var debug = false; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -293,17 +293,25 @@ class RatingDomain extends React.Component {
     console.log("this.state.domain: " + this.state.domain);
     console.log("task:" + task);
 
-    // OPTION A: Downsample to every Nth coordinate to reduce payload size drastically
-    var sampleRate = 3; // Keep 1 out of every 3 recorded movements
-    var downsampledMovements = this.state.mouseMovements.filter(
-      (_, index) => index % sampleRate === 0,
-    );
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
 
-    // OPTION B: Compression shorthand instead of JSON.stringify (saves tons of characters)
-    // Instead of [{"x":12,"y":34,"t":56}], turns it into "12,34,56|14,35,70"
-    var compressedMovements = downsampledMovements
-      .map((m) => `${m.x},${m.y},${m.t}`)
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
+    }
 
     let saveString = {
       prolificID: this.state.prolificID,

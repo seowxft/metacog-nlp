@@ -32,7 +32,7 @@ class Questionnaires extends React.Component {
     const sectionTime = Math.round(performance.now());
     let userID, prolificID, date, startTime, condition;
 
-    var debug = true; // Set flag as needed
+    var debug = false; // Set flag as needed
 
     if (debug === true) {
       userID = 100;
