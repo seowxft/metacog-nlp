@@ -57,7 +57,7 @@ class Questionnaires extends React.Component {
 
     // Build pages array with explicit page names for tracking
     const surveyPages = [
-      { name: "DEMO", questions: demo },
+      { name: "demo", questions: demo },
       ...allQuizText.map((quiz, idx) => ({
         name: quizLabel[idx],
         questions: quiz,
@@ -96,7 +96,7 @@ class Questionnaires extends React.Component {
       // Object mapping page names to coordinate arrays: { "DEMO": [...], "AES": [...] }
       mouseMovements: {},
 
-      currentPageName: "DEMO",
+      currentPageName: "demo",
       pageStartTime: sectionTime,
 
       debug,
