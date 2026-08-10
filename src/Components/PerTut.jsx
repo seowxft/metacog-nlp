@@ -294,6 +294,7 @@ class PerTut extends React.Component {
         0,
       );
     } else if (whichButton === 3 && curInstructNum === 6) {
+      console.log("Tutorial begin.");
       setTimeout(
         function () {
           this.tutorBegin();
@@ -1171,7 +1172,7 @@ class PerTut extends React.Component {
   trialExample() {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var stimPos = Math.random() < 0.5 ? 1 : 2;
-    var dotStair = 5.2;
+    var dotStair = 4.65;
 
     var dotDiffLeft;
     var dotDiffRight;
@@ -1556,8 +1557,8 @@ class PerTut extends React.Component {
     var blockCond = this.state.blockCond;
 
     // 1. Calculate the new values BEFORE setting state
-    let newDotStairEasy = this.state.dotStairEasy;
-    let newDotStairHard = this.state.dotStairHard;
+    var newDotStairEasy = this.state.dotStairEasy;
+    var newDotStairHard = this.state.dotStairHard;
 
     if (blockCond === "easy") {
       newDotStairEasy = this.state.dotStair;
