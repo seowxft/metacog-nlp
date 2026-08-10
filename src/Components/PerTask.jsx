@@ -649,6 +649,7 @@ class PerTask extends React.Component {
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
+            max={this.setState.trialNumTotal}
           />
         </center>
         <br />
@@ -680,6 +681,7 @@ class PerTask extends React.Component {
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
+            max={this.setState.trialNumTotal}
           />
         </center>
         <br />

@@ -108,6 +108,7 @@ class PerTut extends React.Component {
       //trial parameters
       exampleNumTotal: exampleNumTotal,
       trialNumTotal: trialNumTotal,
+      fullTrialNumTotal: 20, //this needs to match the real task number of trials
       blockCondTotal: blockCondTotal,
       trialStaircaseSwitch: trialStaircaseSwitch,
       stimPosList: pracStimPos,
@@ -288,7 +289,7 @@ class PerTut extends React.Component {
     if (whichButton === 3 && curInstructNum === 5) {
       setTimeout(
         function () {
-          this.gConfBegin();
+          this.exampleBegin();
         }.bind(this),
         0,
       );
@@ -986,9 +987,12 @@ class PerTut extends React.Component {
     let gConf_text1 = (
       <div>
         <center>
-          Before we begin, out of {this.state.trialNumTotal} set pairs of
-          battery cards, how many times do you think you will choose the higher
-          charge battery card correctly?
+          You have now seen how fast the battery cards will appear.
+          <br />
+          <br />
+          Out of {this.state.fullTrialNumTotal} set pairs of battery cards, how
+          many times do you think you will choose the higher charge battery card
+          correctly?
         </center>
         <br />
         <br />
@@ -996,6 +1000,7 @@ class PerTut extends React.Component {
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
+            max={this.state.fullTrialNumTotal}
           />
         </center>
         <br />
@@ -1154,13 +1159,12 @@ class PerTut extends React.Component {
   }
 
   exampleEnd() {
-    // change state to make sure the screen is changed for the task
-    this.setState({
-      instructScreen: true,
-      taskScreen: false,
-      instructNum: 6,
-      taskSection: null,
-    });
+    setTimeout(
+      function () {
+        this.gConfBegin();
+      }.bind(this),
+      0,
+    );
   }
 
   // FOUR COMPONENTS OF THE TASK, Fixation, Stimulus/Response, Feedback and Confidence

@@ -6,46 +6,34 @@ import style from "../style/perTaskStyle.module.css";
 
 const theme = createTheme({
   palette: {
-    // Used by `getContrastText()` to maximize the contrast between
-    // the background and the text.
     primary: {
       contrastThreshold: 4.5,
       main: "#ffffff",
     },
-
     text: { primary: "#ffffff", secondary: "#ffffff" },
   },
 });
 
-const marks = [
-  {
-    value: 0,
-    label: "0",
-  },
-  {
-    value: 35,
-    label: "35",
-  },
-  {
-    value: 70,
-    label: "70",
-  },
-  {
-    value: 105,
-    label: "105",
-  },
-  {
-    value: 140,
-    label: "140",
-  },
-];
+// Helper function to generate exactly 5 evenly spaced marks
+const generateMarks = (max) => {
+  const step = max / 4;
+  return [
+    { value: 0, label: "0" },
+    { value: Math.round(step), label: String(Math.round(step)) },
+    { value: Math.round(step * 2), label: String(Math.round(step * 2)) },
+    { value: Math.round(step * 3), label: String(Math.round(step * 3)) },
+    { value: max, label: String(max) },
+  ];
+};
 
-export function ConfSliderGlobal({ callBackValue, initialValue }) {
+export function ConfSliderGlobal({ callBackValue, initialValue, max }) {
   const [value, setValue] = React.useState(initialValue);
+
+  // Recalculate marks only when the max value changes
+  const dynamicMarks = React.useMemo(() => generateMarks(max), [max]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    //  console.log(newValue);
     callBackValue(newValue);
   };
 
@@ -57,9 +45,9 @@ export function ConfSliderGlobal({ callBackValue, initialValue }) {
             color="primary"
             aria-label="Always visible"
             step={1}
-            marks={marks}
+            marks={dynamicMarks}
             min={0}
-            max={140}
+            max={max}
             track={false}
             valueLabelDisplay="on"
             value={value}
