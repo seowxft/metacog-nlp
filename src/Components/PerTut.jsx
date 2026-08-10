@@ -1140,6 +1140,7 @@ class PerTut extends React.Component {
   }
 
   exampleBegin() {
+    console.log("Are we even hitting here yet?");
     this.setState({
       trialNum: 0,
     });
