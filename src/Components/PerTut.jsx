@@ -405,6 +405,7 @@ class PerTut extends React.Component {
       correctPerEasy = this.state.correctPerEasy;
       correctMatEasy = this.state.correctMatEasy;
       stairDirEasy = this.state.stairDirEasy;
+    } else {
     }
 
     //  console.log("response: " + response);
@@ -1171,7 +1172,7 @@ class PerTut extends React.Component {
   trialExample() {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var stimPos = Math.random() < 0.5 ? 1 : 2;
-    var dotStair = 6;
+    var dotStair = 4.8;
 
     var dotDiffLeft;
     var dotDiffRight;
@@ -1211,7 +1212,7 @@ class PerTut extends React.Component {
       correctPer: null,
       stimPos: stimPos,
       reversals: null,
-      responseMatrix: null,
+      responseMatrix: [],
       stairDir: null,
 
       //Calculate the for the paramters for the stim
