@@ -1149,6 +1149,13 @@ class PerTut extends React.Component {
     console.log("Are we even hitting here yet?");
     this.setState({
       trialNum: 0,
+      reversals: null,
+      responseMatrix: [],
+      stairDir: null,
+      confLevel: null,
+      confMove: false,
+      confTime: 0,
+      blockCond: "example",
     });
 
     setTimeout(
@@ -1159,20 +1166,11 @@ class PerTut extends React.Component {
     );
   }
 
-  exampleEnd() {
-    setTimeout(
-      function () {
-        this.gConfBegin();
-      }.bind(this),
-      0,
-    );
-  }
-
   // FOUR COMPONENTS OF THE TASK, Fixation, Stimulus/Response, Feedback and Confidence
   trialExample() {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var stimPos = Math.random() < 0.5 ? 1 : 2;
-    var dotStair = 4.8;
+    var dotStair = 5.2;
 
     var dotDiffLeft;
     var dotDiffRight;
@@ -1197,23 +1195,16 @@ class PerTut extends React.Component {
       taskScreen: true,
       taskSection: "iti",
       trialNum: trialNum,
-      blockCond: 0,
       fixTime: 0,
       stimTime: 0,
       responseKey: 0,
       respTime: 0,
       respFbTime: 0,
       rewFbTime: 0,
-      confLevel: null,
-      confTime: 0,
-      confMove: false,
       choice: null,
       correct: null,
       correctPer: null,
       stimPos: stimPos,
-      reversals: null,
-      responseMatrix: [],
-      stairDir: null,
 
       //Calculate the for the paramters for the stim
       dotDiffStim1: Math.round(Math.exp(dotStair)),
@@ -1237,7 +1228,7 @@ class PerTut extends React.Component {
       // if the trials have reached the total trial number
       setTimeout(
         function () {
-          this.exampleEnd();
+          this.gConfBegin();
         }.bind(this),
         0,
       );
@@ -1685,7 +1676,7 @@ class PerTut extends React.Component {
       console.log("Cant post?");
     }
 
-    if (this.state.blockCond == 0) {
+    if (this.state.blockCond == "example") {
       setTimeout(
         function () {
           this.trialExample();
