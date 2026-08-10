@@ -12,6 +12,7 @@ import * as DrawCorFeedback from "./drawassets/DrawCorFeedback.jsx";
 
 import * as DrawDotsEx from "./drawassets/DrawDotsExample.jsx";
 import * as ConfSliderEx from "./drawassets/DrawConfSliderExample.jsx";
+import * as ConfSliderGlobal from "./drawassets/DrawConfSliderGlobal.jsx";
 
 import style from "./style/perTaskStyle.module.css";
 
@@ -24,10 +25,11 @@ import { DATABASE_URL } from "./config.jsx";
 // THIS CODES THE TUTORIAL SESSION + QUIZ FOR THE TASK
 // Session includes:
 // 1) Introduction to cover story
-// 2) Practice on left/right box with feedback
-// 3) Instructions to confidence rating
-// 4) Quiz on instructions
-// 5) If quiz fail once, bring to instructions on confidence, if fail twice, bring to the start of instructions
+// 2) 2 examples, then global confidence rating
+// 3) Practice on left/right box with feedback
+// 4) Instructions to confidence rating
+// 5) Quiz on instructions
+// 6) If quiz fail once, bring to instructions on confidence, if fail twice, bring to the start of instructions
 //theres two staircases - easy and hard to get the starting dot diff for the different conditions
 
 class PerTut extends React.Component {
@@ -69,6 +71,7 @@ class PerTut extends React.Component {
       perCorrectPer = this.props.state.perCorrectPer;
     }
 
+    var exampleNumTotal = 2;
     var trialNumTotal = 26; //26
     var blockCondTotal = ["easy", "hard"];
     var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
@@ -103,6 +106,7 @@ class PerTut extends React.Component {
       respFbTimeLag: 700, //
 
       //trial parameters
+      exampleNumTotal: exampleNumTotal,
       trialNumTotal: trialNumTotal,
       blockCondTotal: blockCondTotal,
       trialStaircaseSwitch: trialStaircaseSwitch,
@@ -128,21 +132,24 @@ class PerTut extends React.Component {
       choice: null,
       confLevel: null,
       confTime: 0,
+      confInitial: null,
       confMove: null, //can only move to next trial if conf was toggled
       correct: null,
       correctMat: [], //put correct in vector, to cal perf %
       correctPer: 0,
+
+      gConfState: "pre",
 
       dotStairLeft: 0,
       dotStairRight: 0,
       //dot paramters
       dotRadius: 5,
 
-      // staircase parameters
+      // staircase parameters (moved to tutorBegin due to example trials coming first)
       responseMatrix: [],
       reversals: 0,
-      stairDir: ["up", "up"],
-      dotStair: 4.65, //in log space; this is about 104 dots which is 70 dots shown for the first one
+      stairDir: null,
+      dotStair: null,
 
       dotStairLeft: 0,
       dotStairRight: 0,
@@ -151,13 +158,13 @@ class PerTut extends React.Component {
       correctPerEasy: 0,
       responseMatrixEasy: [],
 
-      stairDirEasy: ["up", "up"],
-      dotStairEasy: 4.65,
+      stairDirEasy: null,
+      dotStairEasy: null,
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
       responseMatrixHard: [],
-      stairDirHard: ["up", "up"],
-      dotStairHard: 4.65,
+      stairDirHard: null,
+      dotStairHard: null,
 
       //quiz paramters
       quizTry: 1,
@@ -175,6 +182,7 @@ class PerTut extends React.Component {
       taskSection: null,
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
+      mouseMovements: [],
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,9 +205,45 @@ class PerTut extends React.Component {
     this.handleQuizResp = this.handleQuizResp.bind(this);
     this.instructText = this.instructText.bind(this);
     this.quizText = this.quizText.bind(this);
+    this.globalConfText = this.globalConfText.bind(this);
 
+    // --- Bind Mouse Tracker Event Handler ---
+    this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
+    this.ticking = false; // Performance flag for requestAnimationFrame
     //////////////////////////////////////////////////////////////////////////////////////////////
     //End constructor props
+  }
+
+  // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
+  handleGlobalMouseMove(event) {
+    // Check condition: Track ONLY if active trial screen is mounted
+    if (this.state.taskScreen && !this.ticking) {
+      window.requestAnimationFrame(() => {
+        // Calculate timestamp relative to when this specific individual trial began
+        const relativeTime = Math.round(
+          performance.now() - this.state.trialTime,
+        );
+
+        // Maps section keys to short IDs to keep character count down
+        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
+        let sectionTag = "unmapped";
+        if (this.state.taskSection === "gConf") sectionTag = "r";
+
+        const currentCoord = {
+          x: event.clientX,
+          y: event.clientY,
+          t: relativeTime,
+          p: sectionTag, // 'p' for Phase property
+        };
+
+        this.setState((prevState) => ({
+          mouseMovements: [...prevState.mouseMovements, currentCoord],
+        }));
+
+        this.ticking = false;
+      });
+      this.ticking = true;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,17 +266,17 @@ class PerTut extends React.Component {
       this.setState({ instructNum: curInstructNum + 1 });
     } else if (
       whichButton === 1 &&
-      curInstructNum >= 7 &&
-      curInstructNum <= 10
+      curInstructNum >= 8 &&
+      curInstructNum <= 11
     ) {
-      // from page 7 to 11, I can move back a page
+      // from page 8 to 11, I can move back a page
       this.setState({ instructNum: curInstructNum - 1 });
     } else if (
       whichButton === 2 &&
-      curInstructNum >= 6 &&
-      curInstructNum <= 9
+      curInstructNum >= 7 &&
+      curInstructNum <= 10
     ) {
-      // from page 6 to 10, I can move forward a page
+      // from page 7 to 10, I can move forward a page
       this.setState({ instructNum: curInstructNum + 1 });
     }
   }
@@ -244,21 +288,47 @@ class PerTut extends React.Component {
     if (whichButton === 3 && curInstructNum === 5) {
       setTimeout(
         function () {
-          this.tutorBegin();
+          this.gConfBegin();
         }.bind(this),
         0,
       );
-    } else if (whichButton === 3 && curInstructNum === 10) {
+    } else if (whichButton === 3 && curInstructNum === 6) {
       setTimeout(
         function () {
-          this.quizBegin();
+          this.tutorBegin();
         }.bind(this),
         0,
       );
     } else if (whichButton === 3 && curInstructNum === 11) {
       setTimeout(
         function () {
+          this.quizBegin();
+        }.bind(this),
+        0,
+      );
+    } else if (whichButton === 3 && curInstructNum === 12) {
+      setTimeout(
+        function () {
           this.redirectToNextTask();
+        }.bind(this),
+        0,
+      );
+    }
+  }
+
+  handleGlobalConf(keyPressed) {
+    var timePressed = Math.round(performance.now());
+    var whichButton = keyPressed;
+    if (whichButton === 3 && this.state.confLevel !== null) {
+      var confTime = timePressed - this.state.confTimeInitial;
+
+      this.setState({
+        confTime: confTime,
+      });
+
+      setTimeout(
+        function () {
+          this.renderGConfSave();
         }.bind(this),
         0,
       );
@@ -612,12 +682,7 @@ class PerTut extends React.Component {
           <font color="#87C1FF">
             <strong>light blue</strong>
           </font>
-          . Please respond quickly and to the best of your ability - the
-          spaceship&apos;s power depends on it!
-          <br />
-          <br />
-          Let&apos;s start with a practice. In this phase we will tell you
-          whether your choices are right or wrong.
+          .
           <br />
           <br />
           If you are <strong>correct</strong>, the card that you selected will
@@ -651,10 +716,6 @@ class PerTut extends React.Component {
     let instruct_text5 = (
       <div>
         <span>
-          You will have {this.state.trialNumTotal} chances to choose the battery
-          card with the higher charge.
-          <br />
-          <br />
           For every choice, you will be presented with a white cross in the
           middle of the screen first before the battery cards appear. Please pay
           attention closely as the charge level indicator (white dots) of the
@@ -664,10 +725,9 @@ class PerTut extends React.Component {
           .
           <br />
           <br />
-          As a reminder:
-          <br />
-          <br />
-          Click on the battery card that has more charge.
+          To show you what to expect, we will now show you 2 quick examples.
+          This is just to give you a feel for the pace, so you do not need to
+          worry about getting it correct right now.
           <br />
           <br />
           <center>
@@ -683,6 +743,36 @@ class PerTut extends React.Component {
     );
 
     let instruct_text6 = (
+      <div>
+        <span>
+          Now that you are familiar with the pace, let&apos;s start a practice
+          phase. Here, we will tell you whether your choices are right or wrong.
+          <br />
+          <br />
+          You will have {this.state.trialNumTotal} chances to choose the battery
+          card with the higher charge.
+          <br />
+          <br />
+          Please respond quickly and to the best of your ability - the
+          spaceship&apos;s power depends on it!
+          <br />
+          <br />
+          As a reminder:
+          <br />
+          <br />
+          Click on the battery card that has more charge.
+          <br />
+          <br />
+          <center>
+            <button onClick={() => this.handleBegin(3)}>
+              <strong>BEGIN</strong>
+            </button>
+          </center>
+        </span>
+      </div>
+    );
+
+    let instruct_text7 = (
       <div>
         <span>
           {text2}
@@ -717,7 +807,7 @@ class PerTut extends React.Component {
       </div>
     );
 
-    let instruct_text7 = (
+    let instruct_text8 = (
       <div>
         If you are <strong>very unsure</strong> that you made a correct
         judgement, you should select a 50% chance of being correct, or the{" "}
@@ -748,7 +838,7 @@ class PerTut extends React.Component {
       </div>
     );
 
-    let instruct_text8 = (
+    let instruct_text9 = (
       <div>
         If you are <strong>very sure</strong> that you made a correct judgement,
         you should select a 100% chance of being correct, or the{" "}
@@ -779,7 +869,7 @@ class PerTut extends React.Component {
       </div>
     );
 
-    let instruct_text9 = (
+    let instruct_text10 = (
       <div>
         If you are <strong>somewhat sure</strong> that you made a correct
         judgement, you should select a rating between the two ends of the scale.
@@ -816,7 +906,7 @@ class PerTut extends React.Component {
       </div>
     );
 
-    let instruct_text10 = (
+    let instruct_text11 = (
       <div>
         Before you begin, you have to pass a quick quiz to make sure that you
         have understood the key points of your task for today.
@@ -842,7 +932,7 @@ class PerTut extends React.Component {
       </div>
     );
 
-    let instruct_text11 = (
+    let instruct_text12 = (
       <div>
         Amazing! You scored {this.state.quizCorTotal}/{this.state.quizNumTotal}{" "}
         for the quiz.
@@ -882,6 +972,51 @@ class PerTut extends React.Component {
         return <div>{instruct_text10}</div>;
       case 11:
         return <div>{instruct_text11}</div>;
+      case 12:
+        return <div>{instruct_text11}</div>;
+      default:
+    }
+  }
+
+  handleCallbackConf(callBackValue) {
+    this.setState({ confLevel: callBackValue });
+  }
+
+  globalConfText(globalConfState) {
+    let gConf_text1 = (
+      <div>
+        <center>
+          Before we begin, out of {this.state.trialNumTotal} set pairs of
+          battery cards, how many times do you think you will choose the higher
+          charge battery card correctly?
+        </center>
+        <br />
+        <br />
+        <center>
+          <ConfSliderGlobal.ConfSliderGlobal
+            callBackValue={this.handleCallbackConf.bind(this)}
+            initialValue={this.state.confInitial}
+          />
+        </center>
+        <br />
+        <br />
+        <center>
+          Click or drag the indicator anywhere on the scale.
+          <br />
+          <br />
+          <button onClick={() => this.handleGlobalConf(3)}>
+            <strong>Submit & Continue</strong>
+          </button>
+          <br />
+          <br />
+          You will not be able to move on unless you have adjusted the scale.
+        </center>
+      </div>
+    );
+
+    switch (globalConfState) {
+      case "pre":
+        return <div>{gConf_text1}</div>;
       default:
     }
   }
@@ -987,9 +1122,171 @@ class PerTut extends React.Component {
   //////////////////////////////////////////////////////////////////////////////////////////////
   /// TASK TOGGLES ////
 
-  tutorBegin() {
+  gConfBegin() {
+    //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
+    var initialValue = utils.randomInt(60, 90);
+    var confTimeInitial = Math.round(performance.now());
+
+    this.setState({
+      confInitial: initialValue,
+      confLevel: null,
+      confTimeInitial: confTimeInitial,
+      confTime: null,
+      instructScreen: false,
+      taskScreen: true,
+      taskSection: "gConf",
+      mouseMovements: [],
+    });
+  }
+
+  exampleBegin() {
     this.setState({
       trialNum: 0,
+    });
+
+    setTimeout(
+      function () {
+        this.trialExample();
+      }.bind(this),
+      0,
+    );
+  }
+
+  exampleEnd() {
+    // change state to make sure the screen is changed for the task
+    this.setState({
+      instructScreen: true,
+      taskScreen: false,
+      instructNum: 6,
+      taskSection: null,
+    });
+  }
+
+  // FOUR COMPONENTS OF THE TASK, Fixation, Stimulus/Response, Feedback and Confidence
+  trialExample() {
+    var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
+    var stimPos = Math.random() < 0.5 ? 1 : 2;
+    var dotStair = 6;
+
+    var dotDiffLeft;
+    var dotDiffRight;
+    var dotStairLeft;
+    var dotStairRight;
+
+    if (stimPos === 1) {
+      dotStairLeft = dotStair;
+      dotStairRight = 0;
+      dotDiffLeft = Math.round(Math.exp(dotStairLeft));
+      dotDiffRight = dotStairRight; //should be 0
+    } else {
+      dotStairLeft = 0;
+      dotStairRight = dotStair;
+      dotDiffLeft = dotStairLeft; //should be 0
+      dotDiffRight = Math.round(Math.exp(dotStairRight));
+    }
+
+    //Reset all parameters
+    this.setState({
+      instructScreen: false,
+      taskScreen: true,
+      taskSection: "iti",
+      trialNum: trialNum,
+      blockCond: 0,
+      fixTime: 0,
+      stimTime: 0,
+      responseKey: 0,
+      respTime: 0,
+      respFbTime: 0,
+      rewFbTime: 0,
+      confLevel: null,
+      confTime: 0,
+      confMove: false,
+      choice: null,
+      correct: null,
+      correctPer: null,
+      stimPos: stimPos,
+      reversals: null,
+      responseMatrix: null,
+      stairDir: null,
+
+      //Calculate the for the paramters for the stim
+      dotDiffStim1: Math.round(Math.exp(dotStair)),
+      dotDiffStim2: 0,
+      dotStair: dotStair,
+
+      dotStairLeft: dotStairLeft,
+      dotStairRight: dotStairRight,
+      dotDiffLeft: dotDiffLeft,
+      dotDiffRight: dotDiffRight,
+    });
+
+    if (trialNum < this.state.exampleNumTotal + 1) {
+      setTimeout(
+        function () {
+          this.renderFix();
+        }.bind(this),
+        0,
+      );
+    } else {
+      // if the trials have reached the total trial number
+      setTimeout(
+        function () {
+          this.exampleEnd();
+        }.bind(this),
+        0,
+      );
+    }
+  }
+
+  tutorBegin() {
+    this.setState({
+      //trial by trial paramters
+      trialNum: 0,
+      blockCond: null,
+      trialTime: 0,
+      fixTime: 0,
+      stimTime: 0,
+      stimPos: 0,
+      dotDiffLeft: 0,
+      dotDiffRight: 0,
+      dotDiffStim1: 0,
+      dotDiffStim2: 0,
+      responseKey: 0,
+      respTime: 0,
+      respFbTime: 0,
+      rewFbTime: 0,
+      choice: null,
+      confLevel: null,
+      confTime: 0,
+      confInitial: null,
+      confMove: null, //can only move to next trial if conf was toggled
+      correct: null,
+      correctMat: [], //put correct in vector, to cal perf %
+      correctPer: 0,
+
+      dotStairLeft: 0,
+      dotStairRight: 0,
+
+      // staircase parameters
+      responseMatrix: [],
+      reversals: 0,
+      stairDir: ["up", "up"],
+      dotStair: 4.65, //in log space; this is about 104 dots which is 70 dots shown for the first one
+
+      dotStairLeft: 0,
+      dotStairRight: 0,
+
+      correctMatEasy: [], //put correct in vector, to cal perf %
+      correctPerEasy: 0,
+      responseMatrixEasy: [],
+
+      stairDirEasy: ["up", "up"],
+      dotStairEasy: 4.65,
+      correctMatHard: [], //put correct in vector, to cal perf %
+      correctPerHard: 0,
+      responseMatrixHard: [],
+      stairDirHard: ["up", "up"],
+      dotStairHard: 4.65,
     });
 
     setTimeout(
@@ -1005,19 +1302,12 @@ class PerTut extends React.Component {
     this.setState({
       instructScreen: true,
       taskScreen: false,
-      instructNum: 6,
+      instructNum: 7,
       taskSection: null,
     });
   }
 
   quizBegin() {
-    // remove access to left/right/space keys for the instructions
-    /*     document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
-    document.addEventListener("keyup", this._handleQuizKey); */
-
-    // If I want to shuffle quiz answers?
-
     this.setState({
       instructScreen: false,
       taskScreen: true,
@@ -1062,7 +1352,7 @@ class PerTut extends React.Component {
         this.setState({
           instructScreen: true,
           taskScreen: false,
-          instructNum: 6,
+          instructNum: 7,
           taskSection: "instruct",
           quizTry: quizTry,
         });
@@ -1317,6 +1607,11 @@ class PerTut extends React.Component {
       this.setState({
         dotStairHard: this.state.dotStair,
       });
+    } else {
+      this.setState({
+        dotStairEasy: null,
+        dotStairHard: null,
+      });
     }
 
     let saveString = {
@@ -1384,12 +1679,21 @@ class PerTut extends React.Component {
       console.log("Cant post?");
     }
 
-    setTimeout(
-      function () {
-        this.trialReset();
-      }.bind(this),
-      10,
-    );
+    if (this.state.blockCond == 0) {
+      setTimeout(
+        function () {
+          this.trialExample();
+        }.bind(this),
+        10,
+      );
+    } else {
+      setTimeout(
+        function () {
+          this.trialReset();
+        }.bind(this),
+        10,
+      );
+    }
   }
 
   renderQuizSave() {
@@ -1436,6 +1740,101 @@ class PerTut extends React.Component {
     );
   }
 
+  renderGConfSave() {
+    var prolificID = this.state.prolificID;
+    var task = "perception";
+
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
+
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
+    }
+
+    let saveString = {
+      prolificID: this.state.prolificID,
+      condition: this.state.condition,
+      task: task,
+      userID: this.state.userID,
+      date: this.state.date,
+      startTime: this.state.startTime,
+      section: this.state.section,
+      sectionTime: this.state.sectionTime,
+      blockNum: null,
+      quizState: this.state.gConfState,
+      confInitial: this.state.confInitial,
+      confLevel: this.state.confLevel,
+      textTime: this.state.confTime,
+      selfKnowledge: this.state.selfKnowledge,
+      mouseMovements: compressedMovements,
+    };
+
+    try {
+      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(saveString),
+      });
+    } catch (e) {
+      console.log("Cant post?");
+    }
+
+    //return to instructions
+    this.setState({
+      instructScreen: true,
+      taskScreen: false,
+      instructNum: 6,
+      taskSection: null,
+      mouseMovements: [],
+    });
+  }
+
+  redirectToNextTask() {
+    //  document.removeEventListener("keyup", this._handleInstructKey);
+    // document.removeEventListener("keyup", this._handleBeginKey);
+
+    var condition = this.state.condition;
+    var perCorrectPer = this.state.correctPer;
+    var memCorrectPer = this.state.memCorrectPer;
+
+    var condUrl;
+    if (condition === 1) {
+      //Sent to memory task for part 2
+      condUrl = "/MemPreTut?PROLIFIC_PID=";
+    } else {
+      //Sent to insight page
+      condUrl = "/Bonus?PROLIFIC_PID=";
+    }
+
+    this.props.navigate(condUrl + this.state.prolificID, {
+      state: {
+        prolificID: this.state.prolificID,
+        userID: this.state.userID,
+        condition: this.state.condition,
+        date: this.state.date,
+        startTime: this.state.startTime,
+        perCorrectPer: perCorrectPer,
+        memCorrectPer: memCorrectPer,
+      },
+    });
+  }
+
   redirectToNextTask() {
     //  document.removeEventListener("keyup", this._handleInstructKey);
     //  document.removeEventListener("keyup", this._handleBeginKey);
@@ -1460,12 +1859,14 @@ class PerTut extends React.Component {
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
     console.log("Starting from instruction block");
+    window.addEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
   componentDidUpdate(prevProps, prevState) {
     // Check if the instructNum state has changed since the last render
     if (prevState.instructNum !== this.state.instructNum) {
       console.log("instructNum has changed to:", this.state.instructNum);
+      window.removeEventListener("mousemove", this.handleGlobalMouseMove);
     }
   }
   ///////////////////////////////////////////////////////////////
@@ -1555,6 +1956,12 @@ class PerTut extends React.Component {
           <center>Please use click on the number to respond.</center>
         </div>
       );
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === true &&
+      this.state.taskSection === "gConf"
+    ) {
+      text = <div> {this.globalConfText(this.state.globalConfState)}</div>;
     }
 
     return (

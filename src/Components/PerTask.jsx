@@ -70,11 +70,11 @@ class PerTask extends React.Component {
 
     // if
 
-    var trialNumTotal = 140; //should be 140, for 7 blocks of 20 trials
-    var blockNumTotal = 7; // should be 7
+    var trialNumTotal = 40; //should be 140, for 7 blocks of 20 trials
+    var blockNumTotal = 2; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
-    var condScrabble = ["easy", "hard", "easy", "hard", "easy", "hard"];
+    var condScrabble = ["easy"];
     utils.shuffle(condScrabble);
     var blockCondTotal = ["hard", ...condScrabble];
 
@@ -165,7 +165,7 @@ class PerTask extends React.Component {
       dotStairHard: dotStairHard,
 
       //quiz
-      quizState: "pre",
+      gConfState: "post",
 
       // screen parameters
       instructScreen: true,
@@ -230,7 +230,7 @@ class PerTask extends React.Component {
         else if (this.state.taskSection === "choice") sectionTag = "c";
         else if (this.state.taskSection === "choiceFeedback") sectionTag = "fb";
         else if (this.state.taskSection === "confidence") sectionTag = "conf";
-        else if (this.state.taskSection === "rating") sectionTag = "r";
+        else if (this.state.taskSection === "gConf") sectionTag = "r";
         else if (this.state.taskSection === "break") sectionTag = "b";
 
         const currentCoord = {
@@ -315,23 +315,15 @@ class PerTask extends React.Component {
   handleBegin(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
-    if (whichButton === 3 && curInstructNum === 2) {
-      this.setState({
-        quizState: "pre",
-      });
 
-      //  console.log("pre-conf begin");
+    if (whichButton === 3 && curInstructNum === 2) {
       setTimeout(
         function () {
-          this.quizBegin();
+          this.taskBegin();
         }.bind(this),
         10,
       );
     } else if (whichButton === 3 && curInstructNum === 4) {
-      this.setState({
-        quizState: "post",
-      });
-
       setTimeout(
         function () {
           this.quizBegin();
@@ -643,7 +635,7 @@ class PerTask extends React.Component {
     }
   }
 
-  quizText(quizState) {
+  quizText(gConfState) {
     let quiz_text1 = (
       <div>
         <center>
@@ -703,7 +695,7 @@ class PerTask extends React.Component {
       </div>
     );
 
-    switch (quizState) {
+    switch (gConfState) {
       case "pre":
         return <div>{quiz_text1}</div>;
       case "post":
@@ -726,7 +718,7 @@ class PerTask extends React.Component {
       quizScreen: true,
       instructScreen: false,
       taskScreen: false,
-      taskSection: "rating",
+      taskSection: "gConf",
       mouseMovements: [],
     });
   }
@@ -1167,7 +1159,7 @@ class PerTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: this.state.blockNum,
-      quizState: this.state.quizState,
+      quizState: this.state.gConfState,
       confInitial: null,
       confLevel: null,
       textTime: this.state.textTime,
@@ -1266,12 +1258,12 @@ class PerTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: null,
-      quizState: this.state.quizState,
+      quizState: this.state.gConfState,
       //  confTimeInitial: this.state.confTimeInitial,
       //  confTime: this.state.confTime,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
-      textTime: this.state.textTime,
+      textTime: this.state.confTime,
       selfKnowledge: this.state.selfKnowledge,
       mouseMovements: compressedMovements,
     };
@@ -1289,26 +1281,15 @@ class PerTask extends React.Component {
       console.log("Cant post?");
     }
 
-    if (this.state.quizState === "pre") {
-      // begin the task
-      //  console.log("BEGIN");
-      setTimeout(
-        function () {
-          this.taskBegin();
-        }.bind(this),
-        10,
-      );
-    } else if (this.state.quizState === "post") {
-      //return to instructions
-      this.setState({
-        instructScreen: true,
-        taskScreen: false,
-        quizScreen: false,
-        instructNum: 5,
-        taskSection: null,
-        mouseMovements: [],
-      });
-    }
+    //return to instructions
+    this.setState({
+      instructScreen: true,
+      taskScreen: false,
+      quizScreen: false,
+      instructNum: 5,
+      taskSection: null,
+      mouseMovements: [],
+    });
   }
 
   restBlock() {
@@ -1380,9 +1361,9 @@ class PerTask extends React.Component {
       this.state.instructScreen === false &&
       this.state.taskScreen === false &&
       this.state.quizScreen === true &&
-      this.state.taskSection === "rating"
+      this.state.taskSection === "gConf"
     ) {
-      text = <div> {this.quizText(this.state.quizState)}</div>;
+      text = <div> {this.quizText(this.state.gConfState)}</div>;
       //    console.log("Quiz state: " + this.state.quizState);
     } else if (
       this.state.instructScreen === false &&
