@@ -771,7 +771,7 @@ class PerTask extends React.Component {
     var condHardTrialNum = this.state.condHardTrialNum;
 
     console.log(this.state.blockCond);
-    var stimNum = this.state.stimNum;
+    var dotStair = this.state.dotStair;
     var stairDir = this.state.stairDir;
     var responseMatrix = this.state.responseMatrix;
     var s2; // Declare s2 outside the if/else block
@@ -779,24 +779,24 @@ class PerTask extends React.Component {
     if (this.state.blockCond === "easy") {
       condEasyTrialNum = condEasyTrialNum + 1;
       s2 = staircaseEasy.staircase(
-        this.state.stimNumEasy,
+        this.state.dotStairEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
         condEasyTrialNum,
       );
-      stimNum = s2.stimNum;
+      dotStair = s2.dotStair;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     } else if (this.state.blockCond === "hard") {
       condHardTrialNum = condHardTrialNum + 1;
       s2 = staircase.staircase(
-        this.state.stimNumHard,
+        this.state.dotStairHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
         condHardTrialNum,
       );
 
-      stimNum = s2.stimNum;
+      dotStair = s2.dotStair;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     }

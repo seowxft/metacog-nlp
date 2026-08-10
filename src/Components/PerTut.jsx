@@ -1131,7 +1131,7 @@ class PerTut extends React.Component {
   gConfBegin() {
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
     console.log("Does it come here?");
-    var initialValue = utils.randomInt(60, 90);
+    var initialValue = utils.randomInt(7, 13);
     var confTimeInitial = Math.round(performance.now());
 
     this.setState({
@@ -1379,7 +1379,7 @@ class PerTut extends React.Component {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
 
-    var stimNum = this.state.stimNum;
+    var dotStair = this.state.dotStair;
     var stairDir = this.state.stairDir;
     var responseMatrix = this.state.responseMatrix;
 
@@ -1389,19 +1389,19 @@ class PerTut extends React.Component {
 
     if (trialNum < this.state.trialStaircaseSwitch) {
       console.log("in here easy");
-      console.log(this.state.stimNumEasy);
+      console.log(this.state.dotStairEasy);
       console.log(this.state.responseMatrixEasy);
       console.log(this.state.stairDirEasy);
 
       blockCond = this.state.blockCondTotal[0];
 
       s2 = staircaseEasy.staircase(
-        this.state.stimNumEasy,
+        this.state.dotStairEasy,
         this.state.responseMatrixEasy,
         this.state.stairDirEasy,
         trialNum,
       );
-      stimNum = s2.stimNum;
+      dotStair = s2.dotStair;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
 
@@ -1411,18 +1411,18 @@ class PerTut extends React.Component {
       blockCond = this.state.blockCondTotal[1];
 
       s2 = staircase.staircase(
-        this.state.stimNumHard,
+        this.state.dotStairHard,
         this.state.responseMatrixHard,
         this.state.stairDirHard,
         trialNum - this.state.trialStaircaseSwitch + 1,
       );
 
-      stimNum = s2.stimNum;
+      dotStair = s2.dotStairHard;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     }
 
-    console.log("stimNum: " + stimNum);
+    console.log("stimNum: " + dotStair);
     console.log("stairDir: " + stairDir);
     console.log("responseMat: " + responseMatrix);
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Stage, Layer, Rect } from "react-konva";
 
-var bufferFix = 400;
+var bufferFix = 350; //400
 var bufferFixWidWin = 0;
 var bufferFixHeiWin = 200;
 
