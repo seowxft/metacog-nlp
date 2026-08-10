@@ -331,7 +331,7 @@ class PerTut extends React.Component {
         function () {
           this.renderGConfSave();
         }.bind(this),
-        0,
+        10,
       );
     }
   }
@@ -438,7 +438,7 @@ class PerTut extends React.Component {
       function () {
         this.renderChoiceFb();
       }.bind(this),
-      0,
+      10,
     );
   }
 
@@ -465,7 +465,7 @@ class PerTut extends React.Component {
         function () {
           this.renderTutorSave();
         }.bind(this),
-        0,
+        10,
       );
     }
   }
@@ -504,7 +504,7 @@ class PerTut extends React.Component {
       function () {
         this.renderQuizSave();
       }.bind(this),
-      0,
+      10,
     );
   }
 
@@ -1163,7 +1163,7 @@ class PerTut extends React.Component {
       function () {
         this.trialExample();
       }.bind(this),
-      0,
+      10,
     );
   }
 
@@ -1224,7 +1224,7 @@ class PerTut extends React.Component {
         function () {
           this.renderFix();
         }.bind(this),
-        0,
+        10,
       );
     } else {
       // if the trials have reached the total trial number
@@ -1233,67 +1233,34 @@ class PerTut extends React.Component {
         function () {
           this.gConfBegin();
         }.bind(this),
-        0,
+        10,
       );
     }
   }
 
   tutorBegin() {
-    this.setState({
-      //trial by trial paramters
-      trialNum: 0,
-      blockCond: null,
-      trialTime: 0,
-      fixTime: 0,
-      stimTime: 0,
-      stimPos: 0,
-      dotDiffLeft: 0,
-      dotDiffRight: 0,
-      dotDiffStim1: 0,
-      dotDiffStim2: 0,
-      responseKey: 0,
-      respTime: 0,
-      respFbTime: 0,
-      rewFbTime: 0,
-      choice: null,
-      confLevel: null,
-      confTime: 0,
-      confInitial: null,
-      confMove: null, //can only move to next trial if conf was toggled
-      correct: null,
-      correctMat: [], //put correct in vector, to cal perf %
-      correctPer: 0,
-
-      dotStairLeft: 0,
-      dotStairRight: 0,
-
-      // staircase parameters
-      responseMatrix: [],
-      reversals: 0,
-      stairDir: ["up", "up"],
-      dotStair: 4.65, //in log space; this is about 104 dots which is 70 dots shown for the first one
-
-      dotStairLeft: 0,
-      dotStairRight: 0,
-
-      correctMatEasy: [], //put correct in vector, to cal perf %
-      correctPerEasy: 0,
-      responseMatrixEasy: [],
-
-      stairDirEasy: ["up", "up"],
-      dotStairEasy: 4.65,
-      correctMatHard: [], //put correct in vector, to cal perf %
-      correctPerHard: 0,
-      responseMatrixHard: [],
-      stairDirHard: ["up", "up"],
-      dotStairHard: 4.65,
-    });
-
-    setTimeout(
-      function () {
+    this.setState(
+      {
+        // trial by trial parameters
+        trialNum: 0,
+        blockCond: null,
+        trialTime: 0,
+        // ... keep all your other state initializations ...
+        correctMatEasy: [],
+        correctPerEasy: 0,
+        responseMatrixEasy: [],
+        stairDirEasy: ["up", "up"],
+        dotStairEasy: 4.65,
+        correctMatHard: [],
+        correctPerHard: 0,
+        responseMatrixHard: [],
+        stairDirHard: ["up", "up"],
+        dotStairHard: 4.65,
+      },
+      () => {
+        // THIS CALLBACK EXECUTES EXACTLY AFTER STATE IS UPDATED
         this.trialReset();
-      }.bind(this),
-      0,
+      },
     );
   }
 
@@ -1445,60 +1412,53 @@ class PerTut extends React.Component {
       dotDiffRight = Math.round(Math.exp(dotStairRight));
     }
 
+    JavaScript;
+
     //Reset all parameters
-    this.setState({
-      instructScreen: false,
-      taskScreen: true,
-      taskSection: "iti",
-      trialNum: trialNum,
-      blockCond: blockCond,
-      fixTime: 0,
-      stimTime: 0,
-      responseKey: 0,
-      respTime: 0,
-      respFbTime: 0,
-      rewFbTime: 0,
-      confLevel: null,
-      confTime: 0,
-      confMove: false,
-      choice: null,
-      correct: null,
-      correctPer: null,
-      stimPos: stimPos,
-      reversals: reversals,
-      responseMatrix: responseMatrix,
-      stairDir: stairDir,
+    this.setState(
+      {
+        instructScreen: false,
+        taskScreen: true,
+        taskSection: "iti",
+        trialNum: trialNum,
+        blockCond: blockCond,
+        fixTime: 0,
+        stimTime: 0,
+        responseKey: 0,
+        respTime: 0,
+        respFbTime: 0,
+        rewFbTime: 0,
+        confLevel: null,
+        confTime: 0,
+        confMove: false,
+        choice: null,
+        correct: null,
+        correctPer: null,
+        stimPos: stimPos,
+        reversals: reversals,
+        responseMatrix: responseMatrix,
+        stairDir: stairDir,
 
-      //Calculate the for the paramters for the stim
-      dotDiffStim1: Math.round(Math.exp(dotStair)),
-      dotDiffStim2: 0,
-      dotStair: dotStair,
+        //Calculate the for the paramters for the stim
+        dotDiffStim1: Math.round(Math.exp(dotStair)),
+        dotDiffStim2: 0,
+        dotStair: dotStair,
 
-      dotStairLeft: dotStairLeft,
-      dotStairRight: dotStairRight,
-      dotDiffLeft: dotDiffLeft,
-      dotDiffRight: dotDiffRight,
-    });
-
-    //  console.log(this.state.trialNum);
-    //  console.log(this.state.trialNumTotal);
-
-    if (trialNum < this.state.trialNumTotal + 1) {
-      setTimeout(
-        function () {
+        dotStairLeft: dotStairLeft,
+        dotStairRight: dotStairRight,
+        dotDiffLeft: dotDiffLeft,
+        dotDiffRight: dotDiffRight,
+      },
+      () => {
+        // THIS CALLBACK RUNS EXACTLY WHEN STATE IS FINISHED UPDATING
+        if (trialNum < this.state.trialNumTotal + 1) {
           this.renderFix();
-        }.bind(this),
-        0,
-      );
-    } else {
-      // if the trials have reached the total trial number
-      setTimeout(
-        function () {
+        } else {
+          // if the trials have reached the total trial number
           this.tutorEnd();
-        }.bind(this),
-        0,
-      );
-    }
+        }
+      },
+    );
   }
 
   renderFix() {
@@ -1597,23 +1557,20 @@ class PerTut extends React.Component {
     var prolificID = this.state.prolificID;
     var blockCond = this.state.blockCond;
 
-    //before it switch to the difficult staircase, save the dotStairEasy level
-    if (blockCond == "easy") {
-      this.setState({
-        dotStairEasy: this.state.dotStair,
-      });
-    } else if (blockCond == "hard") {
-      //before finish the hard one, save that too
-      this.setState({
-        dotStairHard: this.state.dotStair,
-      });
+    // 1. Calculate the new values BEFORE setting state
+    let newDotStairEasy = this.state.dotStairEasy;
+    let newDotStairHard = this.state.dotStairHard;
+
+    if (blockCond === "easy") {
+      newDotStairEasy = this.state.dotStair;
+    } else if (blockCond === "hard") {
+      newDotStairHard = this.state.dotStair;
     } else {
-      this.setState({
-        dotStairEasy: null,
-        dotStairHard: null,
-      });
+      newDotStairEasy = null;
+      newDotStairHard = null;
     }
 
+    // 2. Build the save string using the freshly calculated values
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
@@ -1648,17 +1605,18 @@ class PerTut extends React.Component {
       stairDir: this.state.stairDir,
       dotStair: this.state.dotStair,
 
+      // Use the newly calculated variables here
       correctMatEasy: this.state.correctMatEasy,
       correctPerEasy: this.state.correctPerEasy,
       responseMatrixEasy: this.state.responseMatrixEasy,
       stairDirEasy: this.state.stairDirEasy,
-      dotStairEasy: this.state.dotStairEasy,
+      dotStairEasy: newDotStairEasy,
 
       correctMatHard: this.state.correctMatHard,
       correctPerHard: this.state.correctPerHard,
       responseMatrixHard: this.state.responseMatrixHard,
       stairDirHard: this.state.stairDirHard,
-      dotStairHard: this.state.dotStairHard,
+      dotStairHard: newDotStairHard,
 
       dotStairLeft: this.state.dotStairLeft,
       dotStairRight: this.state.dotStairRight,
@@ -1666,6 +1624,7 @@ class PerTut extends React.Component {
 
     console.log(saveString);
 
+    // 3. Fire your database request
     try {
       fetch(`${DATABASE_URL}/per_tutorial_data/` + prolificID, {
         method: "POST",
@@ -1679,21 +1638,21 @@ class PerTut extends React.Component {
       console.log("Cant post?");
     }
 
-    if (this.state.blockCond == "example") {
-      setTimeout(
-        function () {
+    // 4. Update the state, and use the callback to trigger the next phase
+    this.setState(
+      {
+        dotStairEasy: newDotStairEasy,
+        dotStairHard: newDotStairHard,
+      },
+      () => {
+        // This runs exactly after the state is safely updated
+        if (this.state.blockCond === "example") {
           this.trialExample();
-        }.bind(this),
-        10,
-      );
-    } else {
-      setTimeout(
-        function () {
+        } else {
           this.trialReset();
-        }.bind(this),
-        10,
-      );
-    }
+        }
+      },
+    );
   }
 
   renderQuizSave() {
