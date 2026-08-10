@@ -3,9 +3,9 @@ import { Stage, Layer, Rect, Text } from "react-konva";
 
 var boxDist = 200; //distance between the boxes
 var squareWidth = 250;
-var bufferFix = 400;
+var bufferFix = 300; //400
 var bufferFixWidWin = 0; //50
-var bufferFixHeiWin = 300; //150
+var bufferFixHeiWin = 400; //300
 
 //left box
 var leftBoxStartX =

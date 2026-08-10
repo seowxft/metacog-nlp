@@ -1130,6 +1130,7 @@ class PerTut extends React.Component {
 
   gConfBegin() {
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
+    console.log("Does it come here?");
     var initialValue = utils.randomInt(60, 90);
     var confTimeInitial = Math.round(performance.now());
 
@@ -1218,6 +1219,7 @@ class PerTut extends React.Component {
     });
 
     if (trialNum < this.state.exampleNumTotal + 1) {
+      console.log("Example trial next one.");
       setTimeout(
         function () {
           this.renderFix();
@@ -1226,6 +1228,7 @@ class PerTut extends React.Component {
       );
     } else {
       // if the trials have reached the total trial number
+      console.log("End example trials.");
       setTimeout(
         function () {
           this.gConfBegin();

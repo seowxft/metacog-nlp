@@ -6,7 +6,7 @@ import * as utils from "../func/utils.jsx";
 //create black stimulus box
 var squareWidth = 250; //250
 var boxDist = 200; //distance between the boxes
-var bufferFix = 400;
+var bufferFix = 200; //300
 
 var bufferFixWidWin = 0;
 var bufferFixHeiWin = 200;
@@ -28,13 +28,13 @@ export const DrawDots = ({ dotRadius, dotDiffLeft, dotDiffRight }) => {
     leftBoxStartX,
     leftBoxStartY,
     squareWidth,
-    dotCir
+    dotCir,
   );
   var rightDotPos = utils.genDotPos(
     rightBoxStartX,
     rightBoxStartY,
     squareWidth,
-    dotCir
+    dotCir,
   );
 
   var leftDotPosX = leftDotPos[0];
