@@ -40,7 +40,7 @@ export function staircase(stimNum, prevTrialPerf, dir, trialNum) {
   } // If the last trial was wrong
   else {
     // minus one stimuli (decreases difficulty by dropping 2)
-    stimNum -= 2;
+    stimNum -= 1;
 
     dir[0] = dir[1]; // Set the direction two trials ago to the direction one trial ago
     dir[1] = "down"; // Set the direction one trial ago to down

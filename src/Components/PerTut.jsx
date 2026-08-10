@@ -1389,7 +1389,7 @@ class PerTut extends React.Component {
       responseMatrix = s2.stepcount;
     }
 
-    console.log("stimNum: " + dotStair);
+    console.log("dotStair: " + dotStair);
     console.log("stairDir: " + stairDir);
     console.log("responseMat: " + responseMatrix);
 
@@ -1411,8 +1411,6 @@ class PerTut extends React.Component {
       dotDiffLeft = dotStairLeft; //should be 0
       dotDiffRight = Math.round(Math.exp(dotStairRight));
     }
-
-    JavaScript;
 
     //Reset all parameters
     this.setState(

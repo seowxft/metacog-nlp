@@ -6,7 +6,7 @@ import * as utils from "../func/utils.jsx";
 //create black stimulus box
 var squareWidth = 250; //2505
 var boxDist = 200; //distance between the boxes
-var bufferFix = 300; //300
+var bufferFix = 350; //400
 
 var bufferFixWidWin = 0;
 var bufferFixHeiWin = 200;
