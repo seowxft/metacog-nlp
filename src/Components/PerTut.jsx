@@ -1961,7 +1961,7 @@ class PerTut extends React.Component {
       this.state.taskScreen === true &&
       this.state.taskSection === "gConf"
     ) {
-      text = <div> {this.globalConfText(this.state.globalConfState)}</div>;
+      text = <div> {this.globalConfText(this.state.gConfState)}</div>;
     }
 
     return (
