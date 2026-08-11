@@ -14,6 +14,15 @@ export function staircase(dotDiff, prevTrialPerf, dir, trialNum) {
   // do not corrupt the raw data array saved in React state / database
   var stepcount = prevTrialPerf.slice();
 
+  if (stepcount.length < 3) {
+    return {
+      diff: dotDiff,
+      direction: dir,
+      reversal: false,
+      stepcount: stepcount,
+    };
+  }
+
   var back1 = stepcount[stepcount.length - 1]; // Last trial
   var back2 = stepcount[stepcount.length - 2]; // Two trials ago
   var back3 = stepcount[stepcount.length - 3]; // Three trials ago
