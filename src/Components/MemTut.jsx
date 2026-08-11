@@ -1467,7 +1467,7 @@ class MemTut extends React.Component {
         this.setState({
           instructScreen: true,
           taskScreen: false,
-          instructNum: 12,
+          instructNum: 13,
           taskSection: "instruct",
         });
       } else if (quizCorTotal !== this.state.quizNumTotal && quizTry <= 2) {
@@ -1477,7 +1477,7 @@ class MemTut extends React.Component {
         this.setState({
           instructScreen: true,
           taskScreen: false,
-          instructNum: 7,
+          instructNum: 8,
           taskSection: "instruct",
           quizTry: quizTry,
         });
