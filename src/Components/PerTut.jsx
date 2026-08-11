@@ -108,7 +108,7 @@ class PerTut extends React.Component {
       //trial parameters
       exampleNumTotal: exampleNumTotal,
       trialNumTotal: trialNumTotal,
-      fullTrialNumTotal: 20, //this needs to match the real task number of trials
+      fullTrialNumTotal: 40, //this needs to match the real task number of trials
       blockCondTotal: blockCondTotal,
       trialStaircaseSwitch: trialStaircaseSwitch,
       stimPosList: pracStimPos,
@@ -338,102 +338,70 @@ class PerTut extends React.Component {
   }
 
   handleResp(keyPressed) {
-    var timePressed = Math.round(performance.now());
+    var {
+      trialTime,
+      fixTime,
+      stimTime,
+      dotDiffLeft,
+      dotDiffRight,
+      blockCond,
+      stairDir,
+      responseMatrix,
+      correctMat,
+      responseMatrixEasy,
+      correctMatEasy,
+      responseMatrixHard,
+      correctMatHard,
+    } = this.state;
+
     var respTime =
-      timePressed -
-      (this.state.trialTime + this.state.fixTime + this.state.stimTime);
+      Math.round(performance.now()) - (trialTime + fixTime + stimTime);
+    var choice = keyPressed === 1 ? "left" : keyPressed === 2 ? "right" : null;
 
-    var choice;
-    if (keyPressed === 1) {
-      choice = "left";
-    } else if (keyPressed === 2) {
-      choice = "right";
-    } else {
-      choice = null;
-      //  console.log("No response made!");
-    }
+    var response =
+      (dotDiffLeft > dotDiffRight && choice === "left") ||
+      (dotDiffLeft < dotDiffRight && choice === "right") ||
+      dotDiffLeft === dotDiffRight;
 
-    var correct;
-    var response;
-    // correct and response is the same thing, response is just in boolean for the responseMat
-    if (this.state.dotDiffLeft > this.state.dotDiffRight && choice === "left") {
-      response = true;
-      correct = 1;
-    } else if (
-      this.state.dotDiffLeft < this.state.dotDiffRight &&
-      choice === "right"
-    ) {
-      response = true;
-      correct = 1;
-    } else if (this.state.dotDiffLeft === this.state.dotDiffRight) {
-      // in the odd case where the dot diff is the same...
-      response = true;
-      correct = 1;
-    } else {
-      response = false;
-      correct = 0;
-    }
+    var correct = response ? 1 : 0;
 
-    var correctPerHard;
-    var correctPerEasy;
-    var correctMatHard;
-    var correctMatEasy;
-    var responseMatrixHard;
-    var responseMatrixEasy;
-    var stairDirEasy;
-    var stairDirHard;
-
-    var blockCond = this.state.blockCond;
-    if (blockCond === "easy") {
-      correctMatEasy = this.state.correctMatEasy.concat(correct);
-      correctPerEasy =
-        Math.round((utils.getAvg(correctMatEasy) + Number.EPSILON) * 100) / 100; //2 dec pl
-      responseMatrixEasy = this.state.responseMatrixEasy.concat(response);
-      stairDirEasy = this.state.stairDir;
-
-      responseMatrixHard = this.state.responseMatrixHard;
-      correctPerHard = this.state.correctPerHard;
-      correctMatHard = this.state.correctMatHard;
-      stairDirHard = this.state.stairDirHard;
-    } else if (blockCond === "hard") {
-      correctMatHard = this.state.correctMatHard.concat(correct);
-      correctPerHard =
-        Math.round((utils.getAvg(correctMatHard) + Number.EPSILON) * 100) / 100; //2 dec pl
-      responseMatrixHard = this.state.responseMatrixHard.concat(response);
-      stairDirHard = this.state.stairDir;
-
-      responseMatrixEasy = this.state.responseMatrixEasy;
-      correctPerEasy = this.state.correctPerEasy;
-      correctMatEasy = this.state.correctMatEasy;
-      stairDirEasy = this.state.stairDirEasy;
-    } else {
-    }
-
-    //  console.log("response: " + response);
-    var correctMat = this.state.correctMat.concat(correct);
-    var responseMatrix = this.state.responseMatrix.concat(response);
-    var correctPer =
-      Math.round((utils.getAvg(correctMat) + Number.EPSILON) * 100) / 100; //2 dec pl
-
-    this.setState({
+    var newCorrectMat = responseMatrix.concat(correct); // using concat for broad compatibility
+    var stateUpdates = {
       responseKey: keyPressed,
       choice: choice,
       respTime: respTime,
       correct: correct,
-      responseMatrix: responseMatrix,
-      correctMat: correctMat,
-      correctPer: correctPer,
+      responseMatrix: responseMatrix.concat(response),
+      correctMat: correctMat.concat(correct),
+      correctPer:
+        Math.round(
+          (utils.getAvg(correctMat.concat(correct)) + Number.EPSILON) * 100,
+        ) / 100,
+    };
 
-      responseMatrixEasy: responseMatrixEasy,
-      correctMatEasy: correctMatEasy,
-      correctPerEasy: correctPerEasy,
-      stairDirEasy: stairDirEasy,
+    if (blockCond === "easy") {
+      var newCorrectMatEasy = correctMatEasy.concat(correct);
+      Object.assign(stateUpdates, {
+        responseMatrixEasy: responseMatrixEasy.concat(response),
+        correctMatEasy: newCorrectMatEasy,
+        correctPerEasy:
+          Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
+          100,
+        stairDirEasy: stairDir,
+      });
+    } else if (blockCond === "hard") {
+      var newCorrectMatHard = correctMatHard.concat(correct);
+      Object.assign(stateUpdates, {
+        responseMatrixHard: responseMatrixHard.concat(response),
+        correctMatHard: newCorrectMatHard,
+        correctPerHard:
+          Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
+          100,
+        stairDirHard: stairDir,
+      });
+    }
 
-      responseMatrixHard: responseMatrixHard,
-      correctMatHard: correctMatHard,
-      correctPerHard: correctPerHard,
-      stairDirHard: stairDirHard,
-    });
+    this.setState(stateUpdates);
 
     setTimeout(
       function () {
@@ -534,7 +502,7 @@ class PerTut extends React.Component {
           i.e., more number of white dots was the correct answer.
         </span>
       );
-    } else if (this.state.quizTry === 2 && this.state.quizTry === 3) {
+    } else if (this.state.quizTry >= 2 && this.state.quizTry <= 3) {
       text2 = (
         <span>
           You scored {this.state.quizCorTotal}/{this.state.quizNumTotal} on the

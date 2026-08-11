@@ -130,11 +130,11 @@ class MemTask extends React.Component {
     });
 
     // if
-    var trialNumTotal = 140; //should be 140, for 7 blocks of 20 trials
-    var blockNumTotal = 7; // should be 7
+    var trialNumTotal = 40; //should be 140, for 7 blocks of 20 trials
+    var blockNumTotal = 2; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
-    var condScrabble = ["easy", "hard", "easy", "hard", "easy", "hard"];
+    var condScrabble = ["easy"];
     utils.shuffle(condScrabble);
     var blockCondTotal = ["hard", ...condScrabble];
 
@@ -220,7 +220,7 @@ class MemTask extends React.Component {
       stimNumHard: stimNumHard,
 
       //quiz
-      quizState: "pre",
+      quizState: "post",
 
       // screen parameters
       instructScreen: true,
@@ -323,29 +323,8 @@ class MemTask extends React.Component {
   handleBegin(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
+
     if (whichButton === 3 && curInstructNum === 2) {
-      this.setState({
-        quizState: "pre",
-      });
-
-      console.log("pre-conf begin");
-      setTimeout(
-        function () {
-          this.quizBegin();
-        }.bind(this),
-        10,
-      );
-    } else if (whichButton === 3 && curInstructNum === 3) {
-      // continue after a block break
-      var blockNum = this.state.blockNum + 1;
-      this.setState({
-        instructScreen: false,
-        taskScreen: true,
-        taskSection: "iti",
-        trialNumInBlock: 0,
-        blockNum: blockNum,
-      });
-
       setTimeout(
         function () {
           this.taskBegin();
@@ -353,10 +332,6 @@ class MemTask extends React.Component {
         10,
       );
     } else if (whichButton === 3 && curInstructNum === 4) {
-      this.setState({
-        quizState: "post",
-      });
-
       setTimeout(
         function () {
           this.quizBegin();
@@ -428,6 +403,12 @@ class MemTask extends React.Component {
       this.state.quizScreen === true &&
       this.state.confLevel !== null
     ) {
+      var confTime = timePressed - this.state.confTimeInitial;
+
+      this.setState({
+        confTime: confTime,
+      });
+
       setTimeout(
         function () {
           this.renderQuizSave();
@@ -438,102 +419,71 @@ class MemTask extends React.Component {
   }
 
   handleResp(keyPressed) {
-    var timePressed = Math.round(performance.now());
-    //Check first whether it is a valid press
+    var {
+      trialTime,
+      fixTime,
+      stimTime,
+      encodeTime,
+      choiceCor,
+      blockCond,
+      stairDir,
+      responseMatrix,
+      correctMat,
+      responseMatrixEasy,
+      correctMatEasy,
+      responseMatrixHard,
+      correctMatHard,
+    } = this.state;
+
     var respTime =
-      timePressed -
-      (this.state.trialTime +
-        this.state.fixTime +
-        this.state.stimTime +
-        this.state.encodeTime);
+      Math.round(performance.now()) -
+      (trialTime + fixTime + stimTime + encodeTime);
 
-    var choiceCor = this.state.choiceCor; // what the actual answer is
+    var choice = keyPressed === 1 ? "left" : keyPressed === 2 ? "right" : null;
+    var response = choice !== null && choice === choiceCor;
+    var correct = response ? 1 : 0;
 
-    var choice;
-    var correct;
-    var response;
-    if (keyPressed === 1 && choiceCor === "left") {
-      choice = "left";
-      response = true;
-      correct = 1;
-    } else if (keyPressed === 2 && choiceCor === "right") {
-      choice = "right";
-      response = true;
-      correct = 1;
-    } else if (keyPressed === 1 && choiceCor === "right") {
-      choice = "left";
-      response = false;
-      correct = 0;
-    } else if (keyPressed === 2 && choiceCor === "left") {
-      choice = "right";
-      response = false;
-      correct = 0;
-    } else {
-      choice = null;
-      response = false;
-      correct = 0;
+    if (choice === null) {
       console.log("No response made!");
+    } else {
+      console.log("response: " + response);
     }
 
-    var correctPerHard;
-    var correctPerEasy;
-    var correctMatHard;
-    var correctMatEasy;
-    var responseMatrixHard;
-    var responseMatrixEasy;
-    var stairDirEasy;
-    var stairDirHard;
-
-    var blockCond = this.state.blockCond;
-    if (blockCond === "easy") {
-      correctMatEasy = this.state.correctMatEasy.concat(correct);
-      correctPerEasy =
-        Math.round((utils.getAvg(correctMatEasy) + Number.EPSILON) * 100) / 100; //2 dec pl
-      responseMatrixEasy = this.state.responseMatrixEasy.concat(response);
-      stairDirEasy = this.state.stairDir;
-
-      responseMatrixHard = this.state.responseMatrixHard;
-      correctPerHard = this.state.correctPerHard;
-      correctMatHard = this.state.correctMatHard;
-      stairDirHard = this.state.stairDirHard;
-    } else if (blockCond === "hard") {
-      correctMatHard = this.state.correctMatHard.concat(correct);
-      correctPerHard =
-        Math.round((utils.getAvg(correctMatHard) + Number.EPSILON) * 100) / 100; //2 dec pl
-      responseMatrixHard = this.state.responseMatrixHard.concat(response);
-      stairDirHard = this.state.stairDir;
-
-      responseMatrixEasy = this.state.responseMatrixEasy;
-      correctPerEasy = this.state.correctPerEasy;
-      correctMatEasy = this.state.correctMatEasy;
-      stairDirEasy = this.state.stairDirEasy;
-    }
-
-    console.log("response: " + response);
-    var correctMat = this.state.correctMat.concat(correct);
-    var responseMatrix = this.state.responseMatrix.concat(response);
-    var correctPer =
-      Math.round((utils.getAvg(correctMat) + Number.EPSILON) * 100) / 100; //2 dec pl
-
-    this.setState({
+    var newCorrectMat = correctMat.concat(correct);
+    var stateUpdates = {
       responseKey: keyPressed,
       choice: choice,
       respTime: respTime,
       correct: correct,
-      responseMatrix: responseMatrix,
-      correctMat: correctMat,
-      correctPer: correctPer,
+      correctMat: newCorrectMat,
+      correctPer:
+        Math.round((utils.getAvg(newCorrectMat) + Number.EPSILON) * 100) / 100,
+      responseMatrix: responseMatrix.concat(response),
+    };
 
-      responseMatrixEasy: responseMatrixEasy,
-      correctMatEasy: correctMatEasy,
-      correctPerEasy: correctPerEasy,
-      stairDirEasy: stairDirEasy,
+    if (blockCond === "easy") {
+      var newCorrectMatEasy = correctMatEasy.concat(correct);
+      Object.assign(stateUpdates, {
+        responseMatrixEasy: responseMatrixEasy.concat(response),
+        correctMatEasy: newCorrectMatEasy,
+        correctPerEasy:
+          Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
+          100,
+        stairDirEasy: stairDir,
+      });
+    } else if (blockCond === "hard") {
+      var newCorrectMatHard = correctMatHard.concat(correct);
+      Object.assign(stateUpdates, {
+        responseMatrixHard: responseMatrixHard.concat(response),
+        correctMatHard: newCorrectMatHard,
+        correctPerHard:
+          Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
+          100,
+        stairDirHard: stairDir,
+      });
+    }
 
-      responseMatrixHard: responseMatrixHard,
-      correctMatHard: correctMatHard,
-      correctPerHard: correctPerHard,
-      stairDirHard: stairDirHard,
-    });
+    this.setState(stateUpdates);
 
     setTimeout(
       function () {
@@ -796,7 +746,7 @@ class MemTask extends React.Component {
       quizScreen: true,
       instructScreen: false,
       taskScreen: false,
-      taskSection: "rating",
+      taskSection: "gConf",
       mouseMovements: [],
     });
   }
@@ -1416,10 +1366,10 @@ class MemTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: null,
-      quizState: this.state.quizState,
+      quizState: this.state.gConfState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
-      textTime: this.state.textTime,
+      textTime: this.state.confTime,
       selfKnowledge: this.state.selfKnowledge,
       mouseMovements: compressedMovements,
     };
@@ -1437,26 +1387,15 @@ class MemTask extends React.Component {
       console.log("Cant post?");
     }
 
-    if (this.state.quizState === "pre") {
-      // begin the task
-      console.log("BEGIN");
-      setTimeout(
-        function () {
-          this.taskBegin();
-        }.bind(this),
-        10,
-      );
-    } else if (this.state.quizState === "post") {
-      //return to instructions
-      this.setState({
-        instructScreen: true,
-        taskScreen: false,
-        quizScreen: false,
-        instructNum: 5,
-        taskSection: null,
-        mouseMovements: [],
-      });
-    }
+    //return to instructions
+    this.setState({
+      instructScreen: true,
+      taskScreen: false,
+      quizScreen: false,
+      instructNum: 5,
+      taskSection: null,
+      mouseMovements: [],
+    });
   }
 
   restBlock() {
@@ -1550,7 +1489,7 @@ class MemTask extends React.Component {
       this.state.instructScreen === false &&
       this.state.taskScreen === false &&
       this.state.quizScreen === true &&
-      this.state.taskSection === "rating"
+      this.state.taskSection === "gConf"
     ) {
       text = <div> {this.quizText(this.state.quizState)}</div>;
       console.log("Quiz state: " + this.state.quizState);
