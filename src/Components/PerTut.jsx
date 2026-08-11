@@ -1557,14 +1557,17 @@ class PerTut extends React.Component {
     var blockCond = this.state.blockCond;
 
     // 1. Calculate the new values BEFORE setting state
-    var newDotStairEasy = this.state.dotStairEasy;
-    var newDotStairHard = this.state.dotStairHard;
+    var newDotStairEasy;
+    var newDotStairHard;
 
     if (blockCond === "easy") {
+      console.log("Saving dotStair in easy block.");
       newDotStairEasy = this.state.dotStair;
     } else if (blockCond === "hard") {
+      console.log("Saving dotStair in easy block.");
       newDotStairHard = this.state.dotStair;
     } else {
+      console.log("dotStair saving as null (examples).");
       newDotStairEasy = null;
       newDotStairHard = null;
     }
@@ -1646,8 +1649,10 @@ class PerTut extends React.Component {
       () => {
         // This runs exactly after the state is safely updated
         if (this.state.blockCond === "example") {
+          console.log("blockCond is example");
           this.trialExample();
         } else {
+          console.log("blockCond is tutorial");
           this.trialReset();
         }
       },
