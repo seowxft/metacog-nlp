@@ -524,7 +524,17 @@ class PerTut extends React.Component {
     let taskCond;
 
     //If fail quiz once, this brings me to instruct before confidence
-    if (this.state.quizTry === 2 && this.state.quizTry === 3) {
+    if (this.state.quizTry === 1) {
+      text2 = (
+        <span>
+          Well done!
+          <br />
+          <br />
+          You saw that choosing the battery card with the higher charge level,
+          i.e., more number of white dots was the correct answer.
+        </span>
+      );
+    } else if (this.state.quizTry === 2 && this.state.quizTry === 3) {
       text2 = (
         <span>
           You scored {this.state.quizCorTotal}/{this.state.quizNumTotal} on the
