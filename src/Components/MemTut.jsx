@@ -1356,7 +1356,7 @@ class MemTut extends React.Component {
       correct: null,
       correctPer: null,
       choicePos: choicePos,
-      choicePos: choicePos,
+      choiceCor: choiceCor,
 
       stimPick: stimPick,
       stimWordPick: stimWordPick,
