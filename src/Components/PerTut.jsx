@@ -1369,7 +1369,7 @@ class PerTut extends React.Component {
         this.state.stairDirEasy,
         trialNum,
       );
-      dotStair = s2.dotStair;
+      dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
 
@@ -1385,7 +1385,7 @@ class PerTut extends React.Component {
         trialNum - this.state.trialStaircaseSwitch + 1,
       );
 
-      dotStair = s2.dotStairHard;
+      dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     }

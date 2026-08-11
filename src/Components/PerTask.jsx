@@ -784,7 +784,7 @@ class PerTask extends React.Component {
         this.state.stairDirEasy,
         condEasyTrialNum,
       );
-      dotStair = s2.dotStair;
+      dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     } else if (this.state.blockCond === "hard") {
@@ -796,7 +796,7 @@ class PerTask extends React.Component {
         condHardTrialNum,
       );
 
-      dotStair = s2.dotStair;
+      dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     }
