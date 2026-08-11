@@ -595,8 +595,8 @@ class MemTut extends React.Component {
           Well done!
           <br />
           <br />
-          You saw that choosing the battery card with the higher charge level,
-          i.e., more number of white dots was the correct answer.
+          You saw that choosing the word that matches one of the animals you saw
+          previously was the correct answer.
         </span>
       );
     } else if (this.state.quizTry >= 2 && this.state.quizTry <= 3) {
@@ -1262,7 +1262,7 @@ class MemTut extends React.Component {
       trialNum: 0,
       reversals: null,
       responseMatrix: [],
-      stimNum: null,
+      stairDir: null,
       confLevel: null,
       confMove: false,
       confTime: 0,
@@ -1853,16 +1853,15 @@ class MemTut extends React.Component {
     // 1. Calculate the new values BEFORE setting state
     var newstimNumEasy = this.state.stimNumEasy;
     var newstimNumHard = this.state.stimNumHard;
-    //before it switch to the difficult staircase, save the dotStairEasy level
 
     if (blockCond === "easy") {
-      console.log("Saving dotStair in easy block.");
+      console.log("Saving stimNum in easy block.");
       newstimNumEasy = this.state.stimNum;
     } else if (blockCond === "hard") {
-      console.log("Saving dotStair in easy block.");
+      console.log("Saving stimNum in easy block.");
       newstimNumHard = this.state.stimNum;
     } else {
-      console.log("dotStair saving as null (examples).");
+      console.log("stimNum saving as null (examples).");
       newstimNumEasy = null;
       newstimNumHard = null;
     }
@@ -1944,8 +1943,8 @@ class MemTut extends React.Component {
     // 4. Update the state, and use the callback to trigger the next phase
     this.setState(
       {
-        stimNumEasy: newDotStairEasy,
-        stimNumHard: newDotStairHard,
+        stimNumEasy: newstimNumEasy,
+        stimNumHard: newstimNumHard,
       },
       () => {
         // This runs exactly after the state is safely updated

@@ -158,9 +158,9 @@ class PerTut extends React.Component {
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
       responseMatrixEasy: [],
-
       stairDirEasy: null,
       dotStairEasy: null,
+
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
       responseMatrixHard: [],
