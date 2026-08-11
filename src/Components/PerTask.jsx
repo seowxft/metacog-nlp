@@ -147,7 +147,7 @@ class PerTask extends React.Component {
       // staircase parameters
       responseMatrix: [],
       reversals: 0,
-      stairDir: ["up", "up"],
+      stairDir: [],
       dotStair: null, //in log space; this is about 104 dots which is 70 dots shown for the first one
       dotStairLeft: 0,
       dotStairRight: 0,
@@ -155,13 +155,13 @@ class PerTask extends React.Component {
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
       responseMatrixEasy: [],
-      stairDirEasy: ["up", "up"],
+      stairDirEasy: [],
       dotStairEasy: dotStairEasy,
 
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
       responseMatrixHard: [],
-      stairDirHard: ["up", "up"],
+      stairDirHard: [],
       dotStairHard: dotStairHard,
 
       //quiz
@@ -511,7 +511,7 @@ class PerTask extends React.Component {
           do not adjust the rating scale.
           <br /> <br />
           If you do well in the task, you can receive up to{" "}
-          <strong>£2 bonus</strong>!
+          <strong>£0.50 bonus</strong>!
           <br /> <br />
           <center>
             <button onClick={() => this.handleInstruct(1)}>
@@ -699,28 +699,25 @@ class PerTask extends React.Component {
   }
 
   taskBegin() {
+    // push to render fixation for the first trial
     var blockCond = this.state.blockCondTotal[this.state.blockNum - 1];
+
     console.log(this.state.blockCondTotal);
     console.log(blockCond);
 
-    if (blockCond == "easy") {
-      this.setState({
-        blockCond: blockCond,
-        dotStair: this.state.dotStairEasy,
-      });
-    } else if (blockCond == "hard") {
-      this.setState({
-        blockCond: blockCond,
-        dotStair: this.state.dotStairHard,
-      });
-    }
+    // Determine the correct stimNum based on the condition
+    var nextDotStair =
+      blockCond === "easy" ? this.state.dotStairEasy : this.state.dotStairHard;
 
-    // push to render fixation for the first trial
-    setTimeout(
-      function () {
-        this.trialReset();
-      }.bind(this),
-      10,
+    // Update state and fire trialReset ONLY after the update completes
+    this.setState(
+      {
+        blockCond: blockCond,
+        dotStair: nextDotStair,
+      },
+      () => {
+        this.trialReset(); // This is the setState callback
+      },
     );
   }
 

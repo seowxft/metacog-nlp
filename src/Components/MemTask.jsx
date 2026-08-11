@@ -204,19 +204,19 @@ class MemTask extends React.Component {
       // staircase parameters
       responseMatrix: [], // <-- Change from [true, true] to []
       reversals: 0,
-      stairDir: ["up", "up"],
+      stairDir: [],
       stimNum: null,
 
       correctMatEasy: [],
       correctPerEasy: 0,
       responseMatrixEasy: [], // <-- Change from [true, true] to []
-      stairDirEasy: ["up", "up"],
+      stairDirEasy: [],
       stimNumEasy: stimNumEasy,
 
       correctMatHard: [],
       correctPerHard: 0,
       responseMatrixHard: [], // <-- Change from [true, true] to []
-      stairDirHard: ["up", "up"],
+      stairDirHard: [],
       stimNumHard: stimNumHard,
 
       //quiz
@@ -568,7 +568,7 @@ class MemTask extends React.Component {
           do not adjust the rating scale.
           <br /> <br />
           If you do well in the task, you can receive up to{" "}
-          <strong>£2 bonus</strong>!
+          <strong>£0.50 bonus</strong>!
           <br /> <br />
           <center>
             <button onClick={() => this.handleInstruct(1)}>
@@ -760,23 +760,19 @@ class MemTask extends React.Component {
     console.log(this.state.blockCondTotal);
     console.log(blockCond);
 
-    if (blockCond == "easy") {
-      this.setState({
-        blockCond: blockCond,
-        stimNum: this.state.stimNumEasy,
-      });
-    } else if (blockCond == "hard") {
-      this.setState({
-        blockCond: blockCond,
-        stimNum: this.state.stimNumHard,
-      });
-    }
+    // Determine the correct stimNum based on the condition
+    var nextStimNum =
+      blockCond === "easy" ? this.state.stimNumEasy : this.state.stimNumHard;
 
-    setTimeout(
-      function () {
-        this.trialReset();
-      }.bind(this),
-      0,
+    // Update state and fire trialReset ONLY after the update completes
+    this.setState(
+      {
+        blockCond: blockCond,
+        stimNum: nextStimNum,
+      },
+      () => {
+        this.trialReset(); // This is the setState callback
+      },
     );
   }
 

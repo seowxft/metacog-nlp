@@ -858,9 +858,6 @@ class MemTut extends React.Component {
           <br />
           <br />
           <center>
-            <button onClick={() => this.handleInstruct(1)}>
-              <strong>← Back</strong>
-            </button>{" "}
             <button onClick={() => this.handleBegin(3)}>
               <strong>BEGIN</strong>
             </button>

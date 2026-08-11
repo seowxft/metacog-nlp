@@ -54,8 +54,10 @@ class Bonus extends React.Component {
       perCorrectPer = this.props.state.perCorrectPer;
     }
 
-    var memBonus = Math.round((2 * memCorrectPer + Number.EPSILON) * 100) / 100; // 2 dec pl
-    var perBonus = Math.round((2 * perCorrectPer + Number.EPSILON) * 100) / 100; // 2 dec pl
+    var memBonus =
+      Math.round((0.5 * memCorrectPer + Number.EPSILON) * 100) / 100; // 2 dec pl
+    var perBonus =
+      Math.round((0.5 * perCorrectPer + Number.EPSILON) * 100) / 100; // 2 dec pl
     var totalBonus =
       Math.round((memBonus + perBonus) * 100 + Number.EPSILON) / 100;
 
