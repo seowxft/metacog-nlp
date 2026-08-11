@@ -1206,9 +1206,9 @@ class MemTut extends React.Component {
     let gConf_text1 = (
       <div>
         <center>
-          Before we begin, out of {this.state.trialNumTotal} sets of animals,
-          how many times you do think you will be able to select the correct
-          animal seen in the set?
+          Before we begin, out of {this.state.fullTrialNumTotal} sets of
+          animals, how many times you do think you will be able to select the
+          correct animal seen in the set?
         </center>
         <br />
         <br />
@@ -1216,6 +1216,7 @@ class MemTut extends React.Component {
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
+            max={this.state.fullTrialNumTotal}
           />
         </center>
         <br />

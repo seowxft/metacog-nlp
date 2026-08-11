@@ -678,6 +678,7 @@ class MemTask extends React.Component {
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
+            max={this.state.trialNumTotal}
           />
         </center>
         <br />
@@ -706,6 +707,7 @@ class MemTask extends React.Component {
           <ConfSliderGlobal.ConfSliderGlobal
             callBackValue={this.handleCallbackConf.bind(this)}
             initialValue={this.state.confInitial}
+            max={this.state.trialNumTotal}
           />
         </center>
         <br />
