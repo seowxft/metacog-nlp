@@ -14,13 +14,11 @@ export const gse = [
     rows: [
       {
         value: "GSE_1",
-        text:
-          "I can always manage to solve difficult problems if I try hard enough.",
+        text: "I can always manage to solve difficult problems if I try hard enough.",
       },
       {
         value: "GSE_2",
-        text:
-          "If someone opposes me, I can find the means and ways to get what I want.",
+        text: "If someone opposes me, I can find the means and ways to get what I want.",
       },
       {
         value: "GSE_3",
@@ -28,13 +26,11 @@ export const gse = [
       },
       {
         value: "GSE_4",
-        text:
-          "I am confident that I could deal efficiently with unexpected events.",
+        text: "I am confident that I could deal efficiently with unexpected events.",
       },
       {
         value: "GSE_5",
-        text:
-          "Thanks to my resourcefulness, I know how to handle unforeseen situations.",
+        text: "Thanks to my resourcefulness, I know how to handle unforeseen situations.",
       },
       {
         value: "GSE_6",
@@ -42,13 +38,15 @@ export const gse = [
       },
       {
         value: "GSE_7",
-        text:
-          "I can remain calm when facing difficulties because I can rely on my coping abilities.",
+        text: "I can remain calm when facing difficulties because I can rely on my coping abilities.",
+      },
+      {
+        value: "ATTEN_1",
+        text: "I am capable of physically traveling back in time to fix my past mistakes.",
       },
       {
         value: "GSE_8",
-        text:
-          "When I am confronted with a problem, I can usually find several solutions.",
+        text: "When I am confronted with a problem, I can usually find several solutions.",
       },
       {
         value: "GSE_9",

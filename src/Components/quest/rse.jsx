@@ -19,6 +19,10 @@ export const rse = [
         text: "I feel that I have a number of good qualities.",
       },
       {
+        value: "ATTEN_2",
+        text: "I am currently reading these statements as part of a questionnaire.",
+      },
+      {
         value: "RSE_4",
         text: "I am able to do things as well as most other people.",
       },
@@ -26,8 +30,7 @@ export const rse = [
       { value: "RSE_6", text: "I certainly feel useless at times." },
       {
         value: "RSE_7",
-        text:
-          "I feel that I'm a person of worth, at least on an equal plane with others.",
+        text: "I feel that I'm a person of worth, at least on an equal plane with others.",
       },
       {
         value: "RSE_8",

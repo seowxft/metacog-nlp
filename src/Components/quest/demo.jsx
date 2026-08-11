@@ -54,4 +54,12 @@ export const demo = [
     colCount: 0,
     choices: ["Female", "Male", "Other"],
   },
+  {
+    type: "dropdown",
+    name: "mode",
+    title: "What are you using to move your cursor?",
+    isRequired: true,
+    colCount: 0,
+    choices: ["Mouse", "Trackpad / Touchpad", "Other"],
+  },
 ];

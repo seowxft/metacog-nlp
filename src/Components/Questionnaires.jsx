@@ -14,11 +14,11 @@ import "./style/surveyStyle.css"; // Your custom styles
 import style from "./style/questStyle.module.css";
 
 // Import questionnaire JSON files
-import { aes } from "./quest/aes.jsx";
+//import { aes } from "./quest/aes.jsx";
 import { gse } from "./quest/gse.jsx";
 import { rse } from "./quest/rse.jsx";
-import { sds } from "./quest/sds.jsx";
-import { staiy2 } from "./quest/staiy2.jsx";
+//import { sds } from "./quest/sds.jsx";
+//import { staiy2 } from "./quest/staiy2.jsx";
 import { demo } from "./quest/demo.jsx";
 
 import { DATABASE_URL } from "./config.jsx";
@@ -49,8 +49,8 @@ class Questionnaires extends React.Component {
       startTime = this.props.state.startTime;
     }
 
-    let quizLabel = ["AES", "SDS", "STAIY2", "RSE", "GSE"];
-    let allQuizText = [aes, sds, staiy2, rse, gse];
+    let quizLabel = ["RSE", "GSE"];
+    let allQuizText = [rse, gse];
 
     // Shuffle the quizzes and labels together
     utils.shuffleSame(allQuizText, quizLabel);

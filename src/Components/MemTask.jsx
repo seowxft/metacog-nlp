@@ -397,6 +397,7 @@ class MemTask extends React.Component {
   }
 
   handleGlobalConf(keyPressed) {
+    var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (
       whichButton === 3 &&
@@ -795,6 +796,7 @@ class MemTask extends React.Component {
     var choicePos = this.state.choicePosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
     var condEasyTrialNum = this.state.condEasyTrialNum;
     var condHardTrialNum = this.state.condHardTrialNum;
+
     console.log("NEW TRIAL");
 
     var stimNum = this.state.stimNum;
@@ -1620,8 +1622,6 @@ class MemTask extends React.Component {
       text = (
         <div className={style.boxStyle}>
           <center>
-            <br />
-            <br />
             Rate your confidence on the probability that your choice was
             correct:
           </center>
