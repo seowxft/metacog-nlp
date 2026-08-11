@@ -978,26 +978,24 @@ class PerTask extends React.Component {
 
     // it will deploy the next trial with spacebar keypress
   }
-
   renderTaskSave() {
     // document.removeEventListener("keyup", this._handleConfRespKey);
 
     var prolificID = this.state.prolificID;
     var blockCond = this.state.blockCond;
 
-    //before it switch to the difficult staircase, save the dotStairEasy level
-    if (blockCond == "easy") {
-      this.setState({
-        dotStairEasy: this.state.dotStair,
-      });
-    } else if (blockCond == "hard") {
-      //before finish the hard one, save that too
-      this.setState({
-        dotStairHard: this.state.dotStair,
-      });
+    // 1. Calculate the new staircase values locally BEFORE saving
+    // Initialize with current state so we don't overwrite the inactive one with undefined
+    var newDotStairEasy = this.state.dotStairEasy;
+    var newDotStairHard = this.state.dotStairHard;
+
+    if (blockCond === "easy") {
+      newDotStairEasy = this.state.dotStair;
+    } else if (blockCond === "hard") {
+      newDotStairHard = this.state.dotStair;
     }
 
-    // Downsample processing logic to keep character count below DB limits
+    // 2. Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
     var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
 
@@ -1017,6 +1015,7 @@ class PerTask extends React.Component {
       }
     }
 
+    // 3. Build the save string using the FRESH local variables
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
@@ -1057,13 +1056,15 @@ class PerTask extends React.Component {
       stairDir: this.state.stairDir,
       dotStair: this.state.dotStair,
 
-      dotStairEasy: this.state.dotStairEasy,
+      // Use the newly calculated variables here
+      dotStairEasy: newDotStairEasy,
       correctMatEasy: this.state.correctMatEasy,
       correctPerEasy: this.state.correctPerEasy,
       responseMatrixEasy: this.state.responseMatrixEasy,
       stairDirEasy: this.state.stairDirEasy,
 
-      dotStairHard: this.state.dotStairHard,
+      // Use the newly calculated variables here
+      dotStairHard: newDotStairHard,
       correctMatHard: this.state.correctMatHard,
       correctPerHard: this.state.correctPerHard,
       responseMatrixHard: this.state.responseMatrixHard,
@@ -1075,6 +1076,7 @@ class PerTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
+    // 4. Fire DB request
     try {
       fetch(`${DATABASE_URL}/per_task_data/` + prolificID, {
         method: "POST",
@@ -1088,45 +1090,25 @@ class PerTask extends React.Component {
       console.log("Cant post?");
     }
 
-    //  console.log("trialNum: " + this.state.trialNum);
-    //  console.log("trialNumPerBlock: " + this.state.trialNumPerBlock);
-    //  console.log("trialNumInBlock: " + this.state.trialNumInBlock);
-    //  console.log("trialNumTotal: " + this.state.trialNumTotal);
-
-    if (this.state.trialNumInBlock === this.state.trialNumPerBlock) {
-      //and not the last trial, because that will be sent to trialReset to end the task
-      //  console.log("TIME FOR A BREAK");
-      if (this.state.trialNum !== this.state.trialNumTotal) {
-        //      console.log("REST TIME");
-        setTimeout(
-          function () {
-            this.restBlock(); // in between block
-          }.bind(this),
-          10,
-        );
-      } else if (this.state.trialNum === this.state.trialNumTotal) {
-        // have reached the end of the task - but do last rating!
-        //    console.log("END TASK");
-        setTimeout(
-          function () {
-            this.restBlock();
-          }.bind(this),
-          10,
-        );
-      }
-    } else if (this.state.trialNumInBlock !== this.state.trialNumPerBlock) {
-      //  console.log("CONTINUE TIME");
-      setTimeout(
-        function () {
+    // 5. Update state and trigger the next block/trial in the callback
+    this.setState(
+      {
+        dotStairEasy: newDotStairEasy,
+        dotStairHard: newDotStairHard,
+      },
+      () => {
+        // This runs exactly after the state is safely updated
+        if (this.state.trialNumInBlock === this.state.trialNumPerBlock) {
+          // Both the end of a block AND the end of the total task run restBlock()
+          this.restBlock();
+        } else if (this.state.trialNumInBlock !== this.state.trialNumPerBlock) {
           this.trialReset();
-        }.bind(this),
-        10,
-      );
-    } else {
-      console.log("ERROR I HAVENT ACCOUNTED FOR");
-    }
+        } else {
+          console.log("ERROR I HAVENT ACCOUNTED FOR");
+        }
+      },
+    );
   }
-
   renderRatingSave() {
     var prolificID = this.state.prolificID;
     var task = "perception";
@@ -1182,13 +1164,10 @@ class PerTask extends React.Component {
       console.log("Cant post?");
     }
 
-    //go back to the trials
-    setTimeout(
-      function () {
-        this.contBlock();
-      }.bind(this),
-      10,
-    );
+    // Go back to the trials using a clean arrow function
+    setTimeout(() => {
+      this.contBlock();
+    }, 10);
   }
 
   contBlock() {

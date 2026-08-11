@@ -1557,8 +1557,8 @@ class PerTut extends React.Component {
     var blockCond = this.state.blockCond;
 
     // 1. Calculate the new values BEFORE setting state
-    var newDotStairEasy;
-    var newDotStairHard;
+    var newDotStairEasy = this.state.dotStairEasy;
+    var newDotStairHard = this.state.dotStairHard;
 
     if (blockCond === "easy") {
       console.log("Saving dotStair in easy block.");
