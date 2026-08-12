@@ -1719,7 +1719,7 @@ class PerTut extends React.Component {
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
       textTime: this.state.confTime,
-      selfKnowledge: this.state.selfKnowledge,
+      selfKnowledge: null,
       mouseMovements: compressedMovements,
     };
 
