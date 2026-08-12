@@ -324,8 +324,8 @@ class RatingDomain extends React.Component {
       sectionTime: this.state.sectionTime,
       blockNum: null,
       quizState: this.state.quizState,
-      //  confInitial: null,
-      //  confLevel: null,
+      confInitial: null,
+      confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
       // --- ADDED TRACKING KEY ---
