@@ -103,7 +103,7 @@ class RatingDomain extends React.Component {
 
         // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
         let sectionTag = "unmapped";
-        if (this.state.taskSection === "domain") sectionTag = "d";
+        if (this.state.section === "domain") sectionTag = "d";
 
         const currentCoord = {
           x: event.clientX,
