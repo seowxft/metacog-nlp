@@ -690,7 +690,7 @@ class PerTask extends React.Component {
     this.setState({
       confInitial: initialValue,
       confLevel: null,
-      trialTime = Math.round(performance.now()),
+      trialTime: Math.round(performance.now()),
       textTIme: null,
       //  confMove: null,
       quizScreen: true,
