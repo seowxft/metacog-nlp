@@ -150,7 +150,7 @@ class MemPreTut extends React.Component {
       section: "pretutorial",
 
       // trial timings in ms
-      fixTimeLag: 1000, //1000
+      fixTimeLag: 500, //1000
       stimChoiceTimeLag: 300, //1500
       respFbTimeLag: 700, //
       fbTimeLag: 500, //500 correct or wrong

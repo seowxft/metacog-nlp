@@ -237,6 +237,8 @@ class MemTut extends React.Component {
 
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
+
+      mouseMovements: [],
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
