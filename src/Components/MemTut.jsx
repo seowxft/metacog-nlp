@@ -217,7 +217,7 @@ class MemTut extends React.Component {
       stairDirHard: null,
       stimNumHard: null,
 
-      gConfState: "pre",
+      quizState: "pre",
 
       //quiz paramters
       quizTry: 1,
@@ -380,10 +380,10 @@ class MemTut extends React.Component {
     var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (whichButton === 3 && this.state.confLevel !== null) {
-      var confTime = timePressed - this.state.confTimeInitial;
+      var textTime = timePressed - this.state.trialTime;
 
       this.setState({
-        confTime: confTime,
+        textTime: textTime,
       });
 
       setTimeout(
@@ -1199,7 +1199,7 @@ class MemTut extends React.Component {
     this.setState({ confLevel: callBackValue });
   }
 
-  globalConfText(globalConfState) {
+  globalConfText(quizState) {
     let gConf_text1 = (
       <div>
         <center>
@@ -1229,7 +1229,7 @@ class MemTut extends React.Component {
       </div>
     );
 
-    switch (globalConfState) {
+    switch (quizState) {
       case "pre":
         return <div>{gConf_text1}</div>;
       default:
@@ -1239,14 +1239,13 @@ class MemTut extends React.Component {
   gConfBegin() {
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
     console.log("Does it come here?");
-    var initialValue = utils.randomInt(7, 13);
-    var confTimeInitial = Math.round(performance.now());
+    var initialValue = utils.randomInt(8, 12);
 
     this.setState({
       confInitial: initialValue,
       confLevel: null,
-      confTimeInitial: confTimeInitial,
-      confTime: null,
+      trialTime: Math.round(performance.now()),
+      textTime: null,
       instructScreen: false,
       taskScreen: true,
       taskSection: "gConf",
@@ -2036,10 +2035,10 @@ class MemTut extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: null,
-      quizState: this.state.gConfState,
+      quizState: this.state.quizState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
-      textTime: this.state.confTime,
+      textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
       mouseMovements: compressedMovements,
     };
@@ -2119,9 +2118,14 @@ class MemTut extends React.Component {
     // Check if the instructNum state has changed since the last render
     if (prevState.instructNum !== this.state.instructNum) {
       console.log("instructNum has changed to:", this.state.instructNum);
-      window.removeEventListener("mousemove", this.handleGlobalMouseMove);
     }
   }
+
+  componentWillUnmount() {
+    // This safely removes the tracker only when the component is destroyed
+    window.removeEventListener("mousemove", this.handleGlobalMouseMove);
+  }
+
   ///////////////////////////////////////////////////////////////
   render() {
     let text;
@@ -2282,7 +2286,7 @@ class MemTut extends React.Component {
       this.state.taskScreen === true &&
       this.state.taskSection === "gConf"
     ) {
-      text = <div> {this.globalConfText(this.state.gConfState)}</div>;
+      text = <div> {this.globalConfText(this.state.quizState)}</div>;
     }
 
     return (

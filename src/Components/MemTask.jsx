@@ -270,7 +270,12 @@ class MemTask extends React.Component {
   // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
   handleGlobalMouseMove(event) {
     // Check condition: Track ONLY if active trial screen is mounted
-    if (this.state.taskScreen && !this.ticking) {
+    const isTrackingScreen =
+      this.state.taskScreen ||
+      this.state.quizScreen ||
+      this.state.taskSection === "break";
+
+    if (isTrackingScreen && !this.ticking) {
       window.requestAnimationFrame(() => {
         // Calculate timestamp relative to when this specific individual trial began
         const relativeTime = Math.round(
@@ -404,10 +409,10 @@ class MemTask extends React.Component {
       this.state.quizScreen === true &&
       this.state.confLevel !== null
     ) {
-      var confTime = timePressed - this.state.confTimeInitial;
+      var textTime = timePressed - this.state.trialTime;
 
       this.setState({
-        confTime: confTime,
+        textTime: textTime,
       });
 
       setTimeout(
@@ -734,8 +739,7 @@ class MemTask extends React.Component {
   }
 
   quizBegin() {
-    var initialValue = utils.randomInt(70, 80);
-    var confTimeInitial = Math.round(performance.now());
+    var initialValue = utils.randomInt(8, 12);
 
     console.log("Begining quiz");
     console.log("initialValue: " + initialValue);
@@ -743,8 +747,8 @@ class MemTask extends React.Component {
     this.setState({
       confInitial: initialValue,
       confLevel: null,
-      confTimeInitial: confTimeInitial,
-      confTime: null,
+      trialTime: Math.round(performance.now()), // for the mouse tracker
+      textTime: null,
       //  confMove: null,
       quizScreen: true,
       instructScreen: false,
@@ -1268,7 +1272,7 @@ class MemTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: this.state.blockNum,
-      quizState: this.state.quizState,
+      quizState: "block",
       confInitial: null,
       confLevel: null,
       textTime: this.state.textTime,
@@ -1366,10 +1370,10 @@ class MemTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: null,
-      quizState: this.state.gConfState,
+      quizState: this.state.quizState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
-      textTime: this.state.confTime,
+      textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
       mouseMovements: compressedMovements,
     };
@@ -1404,6 +1408,8 @@ class MemTask extends React.Component {
       instructNum: 3,
       taskScreen: false,
       taskSection: "break",
+      textTime: null,
+      trialTime: Math.round(performance.now()), // for the mouse tracker
       mouseMovements: [],
     });
   }

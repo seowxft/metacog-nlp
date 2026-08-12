@@ -129,7 +129,6 @@ class PerTask extends React.Component {
       respFbTime: 0,
       choice: null,
       confLevel: null,
-      confTimeInitial: null, //this is for the global conf time
       confTime: 0,
       confInitial: null,
       //    confMove: null, //can only move to next trial if conf was toggled
@@ -165,7 +164,7 @@ class PerTask extends React.Component {
       dotStairHard: dotStairHard,
 
       //quiz
-      gConfState: "post",
+      quizState: "post",
 
       // screen parameters
       instructScreen: true,
@@ -214,7 +213,12 @@ class PerTask extends React.Component {
   // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
   handleGlobalMouseMove(event) {
     // Check condition: Track ONLY if active trial screen is mounted
-    if (this.state.taskScreen && !this.ticking) {
+    const isTrackingScreen =
+      this.state.taskScreen ||
+      this.state.quizScreen ||
+      this.state.taskSection === "break";
+
+    if (isTrackingScreen && !this.ticking) {
       window.requestAnimationFrame(() => {
         // Calculate timestamp relative to when this specific individual trial began
         const relativeTime = Math.round(
@@ -297,7 +301,7 @@ class PerTask extends React.Component {
     }
     // --- End Validation ---
     var timePressed = Math.round(performance.now());
-    var textTime = timePressed - this.state.sectionTime;
+    var textTime = timePressed - this.state.trialTime;
 
     this.setState({
       selfKnowledge: this.state.selfKnowledge,
@@ -348,10 +352,10 @@ class PerTask extends React.Component {
       this.state.quizScreen === true &&
       this.state.confLevel !== null
     ) {
-      var confTime = timePressed - this.state.confTimeInitial;
+      var textTime = timePressed - this.state.trialTime;
 
       this.setState({
-        confTime: confTime,
+        textTime: textTime,
       });
 
       setTimeout(
@@ -608,7 +612,7 @@ class PerTask extends React.Component {
     }
   }
 
-  quizText(gConfState) {
+  quizText(quizState) {
     let quiz_text1 = (
       <div>
         <center>
@@ -670,7 +674,7 @@ class PerTask extends React.Component {
       </div>
     );
 
-    switch (gConfState) {
+    switch (quizState) {
       case "pre":
         return <div>{quiz_text1}</div>;
       case "post":
@@ -681,14 +685,13 @@ class PerTask extends React.Component {
 
   quizBegin() {
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
-    var initialValue = utils.randomInt(60, 90);
-    var confTimeInitial = Math.round(performance.now());
+    var initialValue = utils.randomInt(8, 12);
 
     this.setState({
       confInitial: initialValue,
       confLevel: null,
-      confTimeInitial: confTimeInitial,
-      confTime: null,
+      trialTime = Math.round(performance.now());
+      textTIme: null,
       //  confMove: null,
       quizScreen: true,
       instructScreen: false,
@@ -1080,6 +1083,7 @@ class PerTask extends React.Component {
       },
     );
   }
+
   renderRatingSave() {
     var prolificID = this.state.prolificID;
     var task = "perception";
@@ -1114,7 +1118,7 @@ class PerTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: this.state.blockNum,
-      quizState: this.state.gConfState,
+      quizState: "block",
       confInitial: null,
       confLevel: null,
       textTime: this.state.textTime,
@@ -1210,12 +1214,10 @@ class PerTask extends React.Component {
       section: this.state.section,
       sectionTime: this.state.sectionTime,
       blockNum: null,
-      quizState: this.state.gConfState,
-      //  confTimeInitial: this.state.confTimeInitial,
-      //  confTime: this.state.confTime,
+      quizState: this.state.quizState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
-      textTime: this.state.confTime,
+      textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
       mouseMovements: compressedMovements,
     };
@@ -1250,6 +1252,7 @@ class PerTask extends React.Component {
       instructNum: 3,
       taskScreen: false,
       taskSection: "break",
+      trialTime: Math.round(performance.now()), // for the mouse tracker
       mouseMovements: [],
     });
   }
@@ -1315,7 +1318,7 @@ class PerTask extends React.Component {
       this.state.quizScreen === true &&
       this.state.taskSection === "gConf"
     ) {
-      text = <div> {this.quizText(this.state.gConfState)}</div>;
+      text = <div> {this.quizText(this.state.quizState)}</div>;
       //    console.log("Quiz state: " + this.state.quizState);
     } else if (
       this.state.instructScreen === false &&
