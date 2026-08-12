@@ -1239,9 +1239,9 @@ class MemTut extends React.Component {
   }
 
   gConfBegin() {
-    //randomise the pre-post initial conf value - this has changed to a scale of 0 to 150
+    //randomise the pre-post initial conf value - this has changed to a scale of 0 to 40
     console.log("Does it come here?");
-    var initialValue = utils.randomInt(8, 12);
+    var initialValue = utils.randomInt(15, 25);
 
     this.setState({
       confInitial: initialValue,

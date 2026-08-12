@@ -49,6 +49,7 @@ class RatingDomain extends React.Component {
       date: date,
       startTime: startTime,
       domain: finalDomain,
+      trialTime: sectionTime,
 
       //section paramters
       sectionTime: sectionTime,
@@ -97,13 +98,18 @@ class RatingDomain extends React.Component {
       window.requestAnimationFrame(() => {
         // Calculate timestamp relative to the section starting time
         const relativeTime = Math.round(
-          performance.now() - this.state.sectionTime,
+          performance.now() - this.state.trialTime,
         );
+
+        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
+        let sectionTag = "unmapped";
+        if (this.state.taskSection === "domain") sectionTag = "d";
 
         const currentCoord = {
           x: event.clientX,
           y: event.clientY,
           t: relativeTime,
+          p: sectionTag, // 'p' for Phase property
         };
 
         this.setState((prevState) => ({
@@ -149,7 +155,7 @@ class RatingDomain extends React.Component {
     }
     // --- End Validation ---
     var timePressed = Math.round(performance.now());
-    var textTime = timePressed - this.state.sectionTime;
+    var textTime = timePressed - this.state.trialTime;
 
     this.setState({
       selfKnowledge: this.state.selfKnowledge,
@@ -360,6 +366,7 @@ class RatingDomain extends React.Component {
       //move to page 2
       this.setState({
         instructNum: this.state.instructNum + 1,
+        trialTime: Math.round(performance.now()),
         selfKnowledge: [],
         mouseMovements: [],
       });

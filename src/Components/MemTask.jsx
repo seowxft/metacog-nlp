@@ -739,7 +739,7 @@ class MemTask extends React.Component {
   }
 
   quizBegin() {
-    var initialValue = utils.randomInt(8, 12);
+    var initialValue = utils.randomInt(15, 25);
 
     console.log("Begining quiz");
     console.log("initialValue: " + initialValue);
