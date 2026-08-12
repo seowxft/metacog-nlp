@@ -698,12 +698,13 @@ class PerTut extends React.Component {
       <div>
         <span>
           For every choice, you will be presented with a white cross in the
-          middle of the screen first before the battery cards appear. Please pay
-          attention closely as the charge level indicator (white dots) of the
-          battery cards will be <strong>flashed quickly only once</strong>. Make
-          your selection{" "}
-          <strong>after the charge level indicator disappears</strong>
-          .
+          middle of the screen first before the battery cards appear.
+          <br />
+          <br />
+          Please pay attention closely as the charge level indicator (white
+          dots) of the battery cards will be{" "}
+          <strong>flashed quickly only once</strong>. Make your selection{" "}
+          <strong>after the charge level indicator disappears</strong>.
           <br />
           <br />
           To show you what to expect, we will now show you 2 quick examples.
@@ -889,8 +890,8 @@ class PerTut extends React.Component {
 
     let instruct_text11 = (
       <div>
-        Before you begin, you have to pass a quick quiz to make sure that you
-        have understood the key points of your task for today.
+        Before you begin, you will now have to pass a quick quiz to make sure
+        that you have understood the key points of your task for today.
         <br />
         <br />
         Note: You will have to get <strong>all</strong> quiz questions correct.
@@ -954,7 +955,7 @@ class PerTut extends React.Component {
       case 11:
         return <div>{instruct_text11}</div>;
       case 12:
-        return <div>{instruct_text11}</div>;
+        return <div>{instruct_text12}</div>;
       default:
     }
   }

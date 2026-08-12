@@ -85,15 +85,8 @@ class EndPage extends React.Component {
 
     if (whichButton === 1 && curText > 1) {
       this.setState({ instructNum: curText - 1 });
-    } else if (whichButton === 2 && curText < 3) {
+    } else if (whichButton === 2 && curText <= 2) {
       this.setState({ instructNum: curText + 1 });
-    } else if (whichButton === 3 && curText === 3) {
-      // setTimeout(
-      //   function () {
-      //     this.redirectToEnd();
-      //   }.bind(this),
-      //   0
-      // );
     }
   }
   // handle key keyPressed
@@ -262,8 +255,6 @@ class EndPage extends React.Component {
       case 1:
         return <div>{instruct_text1}</div>;
       case 2:
-        return <div>{instruct_text2}</div>;
-      case 3:
         return <div>{instruct_text3}</div>;
 
       default:

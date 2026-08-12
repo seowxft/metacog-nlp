@@ -460,33 +460,19 @@ class Bonus extends React.Component {
     }
   }
 
-  // redirectToNextTask() {
-  //   //  document.removeEventListener("keyup", this._handleInstructKey);
-  //   this.props.navigate(
-  //     "/Questionnaires?PROLIFIC_PID=" + this.state.prolificID,
-  //     {
-  //       state: {
-  //         prolificID: this.state.prolificID,
-  //         condition: this.state.condition,
-  //         userID: this.state.userID,
-  //         date: this.state.date,
-  //         startTime: this.state.startTime,
-  //       },
-  //     },
-  //   );
-
-  // }
-
   redirectToNextTask() {
-    this.props.navigate("/End?PROLIFIC_PID=" + this.state.prolificID, {
-      state: {
-        prolificID: this.state.prolificID,
-        condition: this.state.condition,
-        userID: this.state.userID,
-        date: this.state.date,
-        startTime: this.state.startTime,
+    this.props.navigate(
+      "/Questionnaires?PROLIFIC_PID=" + this.state.prolificID,
+      {
+        state: {
+          prolificID: this.state.prolificID,
+          condition: this.state.condition,
+          userID: this.state.userID,
+          date: this.state.date,
+          startTime: this.state.startTime,
+        },
       },
-    });
+    );
   }
 
   componentDidMount() {
