@@ -289,6 +289,7 @@ class MemTask extends React.Component {
         else if (this.state.taskSection === "fixation") sectionTag = "f";
         else if (this.state.taskSection === "stimulus") sectionTag = "s";
         else if (this.state.taskSection === "choice") sectionTag = "c";
+        else if (this.state.taskSection === "encode") sectionTag = "e";
         else if (this.state.taskSection === "choiceFeedback") sectionTag = "fb";
         else if (this.state.taskSection === "confidence") sectionTag = "conf";
         else if (this.state.taskSection === "rating") sectionTag = "r";
@@ -753,7 +754,7 @@ class MemTask extends React.Component {
       quizScreen: true,
       instructScreen: false,
       taskScreen: false,
-      taskSection: "gConf",
+      taskSection: "rating",
       mouseMovements: [],
     });
   }
@@ -1495,7 +1496,7 @@ class MemTask extends React.Component {
       this.state.instructScreen === false &&
       this.state.taskScreen === false &&
       this.state.quizScreen === true &&
-      this.state.taskSection === "gConf"
+      this.state.taskSection === "rating"
     ) {
       text = <div> {this.quizText(this.state.quizState)}</div>;
       console.log("Quiz state: " + this.state.quizState);

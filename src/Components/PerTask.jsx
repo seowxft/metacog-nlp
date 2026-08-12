@@ -234,7 +234,7 @@ class PerTask extends React.Component {
         else if (this.state.taskSection === "choice") sectionTag = "c";
         else if (this.state.taskSection === "choiceFeedback") sectionTag = "fb";
         else if (this.state.taskSection === "confidence") sectionTag = "conf";
-        else if (this.state.taskSection === "gConf") sectionTag = "r";
+        else if (this.state.taskSection === "rating") sectionTag = "r";
         else if (this.state.taskSection === "break") sectionTag = "b";
 
         const currentCoord = {
@@ -697,7 +697,7 @@ class PerTask extends React.Component {
       quizScreen: true,
       instructScreen: false,
       taskScreen: false,
-      taskSection: "gConf",
+      taskSection: "rating",
       mouseMovements: [],
     });
   }
@@ -1317,7 +1317,7 @@ class PerTask extends React.Component {
       this.state.instructScreen === false &&
       this.state.taskScreen === false &&
       this.state.quizScreen === true &&
-      this.state.taskSection === "gConf"
+      this.state.taskSection === "rating"
     ) {
       text = <div> {this.quizText(this.state.quizState)}</div>;
       //    console.log("Quiz state: " + this.state.quizState);
