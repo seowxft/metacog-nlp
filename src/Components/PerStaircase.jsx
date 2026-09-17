@@ -14,7 +14,8 @@ export function staircase(dotDiff, prevTrialPerf, dir, trialNum) {
   // do not corrupt the raw data array saved in React state / database
   var stepcount = prevTrialPerf.slice();
 
-  if (stepcount.length < 2) {
+  // Only need back1 for a step-down; guard only if truly empty
+  if (stepcount.length < 1) {
     return {
       diff: dotDiff,
       direction: dir,
@@ -23,8 +24,9 @@ export function staircase(dotDiff, prevTrialPerf, dir, trialNum) {
     };
   }
 
-  var back1 = stepcount[stepcount.length - 1]; // Last trial
-  var back2 = stepcount[stepcount.length - 2]; // Two trials ago
+  var back1 = stepcount[stepcount.length - 1];
+  var back2 = stepcount.length >= 2 ? stepcount[stepcount.length - 2] : false;
+
   var reverse = false; // Initialize reversal to false
 
   if (back1) {

@@ -201,10 +201,10 @@ class RatingDomain extends React.Component {
 
     let instruct_text1 = (
       <div>
-        Before we begin, please tell us a bit on how you usually solve tasks.
-        For example, when you face a difficult puzzle or challenging decision,
-        what do you do? Do you tend to trust a 'gut feeling', try to reason it
-        out, or something else?
+        Before we begin, think about situations in everyday life where you have
+        to solve a problem or make a decision. Please describe how you
+        experience your own thinking in these situations, including how you
+        judge whether your answer or decision is likely to be correct.
         <br />
         <br />
         <center>

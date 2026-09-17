@@ -130,13 +130,15 @@ class MemTask extends React.Component {
     });
 
     // if
-    var trialNumTotal = 40; //should be 140, for 7 blocks of 20 trials
-    var blockNumTotal = 2; // should be 7
+    var trialNumTotal = 80; //should be 140, for 7 blocks of 20 trials
+    var blockNumTotal = 4; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
-    var condScrabble = ["easy"];
+    var condScrabble1 = ["easy", "hard"];
+    var condScrabble2 = ["easy", "hard"];
     utils.shuffle(condScrabble);
-    var blockCondTotal = ["hard", ...condScrabble];
+    utils.shuffle(condScrabble2);
+    var blockCondTotal = [condScrabble1, ...condScrabble2];
 
     //the choice position
     var choicePos = Array(Math.round(trialNumTotal / 2))
@@ -596,10 +598,12 @@ class MemTask extends React.Component {
           {this.state.blockNumTotal} blocks!
           <br />
           <br />
-          Has your experience changed? Have you developed any particular
-          strategy for making your decisions or on how you rate your confidence?
-          Please explain what cues or feelings you are using to make these
-          judgements.
+          Thinking about the trials you just completed, how sure or unsure did
+          you feel that your answers were correct? Describe this in your own
+          words, including any thoughts or feelings you noticed as you answered.
+          <br />
+          <br />
+          You can describe the block overall or particular moments.
           <br />
           <br />
           <center>

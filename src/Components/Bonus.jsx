@@ -389,9 +389,12 @@ class Bonus extends React.Component {
 
     let instruct_text1 = (
       <div>
-        Do you feel more or less confident about your judgments now compared
-        with before you started? You can also mention anything you noticed about
-        what helps or hinders your ability to tell when you are right.
+        Now that you have completed the tasks, think again about situations
+        where you need to make a quick judgement about what you see, such as
+        deciding which of two groups contains more items. Based on how you see
+        your ability now, how good do you think you are at this, and how do you
+        judge whether your visual judgement is likely to be correct? Describe
+        your experience in your own words.
         <br />
         <br />
         <center>

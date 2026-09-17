@@ -14,8 +14,17 @@ export function staircase(stimNum, prevTrialPerf, dir, trialNum) {
   // do not corrupt the raw data array saved in React state / database
   var stepcount = prevTrialPerf.slice();
 
-  var back1 = stepcount[stepcount.length - 1]; // Last trial
-  var back2 = stepcount[stepcount.length - 2]; // Two trials ago
+  if (stepcount.length < 1) {
+    return {
+      stimNum: stimNum,
+      direction: dir,
+      reversal: false,
+      stepcount: stepcount,
+    };
+  }
+
+  var back1 = stepcount[stepcount.length - 1];
+  var back2 = stepcount.length >= 2 ? stepcount[stepcount.length - 2] : false;
   var reverse = false; // Initialize reversal to false
 
   if (back1) {
