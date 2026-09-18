@@ -14,8 +14,8 @@ import "./style/surveyStyle.css"; // Your custom styles
 import style from "./style/questStyle.module.css";
 
 // Import questionnaire JSON files
-import { phq } from "./quest/sds.jsx";
-import { gad } from "./quest/staiy2.jsx";
+import { phq } from "./quest/phq.jsx";
+import { gad } from "./quest/gad.jsx";
 import { demo } from "./quest/demo.jsx";
 
 import { DATABASE_URL } from "./config.jsx";
