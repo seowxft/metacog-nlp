@@ -1604,19 +1604,16 @@ class PerTut extends React.Component {
 
     console.log(saveString);
 
-    // 3. Fire your database request
-    try {
-      fetch(`${DATABASE_URL}/per_tutorial_data/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/per_tutorial_data/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     // 4. Update the state, and use the callback to trigger the next phase
     this.setState(
@@ -1660,18 +1657,16 @@ class PerTut extends React.Component {
       quizCorTotal: this.state.quizCorTotal,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/per_quiz_test/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/per_quiz_test/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     setTimeout(
       function () {
@@ -1723,18 +1718,16 @@ class PerTut extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     //return to instructions
     this.setState({

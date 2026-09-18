@@ -352,18 +352,16 @@ class RatingDomain extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     setTimeout(
       function () {

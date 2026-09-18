@@ -70,8 +70,8 @@ class PerTask extends React.Component {
 
     // if
 
-    var trialNumTotal = 80; //should be 140, for 7 blocks of 20 trials
-    var blockNumTotal = 4; // should be 7
+    var trialNumTotal = 8; //should be 80, for 4 blocks of 20 trials
+    var blockNumTotal = 4; // should be 4
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
     var condScrabble1 = ["easy", "hard"];
@@ -171,6 +171,8 @@ class PerTask extends React.Component {
       // screen parameters
       instructScreen: true,
       instructNum: 1,
+
+      postGlobalState: "domain",
       quizScreen: false,
       taskScreen: false,
       taskSection: null,
@@ -196,6 +198,8 @@ class PerTask extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     this.handleInstruct = this.handleInstruct.bind(this);
+
+    this.handleGlobalSubmit = this.handleGlobalSubmit.bind(this);
     this.handleBegin = this.handleBegin.bind(this);
     this.handleResp = this.handleResp.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -238,6 +242,7 @@ class PerTask extends React.Component {
         else if (this.state.taskSection === "confidence") sectionTag = "conf";
         else if (this.state.taskSection === "rating") sectionTag = "r";
         else if (this.state.taskSection === "break") sectionTag = "b";
+        else if (this.state.taskSection === "domain") sectionTag = "d";
 
         const currentCoord = {
           x: event.clientX,
@@ -344,6 +349,36 @@ class PerTask extends React.Component {
         0,
       );
     }
+  }
+
+  handleGlobalSubmit(event) {
+    event.preventDefault(); // Always call this first!
+
+    // --- Validation Check ---
+    if (this.state.wordCount < this.state.minWordCount) {
+      this.setState({
+        error:
+          "Please write at least " +
+          this.state.minWordCount +
+          " words to continue.",
+      });
+      return; // Stop the submission
+    }
+    // --- End Validation ---
+    var timePressed = Math.round(performance.now());
+    var textTime = timePressed - this.state.sectionTime;
+
+    this.setState({
+      selfKnowledge: this.state.selfKnowledge,
+      textTime: textTime,
+    });
+
+    setTimeout(
+      function () {
+        this.renderGlobalSave();
+      }.bind(this),
+      0,
+    );
   }
 
   handleGlobalConf(keyPressed) {
@@ -683,6 +718,46 @@ class PerTask extends React.Component {
         return <div>{quiz_text1}</div>;
       case "post":
         return <div>{quiz_text2}</div>;
+      default:
+    }
+  }
+
+  domainGlobalPost(postGlobalState) {
+    let quiz_text1 = (
+      <div>
+        <center>
+          Based on how you did on this task, how would you describe your ability
+          to make visual judgements? Do you think you would do better or worse
+          on other visual tasks?
+        </center>
+        <br />
+        <br />
+        <center>
+          <form onSubmit={this.handleGlobalSubmit}>
+            <label>
+              <textarea
+                key={postGlobalState} // <--- ADD THIS KEY
+                placeholder={`${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
+          Please do not write any self-identifiying information (e.g., your
+          name, your address, etc.).
+        </center>
+      </div>
+    );
+
+    switch (postGlobalState) {
+      case "domain":
+        return <div>{quiz_text1}</div>;
       default:
     }
   }
@@ -1048,19 +1123,16 @@ class PerTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    // 4. Fire DB request
-    try {
-      fetch(`${DATABASE_URL}/per_task_data/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/per_task_data/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     // 5. Update state and trigger the next block/trial in the callback
     this.setState(
@@ -1124,18 +1196,16 @@ class PerTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     // Go back to the trials using a clean arrow function
     setTimeout(() => {
@@ -1219,18 +1289,75 @@ class PerTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
+    //return to go to the global rating
+    this.setState({
+      taskSection: "global",
+      mouseMovements: [],
+    });
+  }
+
+  renderGlobalSave() {
+    var prolificID = this.state.prolificID;
+    var task = "memory";
+
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
+
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
     }
+
+    let saveString = {
+      prolificID: this.state.prolificID,
+      condition: this.state.condition,
+      task: task,
+      userID: this.state.userID,
+      date: this.state.date,
+      startTime: this.state.startTime,
+      section: this.state.section,
+      sectionTime: this.state.sectionTime,
+      blockNum: this.state.blockNum,
+      quizState: "domain post",
+      confInitial: null,
+      confLevel: null,
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
+      mouseMovements: compressedMovements,
+    };
+
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     //return to instructions
     this.setState({
@@ -1312,6 +1439,13 @@ class PerTask extends React.Component {
     ) {
       text = <div> {this.quizText(this.state.quizState)}</div>;
       //    console.log("Quiz state: " + this.state.quizState);
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === false &&
+      this.state.quizScreen === true &&
+      this.state.taskSection === "global"
+    ) {
+      text = <div> {this.domainGlobalPost(this.state.postGlobalState)}</div>;
     } else if (
       this.state.instructScreen === false &&
       this.state.quizScreen === false &&

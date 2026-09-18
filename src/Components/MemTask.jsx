@@ -788,7 +788,7 @@ class MemTask extends React.Component {
         <br />
         <br />
         <center>
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={this.handleGlobalSubmit}>
             <label>
               <textarea
                 key={postGlobalState} // <--- ADD THIS KEY

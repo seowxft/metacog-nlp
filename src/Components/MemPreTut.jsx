@@ -1037,18 +1037,16 @@ class MemPreTut extends React.Component {
 
     console.log(saveString);
 
-    try {
-      fetch(`${DATABASE_URL}/mem_pre_tutorial_data/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/mem_pre_tutorial_data/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     setTimeout(
       function () {
