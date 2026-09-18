@@ -1,8 +1,6 @@
 import React from "react";
 import withRouter from "./func/withRouter.jsx";
 
-import * as InsightSlider from "./drawassets/DrawInsightSlider.jsx";
-
 import style from "./style/perTaskStyle.module.css";
 import astrodude from "./img/astronaut.png";
 
@@ -32,7 +30,7 @@ class Bonus extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -41,8 +39,8 @@ class Bonus extends React.Component {
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
       condition = 1;
-      memCorrectPer = 0.9;
-      perCorrectPer = 0;
+      memCorrectPer = 0.8;
+      perCorrectPer = 0.5;
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
@@ -61,6 +59,10 @@ class Bonus extends React.Component {
     var totalBonus =
       Math.round((memBonus + perBonus) * 100 + Number.EPSILON) / 100;
 
+    var domain = ["memory", "perception"];
+    utils.shuffle(domain);
+    var finalDomain = ["general", ...domain];
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     // SET STATES
@@ -71,12 +73,14 @@ class Bonus extends React.Component {
       userID: userID,
       date: date,
       startTime: startTime,
-      section: "insight",
+      domain: finalDomain,
+      trialTime: sectionTime,
+
+      //section paramters
       sectionTime: sectionTime,
-      astrodude: astrodude,
-      ratingInitial: 3,
-      ratingValue: null,
-      feedback: [],
+      section: "domainpost",
+      quizState: "domain",
+      ratingDomain: null,
       textTime: null,
       selfKnowledge: [],
       wordCount: 0,
@@ -84,10 +88,15 @@ class Bonus extends React.Component {
 
       // screen parameters
       instructScreen: true,
-      instructNum: 1,
+      instructNum: 1, //start from 1
+      // --- MOUSE TRACKING STATE ---
+      mouseMovements: [],
+
+      astrodude: astrodude,
       memBonus: memBonus,
       perBonus: perBonus,
       totalBonus: totalBonus,
+
       debug: debug,
     };
 
@@ -110,8 +119,42 @@ class Bonus extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmitFb = this.handleSubmitFb.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
+
+    // --- Bind Mouse Tracker Event Handler ---
+    this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
+    this.ticking = false; // Performance flag for requestAnimationFrame
     //////////////////////////////////////////////////////////////////////////////////////////////
     //End constructor props
+  }
+
+  // --- MOUSE TRACKING EVENT HANDLER ---
+  handleGlobalMouseMove(event) {
+    if (!this.ticking) {
+      window.requestAnimationFrame(() => {
+        // Calculate timestamp relative to the section starting time
+        const relativeTime = Math.round(
+          performance.now() - this.state.trialTime,
+        );
+
+        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
+        let sectionTag = "unmapped";
+        if (this.state.section === "domainpost") sectionTag = "dp";
+
+        const currentCoord = {
+          x: event.clientX,
+          y: event.clientY,
+          t: relativeTime,
+          p: sectionTag, // 'p' for Phase property
+        };
+
+        this.setState((prevState) => ({
+          mouseMovements: [...prevState.mouseMovements, currentCoord],
+        }));
+
+        this.ticking = false;
+      });
+      this.ticking = true;
+    }
   }
 
   //for the feedback box
@@ -138,33 +181,6 @@ class Bonus extends React.Component {
   handlePaste(event) {
     event.preventDefault();
     alert("Pasting is not allowed in this field."); // Optional: Notify the user
-  }
-
-  // This handles instruction screen within the component USING KEYBOARD
-  handleInstruct(keyPressed) {
-    var timePressed = Math.round(performance.now());
-    var curInstructNum = this.state.instructNum;
-    var ratingValue = this.state.ratingValue;
-    var whichButton = keyPressed;
-
-    if (whichButton === 3 && curInstructNum < 3 && ratingValue !== null) {
-      var ratingTime = timePressed - this.state.sectionTime;
-
-      this.setState({
-        ratingTime: ratingTime,
-      });
-
-      setTimeout(
-        function () {
-          this.renderRatingSave();
-        }.bind(this),
-        0,
-      );
-    }
-  }
-
-  handleCallbackConf(callBackValue) {
-    this.setState({ ratingValue: callBackValue });
   }
 
   handleSubmit(event) {
@@ -240,13 +256,244 @@ class Bonus extends React.Component {
     );
   }
 
+  // This handles instruction screen within the component USING KEYBOARD
+  handleInstruct(keyPressed) {
+    var timePressed = Math.round(performance.now());
+    var curInstructNum = this.state.instructNum;
+    var ratingValue = this.state.ratingValue;
+    var whichButton = keyPressed;
+
+    if (whichButton === 3 && curInstructNum < 3 && ratingValue !== null) {
+      var ratingTime = timePressed - this.state.sectionTime;
+
+      this.setState({
+        ratingTime: ratingTime,
+      });
+
+      setTimeout(
+        function () {
+          this.renderRatingSave();
+        }.bind(this),
+        0,
+      );
+    }
+  }
+
+  // Ask the second round of the self-knowledge questions
+  instructText(instructNum) {
+    var explain;
+    if (this.state.domain[instructNum - 1] === "memory") {
+      //if the curren domain is memory
+      explain = (
+        <span>
+          Think about situations where you need to remember something you have
+          just seen. Based on how you see your ability now, how good do you
+          think you are at this, and how do you judge whether your memory is
+          likely to be correct?
+          <br /> <br />
+          Describe your experience in your own words.
+          <br /> <br />
+        </span>
+      );
+    } else if (this.state.domain[instructNum - 1] === "perception") {
+      explain = (
+        <span>
+          Think about situations where you need to make a quick judgement about
+          what you see, such as deciding which of two groups contains more
+          items. Based on how you see your ability now, how good do you think
+          you are at this, and how do you judge whether your visual judgement is
+          likely to be correct?
+          <br /> <br />
+          Describe your experience in your own words.
+          <br /> <br />
+        </span>
+      );
+    }
+
+    var condition = this.state.condition;
+    var FirstT;
+    var SecondT;
+    var FirstB;
+    var SecondB;
+    var explain1;
+    var explain2;
+    if (condition === 1) {
+      //perform the perception task first
+      FirstT = "comparing the battery cards";
+      SecondT = "recognising animals you saw before";
+      FirstB = this.state.perBonus;
+      SecondB = this.state.memBonus;
+    } else {
+      //perform the memory task first
+      SecondT = "comparing the battery cards";
+      FirstT = "recognising animals you saw before";
+      SecondB = this.state.perBonus;
+      FirstB = this.state.memBonus;
+    }
+
+    let instruct_text1 = (
+      <div>
+        Well done on completing both tasks!
+        <br />
+        <br />
+        Now that you have completed the tasks, think again about situations in
+        everyday life where you have to solve a problem or make a decision.
+        Based on how you see yourself now, please describe how you experience
+        your own thinking in these situations, including how you judge whether
+        your answer or decision is likely to be correct.
+        <br />
+        <br />
+        <center>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
+        </center>
+        <span className={style.astro}>
+          <img src={this.state.astrodude} width={200} alt="astrodude" />
+        </span>
+      </div>
+    );
+
+    let instruct_text2 = (
+      <div>
+        {explain}
+        <br />
+        <br />
+        <center>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
+        </center>
+        <span className={style.astro}>
+          <img src={this.state.astrodude} width={200} alt="astrodude" />
+        </span>
+      </div>
+    );
+
+    let instruct_text3 = (
+      <div>
+        {explain}
+        <br />
+        <br />
+        <center>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
+        </center>
+        <span className={style.astro}>
+          <img src={this.state.astrodude} width={200} alt="astrodude" />
+        </span>
+      </div>
+    );
+
+    let instruct_text4 = (
+      <div>
+        <span>
+          From the first task [{FirstT}], you earned a bonus of £{FirstB}. From
+          the second task [{SecondT}], you earned a bonus of £{SecondB}.
+          <br /> <br />
+          We would love to hear any comments you have about the tasks you have
+          completed.
+          <br /> <br />
+          If you have any, please fill in the box below and click submit. If
+          not, leave the box empty and click the submit button.
+          <br />
+          <br />
+          <center>
+            <form onSubmit={this.handleSubmitFb}>
+              <label>
+                <textarea
+                  placeholder="Were the task instructions clear? Did you encounter any problems? Did you prefer to use the mouse or the keyboard to rate your confidence?"
+                  value={this.state.feedback}
+                  onChange={this.handleChangeFb}
+                />
+              </label>
+              <br />
+              <br />
+              <input type="submit" value="Submit & Continue" />
+            </form>
+          </center>
+        </span>
+      </div>
+    );
+
+    // have to use button to go to next page, because pressing spacebar when typing feedback will make it go forward prematurely
+    switch (instructNum) {
+      case 1:
+        return <div>{instruct_text1}</div>;
+      case 2:
+        return <div>{instruct_text2}</div>;
+      case 3:
+        return <div>{instruct_text3}</div>;
+      case 4:
+        return <div>{instruct_text4}</div>;
+      default:
+    }
+  }
+
   renderRatingSave() {
     var prolificID = this.state.prolificID;
+    var task = this.state.domain[this.state.instructNum - 1];
 
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
+
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
+    }
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
-      task: "end",
+      task: task,
       userID: this.state.userID,
       date: this.state.date,
       startTime: this.state.startTime,
@@ -258,6 +505,8 @@ class Bonus extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      // --- ADDED TRACKING KEY ---
+      mouseMovements: compressedMovements,
     };
 
     try {
@@ -332,137 +581,6 @@ class Bonus extends React.Component {
     );
   }
 
-  // Ask the second round of the self-knowledge questions
-  instructText(instructNum) {
-    var condition = this.state.condition;
-    var FirstT;
-    var SecondT;
-    var FirstB;
-    var SecondB;
-
-    if (condition === 1) {
-      //perform the perception task first
-      FirstT = "comparing the battery cards";
-      SecondT = "recognising animals you saw before";
-      FirstB = this.state.perBonus;
-      SecondB = this.state.memBonus;
-    } else {
-      //perform the memory task first
-      SecondT = "comparing the battery cards";
-      FirstT = "recognising animals you saw before";
-      SecondB = this.state.perBonus;
-      FirstB = this.state.memBonus;
-    }
-
-    let instruct_text0 = (
-      <div>
-        Well done on completing both tasks!
-        <br />
-        <br />
-        Now that you’ve completed both kinds of tasks, please describe how you
-        feel about your abilities. Did the first task ({FirstT}) feel easier or
-        harder than the second task ({SecondT})?
-        <br />
-        <br />
-        <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-                onPaste={this.handlePaste}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
-        </center>
-        <span className={style.astro}>
-          <img src={this.state.astrodude} width={200} alt="astrodude" />
-        </span>
-      </div>
-    );
-
-    let instruct_text1 = (
-      <div>
-        Now that you have completed the tasks, think again about situations
-        where you need to make a quick judgement about what you see, such as
-        deciding which of two groups contains more items. Based on how you see
-        your ability now, how good do you think you are at this, and how do you
-        judge whether your visual judgement is likely to be correct? Describe
-        your experience in your own words.
-        <br />
-        <br />
-        <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-                onPaste={this.handlePaste}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
-        </center>
-        <span className={style.astro}>
-          <img src={this.state.astrodude} width={200} alt="astrodude" />
-        </span>
-      </div>
-    );
-
-    let instruct_text2 = (
-      <div>
-        <span>
-          From the first task [{FirstT}], you earned a bonus of £{FirstB}. From
-          the second task [{SecondT}], you earned a bonus of £{SecondB}.
-          <br /> <br />
-          We would love to hear any comments you have about the tasks you have
-          completed.
-          <br /> <br />
-          If you have any, please fill in the box below and click submit. If
-          not, leave the box empty and click the submit button.
-          <br />
-          <br />
-          <center>
-            <form onSubmit={this.handleSubmitFb}>
-              <label>
-                <textarea
-                  placeholder="Were the task instructions clear? Did you encounter any problems? Did you prefer to use the mouse or the keyboard to rate your confidence?"
-                  value={this.state.feedback}
-                  onChange={this.handleChangeFb}
-                />
-              </label>
-              <br />
-              <br />
-              <input type="submit" value="Submit & Continue" />
-            </form>
-          </center>
-        </span>
-      </div>
-    );
-
-    // have to use button to go to next page, because pressing spacebar when typing feedback will make it go forward prematurely
-    switch (instructNum) {
-      case 1:
-        return <div>{instruct_text0}</div>;
-      case 2:
-        return <div>{instruct_text1}</div>;
-      case 3:
-        return <div>{instruct_text2}</div>;
-      default:
-    }
-  }
-
   redirectToNextTask() {
     this.props.navigate(
       "/Questionnaires?PROLIFIC_PID=" + this.state.prolificID,
@@ -480,6 +598,13 @@ class Bonus extends React.Component {
 
   componentDidMount() {
     window.scrollTo(0, 0);
+    // --- Attach mouse listener when screen loads ---
+    window.addEventListener("mousemove", this.handleGlobalMouseMove);
+  }
+
+  componentWillUnmount() {
+    // --- Clean up listener to prevent catastrophic memory leaks ---
+    window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
   ///////////////////////////////////////////////////////////////

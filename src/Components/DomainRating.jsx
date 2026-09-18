@@ -2,7 +2,7 @@ import React from "react";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 
-import * as ConfSliderDomain from "./drawassets/DrawConfSliderDomain.jsx";
+//import * as ConfSliderDomain from "./drawassets/DrawConfSliderDomain.jsx";
 
 import style from "./style/memTaskStyle.module.css";
 
@@ -176,24 +176,23 @@ class RatingDomain extends React.Component {
       //if the curren domain is memory
       explain = (
         <span>
-          involve remembering what you just saw? For example, in remembering
-          items you studied earlier.
+          What about situations where you need to remember something you have
+          just seen. How good do you think you are at this, and how do you judge
+          whether your memory is likely to be correct?
           <br /> <br />
-          How good do you think you are at remembering things accurately or
-          knowing when a memory feels correct? What strategies do you use to
-          remember things?
+          Describe your experience in your own words.
           <br /> <br />
         </span>
       );
     } else if (this.state.domain[instructNum - 1] === "perception") {
       explain = (
         <span>
-          involve judging what you see? For example, deciding which image looks
-          stronger or clearer.
+          What about situations where you need to make a quick judgement about
+          what you see, such as deciding which of two groups contains more
+          items. How good do you think you are at this, and how do you judge
+          whether your visual judgement is likely to be correct?
           <br /> <br />
-          How good do you think you are at noticing small visual details or
-          deciding when you are right you spotted the detail? What strategies do
-          you use to notice things?
+          Describe your experience in your own words.
           <br /> <br />
         </span>
       );
@@ -201,8 +200,8 @@ class RatingDomain extends React.Component {
 
     let instruct_text1 = (
       <div>
-        Before we begin, think about situations in everyday life where you have
-        to solve a problem or make a decision. Please describe how you
+        Before you begin, please think about situations in everyday life where
+        you have to solve a problem or make a decision. Please describe how you
         experience your own thinking in these situations, including how you
         judge whether your answer or decision is likely to be correct.
         <br />
@@ -231,7 +230,7 @@ class RatingDomain extends React.Component {
 
     let instruct_text2 = (
       <div>
-        How you usually do on tasks that {explain}
+        {explain}
         <center>
           <form onSubmit={this.handleSubmit}>
             <label>
@@ -256,7 +255,7 @@ class RatingDomain extends React.Component {
 
     let instruct_text3 = (
       <div>
-        How you usually do on tasks that {explain}
+        {explain}
         <center>
           <form onSubmit={this.handleSubmit}>
             <label>
