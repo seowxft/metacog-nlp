@@ -103,7 +103,8 @@ class Bonus extends React.Component {
 
     this.handleChangeFb = this.handleChangeFb.bind(this);
     this.handleSubmitFb = this.handleSubmitFb.bind(this);
-    this.handlePaste = this.handlePaste.bind(this);
+
+    this.instructText = this.instructText.bind(this);
   }
 
   //for the feedback box
@@ -131,18 +132,16 @@ class Bonus extends React.Component {
       feedback: this.state.feedback,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/feedback/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(feedback),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/feedback/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     alert("Thanks for your feedback!");
     event.preventDefault();
