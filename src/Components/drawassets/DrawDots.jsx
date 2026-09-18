@@ -21,7 +21,12 @@ var rightBoxStartX =
   (window.innerWidth - bufferFixWidWin) / 2 - squareWidth / 2 + boxDist;
 var rightBoxStartY = (window.innerHeight - bufferFix) / 2 - squareWidth / 2;
 
-export const DrawDots = ({ dotRadius, dotDiffLeft, dotDiffRight }) => {
+export const DrawDots = ({
+  dotRadius,
+  dotDiffLeft,
+  dotDiffRight,
+  extractDots,
+}) => {
   var dotCir = dotRadius * 2;
 
   var leftDotPos = utils.genDotPos(
@@ -60,6 +65,13 @@ export const DrawDots = ({ dotRadius, dotDiffLeft, dotDiffRight }) => {
 
   const [dotsLeftShow] = React.useState(leftDotShownCoor);
   const [dotsRightShow] = React.useState(rightDotShownCoor);
+
+  // NEW: Hand the arrays back to the parent silently
+  useEffect(() => {
+    if (extractDots) {
+      extractDots(dotsLeftShow, dotsRightShow);
+    }
+  }, []); // Empty array ensures this only runs once
 
   return (
     <Stage

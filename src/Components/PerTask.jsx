@@ -818,6 +818,10 @@ class PerTask extends React.Component {
   //////////////////////////////////////////////////////////////////////////////////
   // FOUR COMPONENTS OF THE TASK, Fixation, Stimulus/Response, Feedback and Confidence
   trialReset() {
+    //this is the dot array to be saved
+    this.extractedLeft = null;
+    this.extractedRight = null;
+
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var trialNumInBlock = this.state.trialNumInBlock + 1;
     var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
@@ -1063,6 +1067,15 @@ class PerTask extends React.Component {
       }
     }
 
+    // NEW: Compress the coordinates you extracted into a clean string (e.g., "150,200|155,210")
+    var compressedLeft = (this.extractedLeft || [])
+      .map((d) => `${Math.round(d.x)},${Math.round(d.y)}`)
+      .join("|");
+
+    var compressedRight = (this.extractedRight || [])
+      .map((d) => `${Math.round(d.x)},${Math.round(d.y)}`)
+      .join("|");
+
     // 3. Build the save string using the FRESH local variables
     let saveString = {
       prolificID: this.state.prolificID,
@@ -1120,6 +1133,10 @@ class PerTask extends React.Component {
 
       dotStairLeft: this.state.dotStairLeft,
       dotStairRight: this.state.dotStairRight,
+
+      // NEW: Add the compressed strings to your payload
+      leftDotsArray: compressedLeft,
+      rightDotsArray: compressedRight,
 
       mouseMovements: compressedMovements,
     };
@@ -1477,6 +1494,10 @@ class PerTask extends React.Component {
             dotRadius={this.state.dotRadius}
             dotDiffLeft={this.state.dotDiffLeft}
             dotDiffRight={this.state.dotDiffRight}
+            extractDots={(left, right) => {
+              this.extractedLeft = left;
+              this.extractedRight = right;
+            }}
           />
         </div>
       );
