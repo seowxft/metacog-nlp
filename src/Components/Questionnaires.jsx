@@ -143,39 +143,39 @@ class Questionnaires extends React.Component {
 
   // --- Mouse Movement Handler (Stores array per active page key) ---
   handleGlobalMouseMove(event) {
-    if (this.state.questScreen && !this.ticking) {
-      window.requestAnimationFrame(() => {
-        const now = Math.round(performance.now());
-        const relativePageTime = now - this.state.pageStartTime;
-        const activePage = this.state.currentPageName;
+    window.requestAnimationFrame(() => {
+      const now = Math.round(performance.now());
+      const relativePageTime = now - this.state.pageStartTime;
+      const activePage = this.state.currentPageName;
 
-        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
-        let sectionTag = "unmapped";
-        if (this.state.section === "psych") sectionTag = "p";
+      if (activePage === "instructions") {
+        sectionTag = "p"; // "p" for the description phase
+      } else {
+        sectionTag = activePage; // "demo", "PHQ", "GAD", etc.
+      }
 
-        const currentCoord = {
-          x: event.clientX,
-          y: event.clientY,
-          t: relativePageTime, // Relative time spent on current page (ms)
-          p: sectionTag, // 'p' for Phase property
+      const currentCoord = {
+        x: event.clientX,
+        y: event.clientY,
+        t: relativePageTime, // Relative time spent on current page (ms)
+        p: sectionTag, // 'p' for Phase property
+      };
+
+      this.setState((prevState) => {
+        const existingPageMovements =
+          prevState.mouseMovements[activePage] || [];
+
+        return {
+          mouseMovements: {
+            ...prevState.mouseMovements,
+            [activePage]: [...existingPageMovements, currentCoord],
+          },
         };
-
-        this.setState((prevState) => {
-          const existingPageMovements =
-            prevState.mouseMovements[activePage] || [];
-
-          return {
-            mouseMovements: {
-              ...prevState.mouseMovements,
-              [activePage]: [...existingPageMovements, currentCoord],
-            },
-          };
-        });
-
-        this.ticking = false;
       });
-      this.ticking = true;
-    }
+
+      this.ticking = false;
+    });
+    this.ticking = true;
   }
 
   // --- Page Change Event Handler ---
