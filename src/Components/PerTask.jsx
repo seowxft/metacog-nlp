@@ -585,6 +585,7 @@ class PerTask extends React.Component {
             <form onSubmit={this.handleSubmit}>
               <label>
                 <textarea
+                  key={instructNum}
                   placeholder={`${this.state.minWordCount} words minimum.`}
                   value={this.state.selfKnowledge}
                   onChange={this.handleChange}

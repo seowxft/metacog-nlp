@@ -5,7 +5,7 @@ import * as utils from "./func/utils.jsx";
 import style from "./style/perTaskStyle.module.css";
 import astrodude from "./img/astronaut.png";
 
-//import { DATABASE_URL } from "./config";
+import { DATABASE_URL } from "./config";
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ class Bonus extends React.Component {
   handleSubmitFb(event) {
     var prolificID = this.state.prolificID;
 
-    let feedback = {
+    let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
       userID: this.state.userID,
