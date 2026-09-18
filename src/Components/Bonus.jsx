@@ -1,6 +1,8 @@
 import React from "react";
 import withRouter from "./func/withRouter.jsx";
 
+import * as utils from "./func/utils.jsx";
+
 import style from "./style/perTaskStyle.module.css";
 import astrodude from "./img/astronaut.png";
 
