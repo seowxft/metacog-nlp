@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Stage, Layer, Rect, Circle } from "react-konva";
 import * as utils from "../func/utils.jsx";
 
