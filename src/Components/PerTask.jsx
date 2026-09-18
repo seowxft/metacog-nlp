@@ -76,7 +76,7 @@ class PerTask extends React.Component {
 
     var condScrabble1 = ["easy", "hard"];
     var condScrabble2 = ["easy", "hard"];
-    utils.shuffle(condScrabble);
+    utils.shuffle(condScrabble1);
     utils.shuffle(condScrabble2);
     var blockCondTotal = [condScrabble1, ...condScrabble2];
 

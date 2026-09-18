@@ -18,7 +18,7 @@ class RatingDomain extends React.Component {
     // --- Declare variables OUTSIDE the if/else ---
     let userID, prolificID, date, startTime, condition;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -59,7 +59,7 @@ class RatingDomain extends React.Component {
       textTime: null,
       selfKnowledge: "",
       wordCount: 0,
-      minWordCount: 10,
+      minWordCount: 100,
 
       // screen parameters
       instructScreen: true,
@@ -176,23 +176,30 @@ class RatingDomain extends React.Component {
       //if the curren domain is memory
       explain = (
         <span>
-          What about situations where you need to remember something you have
-          just seen. How good do you think you are at this, and how do you judge
-          whether your memory is likely to be correct?
+          Think about situations when you need to use your memory. For example,
+          you run into someone at a café and need to remember their name. How do
+          you tell whether what you remember is correct?
           <br /> <br />
-          Describe your experience in your own words.
+          What thoughts or feelings do you notice, and what helps you judge
+          whether you can trust your memory? Try to describe a specific
+          situation, but you may also talk in general about when you can and
+          cannot trust your memory.
           <br /> <br />
         </span>
       );
     } else if (this.state.domain[instructNum - 1] === "perception") {
       explain = (
         <span>
-          What about situations where you need to make a quick judgement about
-          what you see, such as deciding which of two groups contains more
-          items. How good do you think you are at this, and how do you judge
-          whether your visual judgement is likely to be correct?
-          <br /> <br />
-          Describe your experience in your own words.
+          Think about situations when you need to make a judgement about what
+          you see. For example, during an eye test, you are asked whether the
+          letters look clearer with option A or option B. How do you tell
+          whether you can trust your choice?
+          <br />
+          <br />
+          What thoughts or feelings do you notice, and what helps you judge how
+          sure you are? Try to describe a specific situation, but you may also
+          talk in general about when you can and cannot trust your visual
+          judgements.
           <br /> <br />
         </span>
       );
@@ -200,10 +207,15 @@ class RatingDomain extends React.Component {
 
     let instruct_text1 = (
       <div>
-        Before you begin, please think about situations in everyday life where
-        you have to solve a problem or make a decision. Please describe how you
-        experience your own thinking in these situations, including how you
-        judge whether your answer or decision is likely to be correct.
+        Think of a recent situation where you had to work something out or make
+        a decision. Briefly describe the situation and what you noticed about
+        your thoughts and feelings as you dealt with it.
+        <br />
+        <br />
+        Looking back, what does this tell you about your own thinking, including
+        your abilities, what helps or gets in the way, and how you recognise
+        when your thinking is going well? How typical is this of you in other
+        situations?
         <br />
         <br />
         <center>
@@ -211,7 +223,7 @@ class RatingDomain extends React.Component {
             <label>
               <textarea
                 key={instructNum} // <--- ADD THIS KEY
-                placeholder={`Describe your typical approach. Can you give examples? ${this.state.minWordCount} words minimum.`}
+                placeholder={`${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
                 onPaste={this.handlePaste}
@@ -237,7 +249,7 @@ class RatingDomain extends React.Component {
             <label>
               <textarea
                 key={instructNum} // <--- ADD THIS KEY
-                placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
+                placeholder={`${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
                 onPaste={this.handlePaste}
@@ -263,7 +275,7 @@ class RatingDomain extends React.Component {
             <label>
               <textarea
                 key={instructNum} // <--- ADD THIS KEY
-                placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
+                placeholder={`${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
                 onPaste={this.handlePaste}

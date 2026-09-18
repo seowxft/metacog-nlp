@@ -55,7 +55,7 @@ class MemTask extends React.Component {
       stateWord,
       statePic;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
@@ -136,7 +136,7 @@ class MemTask extends React.Component {
 
     var condScrabble1 = ["easy", "hard"];
     var condScrabble2 = ["easy", "hard"];
-    utils.shuffle(condScrabble);
+    utils.shuffle(condScrabble1);
     utils.shuffle(condScrabble2);
     var blockCondTotal = [condScrabble1, ...condScrabble2];
 
@@ -201,7 +201,7 @@ class MemTask extends React.Component {
       textTime: null,
       selfKnowledge: [],
       wordCount: 0,
-      minWordCount: 10,
+      minWordCount: 50,
 
       // staircase parameters
       responseMatrix: [], // <-- Change from [true, true] to []
@@ -227,6 +227,7 @@ class MemTask extends React.Component {
       // screen parameters
       instructScreen: true,
       instructNum: 1,
+      postGlobalState: "domain",
       quizScreen: false,
       taskScreen: false,
       taskSection: null,
@@ -253,6 +254,7 @@ class MemTask extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     this.handleInstruct = this.handleInstruct.bind(this);
+    this.handleGlobalSubmit = this.handleGlobalSubmit.bind(this);
     this.handleBegin = this.handleBegin.bind(this);
     this.handleResp = this.handleResp.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -296,6 +298,7 @@ class MemTask extends React.Component {
         else if (this.state.taskSection === "confidence") sectionTag = "conf";
         else if (this.state.taskSection === "rating") sectionTag = "r";
         else if (this.state.taskSection === "break") sectionTag = "b";
+        else if (this.state.taskSection === "domain") sectionTag = "d";
 
         const currentCoord = {
           x: event.clientX,
@@ -399,6 +402,36 @@ class MemTask extends React.Component {
     setTimeout(
       function () {
         this.renderRatingSave();
+      }.bind(this),
+      0,
+    );
+  }
+
+  handleGlobalSubmit(event) {
+    event.preventDefault(); // Always call this first!
+
+    // --- Validation Check ---
+    if (this.state.wordCount < this.state.minWordCount) {
+      this.setState({
+        error:
+          "Please write at least " +
+          this.state.minWordCount +
+          " words to continue.",
+      });
+      return; // Stop the submission
+    }
+    // --- End Validation ---
+    var timePressed = Math.round(performance.now());
+    var textTime = timePressed - this.state.sectionTime;
+
+    this.setState({
+      selfKnowledge: this.state.selfKnowledge,
+      textTime: textTime,
+    });
+
+    setTimeout(
+      function () {
+        this.renderGlobalSave();
       }.bind(this),
       0,
     );
@@ -610,6 +643,7 @@ class MemTask extends React.Component {
             <form onSubmit={this.handleSubmit}>
               <label>
                 <textarea
+                  key={instructNum}
                   placeholder={`${this.state.minWordCount} words minimum.`}
                   value={this.state.selfKnowledge}
                   onChange={this.handleChange}
@@ -743,6 +777,46 @@ class MemTask extends React.Component {
     }
   }
 
+  domainGlobalPost(postGlobalState) {
+    let quiz_text1 = (
+      <div>
+        <center>
+          Based on how you did on this task, how would you describe your memory
+          ability? Do you think you would do better or worse on other memory
+          tasks?
+        </center>
+        <br />
+        <br />
+        <center>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                key={quizState} // <--- ADD THIS KEY
+                placeholder={`${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
+          Please do not write any self-identifiying information (e.g., your
+          name, your address, etc.).
+        </center>
+      </div>
+    );
+
+    switch (postGlobalState) {
+      case "domain":
+        return <div>{quiz_text1}</div>;
+      default:
+    }
+  }
+
   quizBegin() {
     var initialValue = utils.randomInt(15, 25);
 
@@ -858,8 +932,8 @@ class MemTask extends React.Component {
 
     //pick the number of stim to be shown, plus 1 more for the other option of 2AFC
     var stimPickNum = stimNum + 1;
-    var stimPick = stim.slice([-stimPickNum]);
-    var stimWordPick = stimWord.slice([-stimPickNum]); // word of array of stimuli to be shown
+    var stimPick = stim.slice(-stimPickNum);
+    var stimWordPick = stimWord.slice(-stimPickNum); // word of array of stimuli to be shown
 
     console.log("stimPickNum: " + stimPickNum);
     console.log("stimPick: " + stimPick);
@@ -1020,8 +1094,6 @@ class MemTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoice() {
-    document.addEventListener("keyup", this._handleRespKey);
-
     var encodeTime =
       Math.round(performance.now()) -
       [this.state.trialTime + this.state.fixTime + this.state.stimTime];
@@ -1036,8 +1108,6 @@ class MemTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-    document.removeEventListener("keyup", this._handleRespKey);
-
     var choice = this.state.choice;
     var choiceFbLeft;
     var choiceFbRight;
@@ -1073,8 +1143,6 @@ class MemTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderConfScale() {
-    document.addEventListener("keyup", this._handleConfRespKey);
-
     var initialValue = utils.randomInt(70, 80);
 
     var respFbTime =
@@ -1099,8 +1167,6 @@ class MemTask extends React.Component {
   }
 
   renderTaskSave() {
-    document.removeEventListener("keyup", this._handleConfRespKey);
-
     console.log("trialNumInBlock Save: " + this.state.trialNumInBlock);
 
     // Downsample processing logic to keep character count below DB limits
@@ -1192,18 +1258,16 @@ class MemTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/mem_task_data/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/mem_task_data/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     console.log("trialNum: " + this.state.trialNum);
     console.log("trialNumPerBlock: " + this.state.trialNumPerBlock);
@@ -1285,18 +1349,16 @@ class MemTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     //go back to the trials
     setTimeout(
@@ -1341,7 +1403,6 @@ class MemTask extends React.Component {
   }
 
   renderQuizSave() {
-    document.removeEventListener("keyup", this._handleGlobalConfKey);
     var prolificID = this.state.prolificID;
     var task = "memory";
 
@@ -1383,6 +1444,66 @@ class MemTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
+
+    //return to go to the global rating
+    this.setState({
+      taskSection: "global",
+      mouseMovements: [],
+    });
+  }
+
+  renderGlobalSave() {
+    var prolificID = this.state.prolificID;
+    var task = "memory";
+
+    // Downsample processing logic to keep character count below DB limits
+    var sampleRate = 3;
+    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
+
+    var rawMovements = this.state.mouseMovements || [];
+
+    var compressedMovements = rawMovements
+      .filter((_, index) => index % sampleRate === 0)
+      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
+      .join("|");
+
+    // --- FAILSAFE: Truncate if trial string exceeds limit ---
+    if (compressedMovements.length > maxChars) {
+      compressedMovements = compressedMovements.substring(0, maxChars);
+      const lastPipe = compressedMovements.lastIndexOf("|");
+      if (lastPipe !== -1) {
+        compressedMovements = compressedMovements.substring(0, lastPipe);
+      }
+    }
+
+    let saveString = {
+      prolificID: this.state.prolificID,
+      condition: this.state.condition,
+      task: task,
+      userID: this.state.userID,
+      date: this.state.date,
+      startTime: this.state.startTime,
+      section: this.state.section,
+      sectionTime: this.state.sectionTime,
+      blockNum: this.state.blockNum,
+      quizState: "domain post",
+      confInitial: null,
+      confLevel: null,
+      textTime: this.state.textTime,
+      selfKnowledge: this.state.selfKnowledge,
+      mouseMovements: compressedMovements,
+    };
+
     try {
       fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
         method: "POST",
@@ -1420,9 +1541,6 @@ class MemTask extends React.Component {
   }
 
   redirectToNextTask() {
-    document.removeEventListener("keyup", this._handleInstructKey);
-    document.removeEventListener("keyup", this._handleBeginKey);
-
     var condition = this.state.condition;
     var perCorrectPer = this.state.perCorrectPer;
     var memCorrectPer = this.state.correctPer;
@@ -1492,8 +1610,6 @@ class MemTask extends React.Component {
       this.state.taskScreen === false &&
       this.state.quizScreen === false
     ) {
-      /*   document.addEventListener("keyup", this._handleInstructKey);
-      document.addEventListener("keyup", this._handleBeginKey); */
       text = <div> {this.instructText(this.state.instructNum)}</div>;
       console.log("Page: " + this.state.instructNum);
     } else if (
@@ -1504,6 +1620,13 @@ class MemTask extends React.Component {
     ) {
       text = <div> {this.quizText(this.state.quizState)}</div>;
       console.log("Quiz state: " + this.state.quizState);
+    } else if (
+      this.state.instructScreen === false &&
+      this.state.taskScreen === false &&
+      this.state.quizScreen === true &&
+      this.state.taskSection === "global"
+    ) {
+      text = <div> {this.domainGlobalPost(this.state.postGlobalState)}</div>;
     } else if (
       this.state.instructScreen === false &&
       this.state.quizScreen === false &&

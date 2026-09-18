@@ -1,6 +1,5 @@
 import React from "react";
 import withRouter from "./func/withRouter.jsx";
-
 import * as utils from "./func/utils.jsx";
 
 import style from "./style/perTaskStyle.module.css";
@@ -11,9 +10,8 @@ import astrodude from "./img/astronaut.png";
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 // THIS CODES THE LAST PAGE BEFORE QUESTIONNAIRES
-// 1) Insight whether the first task had impact on second task
-// 2) Amount of bonus earned for both tasks
-// 3) Feedback box
+// 1) Amount of bonus earned for both tasks
+// 2) Feedback box
 
 class Bonus extends React.Component {
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,10 +59,6 @@ class Bonus extends React.Component {
     var totalBonus =
       Math.round((memBonus + perBonus) * 100 + Number.EPSILON) / 100;
 
-    var domain = ["memory", "perception"];
-    utils.shuffle(domain);
-    var finalDomain = ["general", ...domain];
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     // SET STATES
@@ -75,24 +69,16 @@ class Bonus extends React.Component {
       userID: userID,
       date: date,
       startTime: startTime,
-      domain: finalDomain,
       trialTime: sectionTime,
 
       //section paramters
       sectionTime: sectionTime,
-      section: "domainpost",
-      quizState: "domain",
-      ratingDomain: null,
-      textTime: null,
-      selfKnowledge: [],
-      wordCount: 0,
-      minWordCount: 10,
+      section: "bonus",
+      feedback: "",
 
       // screen parameters
       instructScreen: true,
       instructNum: 1, //start from 1
-      // --- MOUSE TRACKING STATE ---
-      mouseMovements: [],
 
       astrodude: astrodude,
       memBonus: memBonus,
@@ -115,48 +101,9 @@ class Bonus extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    this.handleInstruct = this.handleInstruct.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleChangeFb = this.handleChangeFb.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmitFb = this.handleSubmitFb.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
-
-    // --- Bind Mouse Tracker Event Handler ---
-    this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
-    this.ticking = false; // Performance flag for requestAnimationFrame
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //End constructor props
-  }
-
-  // --- MOUSE TRACKING EVENT HANDLER ---
-  handleGlobalMouseMove(event) {
-    if (!this.ticking) {
-      window.requestAnimationFrame(() => {
-        // Calculate timestamp relative to the section starting time
-        const relativeTime = Math.round(
-          performance.now() - this.state.trialTime,
-        );
-
-        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
-        let sectionTag = "unmapped";
-        if (this.state.section === "domainpost") sectionTag = "dp";
-
-        const currentCoord = {
-          x: event.clientX,
-          y: event.clientY,
-          t: relativeTime,
-          p: sectionTag, // 'p' for Phase property
-        };
-
-        this.setState((prevState) => ({
-          mouseMovements: [...prevState.mouseMovements, currentCoord],
-        }));
-
-        this.ticking = false;
-      });
-      this.ticking = true;
-    }
   }
 
   //for the feedback box
@@ -165,54 +112,6 @@ class Bonus extends React.Component {
       feedback: event.target.value,
       section: "feedback",
     });
-  }
-
-  //for the submitting the text plus moving to next page
-  handleChange(event) {
-    var text = event.target.value;
-    var trimmedText = text.trim();
-    var wordCount = trimmedText ? trimmedText.split(/\s+/).length : 0;
-
-    this.setState({
-      selfKnowledge: text,
-      wordCount: wordCount,
-      error: null,
-    });
-  }
-
-  handlePaste(event) {
-    event.preventDefault();
-    alert("Pasting is not allowed in this field."); // Optional: Notify the user
-  }
-
-  handleSubmit(event) {
-    event.preventDefault(); // Always call this first!
-
-    // --- Validation Check ---
-    if (this.state.wordCount < this.state.minWordCount) {
-      this.setState({
-        error:
-          "Please write at least " +
-          this.state.minWordCount +
-          " words to continue.",
-      });
-      return; // Stop the submission
-    }
-    // --- End Validation ---
-    var timePressed = Math.round(performance.now());
-    var textTime = timePressed - this.state.sectionTime;
-
-    this.setState({
-      selfKnowledge: this.state.selfKnowledge,
-      textTime: textTime,
-    });
-
-    setTimeout(
-      function () {
-        this.renderRatingSave();
-      }.bind(this),
-      0,
-    );
   }
 
   handleSubmitFb(event) {
@@ -226,11 +125,9 @@ class Bonus extends React.Component {
       startTime: this.state.startTime,
       section: this.state.section,
       sectionTime: this.state.sectionTime,
-      ratingTime: null,
-      ratingValue: null,
-      perBonus: null,
-      memBonus: null,
-      totalBonus: null,
+      memBonus: this.state.memBonus,
+      perBonus: this.state.perBonus,
+      totalBonus: this.state.totalBonus,
       feedback: this.state.feedback,
     };
 
@@ -258,65 +155,14 @@ class Bonus extends React.Component {
     );
   }
 
-  // This handles instruction screen within the component USING KEYBOARD
-  handleInstruct(keyPressed) {
-    var timePressed = Math.round(performance.now());
-    var curInstructNum = this.state.instructNum;
-    var ratingValue = this.state.ratingValue;
-    var whichButton = keyPressed;
-
-    if (whichButton === 3 && curInstructNum < 3 && ratingValue !== null) {
-      var ratingTime = timePressed - this.state.sectionTime;
-
-      this.setState({
-        ratingTime: ratingTime,
-      });
-
-      setTimeout(
-        function () {
-          this.renderRatingSave();
-        }.bind(this),
-        0,
-      );
-    }
-  }
-
   // Ask the second round of the self-knowledge questions
   instructText(instructNum) {
-    var explain;
-    if (this.state.domain[instructNum - 1] === "memory") {
-      //if the curren domain is memory
-      explain = (
-        <span>
-          Think about situations where you need to remember something you have
-          just seen. Based on how you see your ability now, how good do you
-          think you are at this, and how do you judge whether your memory is
-          likely to be correct?
-          <br /> <br />
-          Describe your experience in your own words.
-        </span>
-      );
-    } else if (this.state.domain[instructNum - 1] === "perception") {
-      explain = (
-        <span>
-          Think about situations where you need to make a quick judgement about
-          what you see, such as deciding which of two groups contains more
-          items. Based on how you see your ability now, how good do you think
-          you are at this, and how do you judge whether your visual judgement is
-          likely to be correct?
-          <br /> <br />
-          Describe your experience in your own words.
-        </span>
-      );
-    }
-
     var condition = this.state.condition;
     var FirstT;
     var SecondT;
     var FirstB;
     var SecondB;
-    var explain1;
-    var explain2;
+
     if (condition === 1) {
       //perform the perception task first
       FirstT = "comparing the battery cards";
@@ -333,109 +179,16 @@ class Bonus extends React.Component {
 
     let instruct_text1 = (
       <div>
-        Well done on completing both tasks!
-        <br />
-        <br />
-        Now that you have completed the tasks, think again about situations in
-        everyday life where you have to solve a problem or make a decision.
-        Based on how you see yourself now, please describe how you experience
-        your own thinking in these situations, including how you judge whether
-        your answer or decision is likely to be correct.
-        <br />
-        <br />
-        <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                key={instructNum} // <--- ADD THIS KEY
-                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-                onPaste={this.handlePaste}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
-        </center>
-        <span className={style.astro}>
-          <img src={this.state.astrodude} width={200} alt="astrodude" />
-        </span>
-      </div>
-    );
-
-    let instruct_text2 = (
-      <div>
-        {explain}
-        <br />
-        <br />
-        <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                key={instructNum} // <--- ADD THIS KEY
-                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-                onPaste={this.handlePaste}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
-        </center>
-        <span className={style.astro}>
-          <img src={this.state.astrodude} width={200} alt="astrodude" />
-        </span>
-      </div>
-    );
-
-    let instruct_text3 = (
-      <div>
-        {explain}
-        <br />
-        <br />
-        <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                key={instructNum} // <--- ADD THIS KEY
-                placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-                onPaste={this.handlePaste}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
-        </center>
-        <span className={style.astro}>
-          <img src={this.state.astrodude} width={200} alt="astrodude" />
-        </span>
-      </div>
-    );
-
-    let instruct_text4 = (
-      <div>
         <span>
+          Well done on completing both tasks!
+          <br />
+          <br />
           From the first task [{FirstT}], you earned a bonus of £{FirstB}. From
           the second task [{SecondT}], you earned a bonus of £{SecondB}.
           <br /> <br />
-          We would love to hear any comments you have about the tasks you have
-          completed.
-          <br /> <br />
-          If you have any, please fill in the box below and click submit. If
-          not, leave the box empty and click the submit button.
+          If you have comments you have about the tasks you have completed,
+          please fill in the box below and click submit. If not, leave the box
+          empty and click the submit button.
           <br />
           <br />
           <center>
@@ -460,131 +213,8 @@ class Bonus extends React.Component {
     switch (instructNum) {
       case 1:
         return <div>{instruct_text1}</div>;
-      case 2:
-        return <div>{instruct_text2}</div>;
-      case 3:
-        return <div>{instruct_text3}</div>;
-      case 4:
-        return <div>{instruct_text4}</div>;
       default:
     }
-  }
-
-  renderRatingSave() {
-    var prolificID = this.state.prolificID;
-    var task = this.state.domain[this.state.instructNum - 1];
-
-    // Downsample processing logic to keep character count below DB limits
-    var sampleRate = 3;
-    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
-
-    var rawMovements = this.state.mouseMovements || [];
-
-    var compressedMovements = rawMovements
-      .filter((_, index) => index % sampleRate === 0)
-      .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
-      .join("|");
-
-    // --- FAILSAFE: Truncate if trial string exceeds limit ---
-    if (compressedMovements.length > maxChars) {
-      compressedMovements = compressedMovements.substring(0, maxChars);
-      const lastPipe = compressedMovements.lastIndexOf("|");
-      if (lastPipe !== -1) {
-        compressedMovements = compressedMovements.substring(0, lastPipe);
-      }
-    }
-    let saveString = {
-      prolificID: this.state.prolificID,
-      condition: this.state.condition,
-      task: task,
-      userID: this.state.userID,
-      date: this.state.date,
-      startTime: this.state.startTime,
-      section: this.state.section,
-      sectionTime: this.state.sectionTime,
-      blockNum: null,
-      quizState: this.state.quizState,
-      confInitial: null,
-      confLevel: null,
-      textTime: this.state.textTime,
-      selfKnowledge: this.state.selfKnowledge,
-      // --- ADDED TRACKING KEY ---
-      mouseMovements: compressedMovements,
-    };
-
-    try {
-      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
-
-    setTimeout(
-      function () {
-        this.nextPg();
-      }.bind(this),
-      0,
-    );
-  }
-
-  nextPg() {
-    var instructNum = this.state.instructNum;
-    console.log(instructNum);
-
-    //move to page 2
-    this.setState({
-      instructNum: this.state.instructNum + 1,
-      trialTime: Math.round(performance.now()),
-      mouseMovements: [],
-      selfKnowledge: "", // Change from [] to ""
-      wordCount: 0, // Reset the word count to 0!
-    });
-  }
-
-  renderRatingSaveFb() {
-    var prolificID = this.state.prolificID;
-
-    let saveString = {
-      prolificID: this.state.prolificID,
-      condition: this.state.condition,
-      userID: this.state.userID,
-      date: this.state.date,
-      startTime: this.state.startTime,
-      section: this.state.section,
-      sectionTime: this.state.sectionTime,
-      memBonus: this.state.memBonus,
-      perBonus: this.state.perBonus,
-      totalBonus: this.state.totalBonus,
-      feedback: null,
-      textTime: this.state.textTime,
-      selfKnowledge: this.state.selfKnowledge,
-    };
-
-    try {
-      fetch(`${DATABASE_URL}/feedback/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
-
-    setTimeout(
-      function () {
-        this.redirectToNextTask();
-      }.bind(this),
-      0,
-    );
   }
 
   redirectToNextTask() {
@@ -604,13 +234,6 @@ class Bonus extends React.Component {
 
   componentDidMount() {
     window.scrollTo(0, 0);
-    // --- Attach mouse listener when screen loads ---
-    window.addEventListener("mousemove", this.handleGlobalMouseMove);
-  }
-
-  componentWillUnmount() {
-    // --- Clean up listener to prevent catastrophic memory leaks ---
-    window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
   ///////////////////////////////////////////////////////////////
@@ -618,7 +241,6 @@ class Bonus extends React.Component {
     let text;
 
     if (this.state.instructScreen === true) {
-      //   document.addEventListener("keyup", this._handleInstructKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
     } else {
       console.log("ERROR CAN'T FIND THE RIGHT PAGE");
