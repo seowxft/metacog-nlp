@@ -350,6 +350,8 @@ class RatingDomain extends React.Component {
       selfKnowledge: this.state.selfKnowledge,
       // --- ADDED TRACKING KEY ---
       mouseMovements: compressedMovements,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     };
 
     fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {

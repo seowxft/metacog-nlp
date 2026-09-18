@@ -2039,6 +2039,8 @@ class MemTut extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: null,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 

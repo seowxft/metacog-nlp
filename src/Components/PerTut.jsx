@@ -1715,6 +1715,8 @@ class PerTut extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.confTime,
       selfKnowledge: null,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 

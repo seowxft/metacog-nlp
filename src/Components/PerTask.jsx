@@ -1137,7 +1137,8 @@ class PerTask extends React.Component {
       // NEW: Add the compressed strings to your payload
       leftDotsArray: compressedLeft,
       rightDotsArray: compressedRight,
-
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 
@@ -1211,6 +1212,8 @@ class PerTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 
@@ -1304,6 +1307,8 @@ class PerTask extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: null,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 
@@ -1363,6 +1368,8 @@ class PerTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 

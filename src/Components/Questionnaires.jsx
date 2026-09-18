@@ -222,6 +222,8 @@ class Questionnaires extends React.Component {
     survey.setValue("sectionTime", this.state.sectionTime);
     survey.setValue("qnTimeStart", this.state.qnStart);
     survey.setValue("qnTimeEnd", qnEnd);
+    survey.setValue("windowWidth", window.innerWidth);
+    survey.setValue("windowHeight", window.innerHeight);
 
     // --- Downsample, Compress, and Failsafe Cap Per Page ---
     const sampleRate = 3; // Keep 1 out of every 3 points
@@ -373,6 +375,8 @@ class Questionnaires extends React.Component {
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
       // --- ADDED TRACKING KEY ---
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 

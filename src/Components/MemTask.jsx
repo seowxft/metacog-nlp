@@ -1255,6 +1255,8 @@ class MemTask extends React.Component {
       choiceShownWordLeft: this.state.choiceShownWordLeft,
       choiceShownWordRight: this.state.choiceShownWordRight,
 
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 
@@ -1346,6 +1348,8 @@ class MemTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 
@@ -1441,6 +1445,8 @@ class MemTask extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: null,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 
