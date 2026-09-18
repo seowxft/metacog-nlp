@@ -101,7 +101,7 @@ class Bonus extends React.Component {
     //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChangeFb = this.handleChangeFb.bind(this);
     this.handleSubmitFb = this.handleSubmitFb.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
   }

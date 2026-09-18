@@ -59,7 +59,7 @@ class RatingDomain extends React.Component {
       textTime: null,
       selfKnowledge: "",
       wordCount: 0,
-      minWordCount: 100,
+      minWordCount: 1, //100
 
       // screen parameters
       instructScreen: true,
@@ -408,7 +408,6 @@ class RatingDomain extends React.Component {
   }
 
   redirectToTarget() {
-    document.removeEventListener("keyup", this._handleInstructKey);
     var condition = this.state.condition;
     var condUrl;
 
@@ -438,7 +437,6 @@ class RatingDomain extends React.Component {
     let text;
 
     if (this.state.instructScreen === true) {
-      document.addEventListener("keyup", this._handleInstructKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
     } else {
       console.log("ERROR CAN'T FIND THE RIGHT PAGE");
