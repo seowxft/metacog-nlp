@@ -138,7 +138,7 @@ class MemTask extends React.Component {
     var condScrabble2 = ["easy", "hard"];
     utils.shuffle(condScrabble1);
     utils.shuffle(condScrabble2);
-    var blockCondTotal = [condScrabble1, ...condScrabble2];
+    var blockCondTotal = [...condScrabble1, ...condScrabble2];
 
     //the choice position
     var choicePos = Array(Math.round(trialNumTotal / 2))
@@ -791,7 +791,7 @@ class MemTask extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
-                key={quizState} // <--- ADD THIS KEY
+                key={postGlobalState} // <--- ADD THIS KEY
                 placeholder={`${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -1504,18 +1504,16 @@ class MemTask extends React.Component {
       mouseMovements: compressedMovements,
     };
 
-    try {
-      fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(saveString),
-      });
-    } catch (e) {
-      console.log("Cant post?");
-    }
+    fetch(`${DATABASE_URL}/pre_post_conf/` + prolificID, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(saveString),
+    }).catch((e) => {
+      console.log("Cant post?", e);
+    });
 
     //return to instructions
     this.setState({

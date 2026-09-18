@@ -78,7 +78,7 @@ class PerTask extends React.Component {
     var condScrabble2 = ["easy", "hard"];
     utils.shuffle(condScrabble1);
     utils.shuffle(condScrabble2);
-    var blockCondTotal = [condScrabble1, ...condScrabble2];
+    var blockCondTotal = [...condScrabble1, ...condScrabble2];
 
     //the stim position
     var stimPos = Array(Math.round(trialNumTotal / 2))
@@ -900,7 +900,6 @@ class PerTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoice() {
-    //  document.addEventListener("keyup", this._handleRespKey);
     var stimTime =
       Math.round(performance.now()) -
       [this.state.trialTime + this.state.fixTime];
@@ -915,8 +914,6 @@ class PerTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-    //  document.removeEventListener("keyup", this._handleRespKey);
-
     this.setState({
       //    instructScreen: false,
       //    taskScreen: true,
@@ -933,8 +930,6 @@ class PerTask extends React.Component {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   renderConfScale() {
-    document.addEventListener("keyup", this._handleConfRespKey);
-
     var initialValue = utils.randomInt(70, 80);
 
     var respFbTime =
@@ -958,8 +953,6 @@ class PerTask extends React.Component {
   }
 
   renderTaskSave() {
-    // document.removeEventListener("keyup", this._handleConfRespKey);
-
     var prolificID = this.state.prolificID;
     var blockCond = this.state.blockCond;
 
@@ -1185,7 +1178,6 @@ class PerTask extends React.Component {
   }
 
   renderQuizSave() {
-    //  document.removeEventListener("keyup", this._handleGlobalConfKey);
     var prolificID = this.state.prolificID;
     var task = "perception";
 
@@ -1263,9 +1255,6 @@ class PerTask extends React.Component {
   }
 
   redirectToNextTask() {
-    //  document.removeEventListener("keyup", this._handleInstructKey);
-    // document.removeEventListener("keyup", this._handleBeginKey);
-
     var condition = this.state.condition;
     var perCorrectPer = this.state.correctPer;
     var memCorrectPer = this.state.memCorrectPer;
@@ -1313,8 +1302,6 @@ class PerTask extends React.Component {
       this.state.taskScreen === false &&
       this.state.quizScreen === false
     ) {
-      //  document.addEventListener("keyup", this._handleInstructKey);
-      //  document.addEventListener("keyup", this._handleBeginKey);
       text = <div> {this.instructText(this.state.instructNum)}</div>;
       //    console.log("Page: " + this.state.instructNum);
     } else if (
