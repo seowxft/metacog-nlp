@@ -294,7 +294,6 @@ class Bonus extends React.Component {
           likely to be correct?
           <br /> <br />
           Describe your experience in your own words.
-          <br /> <br />
         </span>
       );
     } else if (this.state.domain[instructNum - 1] === "perception") {
@@ -307,7 +306,6 @@ class Bonus extends React.Component {
           likely to be correct?
           <br /> <br />
           Describe your experience in your own words.
-          <br /> <br />
         </span>
       );
     }
@@ -349,6 +347,7 @@ class Bonus extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
+                key={instructNum} // <--- ADD THIS KEY
                 placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -377,6 +376,7 @@ class Bonus extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
+                key={instructNum} // <--- ADD THIS KEY
                 placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -405,6 +405,7 @@ class Bonus extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
+                key={instructNum} // <--- ADD THIS KEY
                 placeholder={`Can you give any reasons why? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -539,7 +540,10 @@ class Bonus extends React.Component {
     //move to page 2
     this.setState({
       instructNum: this.state.instructNum + 1,
-      selfKnowledge: [],
+      trialTime: Math.round(performance.now()),
+      mouseMovements: [],
+      selfKnowledge: "", // Change from [] to ""
+      wordCount: 0, // Reset the word count to 0!
     });
   }
 

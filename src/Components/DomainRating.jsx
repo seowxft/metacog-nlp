@@ -57,7 +57,7 @@ class RatingDomain extends React.Component {
       quizState: "domain",
       ratingDomain: null,
       textTime: null,
-      selfKnowledge: [],
+      selfKnowledge: "",
       wordCount: 0,
       minWordCount: 10,
 
@@ -210,6 +210,7 @@ class RatingDomain extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
+                key={instructNum} // <--- ADD THIS KEY
                 placeholder={`Describe your typical approach. Can you give examples? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -235,6 +236,7 @@ class RatingDomain extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
+                key={instructNum} // <--- ADD THIS KEY
                 placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -260,6 +262,7 @@ class RatingDomain extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <label>
               <textarea
+                key={instructNum} // <--- ADD THIS KEY
                 placeholder={`How would you rate yourself? Can you give examples? ${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -366,8 +369,9 @@ class RatingDomain extends React.Component {
       this.setState({
         instructNum: this.state.instructNum + 1,
         trialTime: Math.round(performance.now()),
-        selfKnowledge: [],
         mouseMovements: [],
+        selfKnowledge: "", // Change from [] to ""
+        wordCount: 0, // Reset the word count to 0!
       });
     } else if (instructNum === 3) {
       // move to real task!
