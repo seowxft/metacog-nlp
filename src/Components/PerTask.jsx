@@ -775,7 +775,16 @@ class PerTask extends React.Component {
   quizBegin() {
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 40
 
-    var initialValue = utils.randomInt(15, 25);
+    var initialValuePre = this.state.trialNumTotal / 2;
+
+    // 0.125 means the offset is 12.5% of the total.
+    // Math.round ensures the offset remains an integer.
+    var offset = Math.round(this.state.trialNumTotal * 0.125);
+
+    var initialValue = utils.randomInt(
+      initialValuePre - offset,
+      initialValuePre + offset,
+    );
 
     this.setState({
       confInitial: initialValue,

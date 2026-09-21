@@ -827,7 +827,16 @@ class MemTask extends React.Component {
   }
 
   quizBegin() {
-    var initialValue = utils.randomInt(15, 25);
+    var initialValuePre = this.state.trialNumTotal / 2;
+
+    // 0.125 means the offset is 12.5% of the total.
+    // Math.round ensures the offset remains an integer.
+    var offset = Math.round(this.state.trialNumTotal * 0.125);
+
+    var initialValue = utils.randomInt(
+      initialValuePre - offset,
+      initialValuePre + offset,
+    );
 
     console.log("Begining quiz");
     console.log("initialValue: " + initialValue);
@@ -1520,6 +1529,8 @@ class MemTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
     };
 
