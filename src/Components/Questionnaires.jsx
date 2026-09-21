@@ -148,7 +148,12 @@ class Questionnaires extends React.Component {
       window.requestAnimationFrame(() => {
         const now = Math.round(performance.now());
         const relativePageTime = now - this.state.pageStartTime;
-        const activePage = this.state.currentPageName;
+
+        // --- FIX: Check if we are on the instruction screen first ---
+        let activePage = this.state.currentPageName;
+        if (this.state.instructScreen) {
+          activePage = "instructions";
+        }
 
         // Properly declare and assign sectionTag here
         let sectionTag = "unmapped";
@@ -354,7 +359,16 @@ class Questionnaires extends React.Component {
     var sampleRate = 3;
     var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
 
-    var rawMovements = this.state.mouseMovements || [];
+    // --- NEW FIX: Safely handle if mouseMovements is an Object or an Array ---
+    var rawMovements = [];
+    if (this.state.mouseMovements) {
+      if (Array.isArray(this.state.mouseMovements)) {
+        rawMovements = this.state.mouseMovements;
+      } else {
+        // Extracts arrays from the object { "demo": [...] } and flattens them
+        rawMovements = Object.values(this.state.mouseMovements).flat();
+      }
+    }
 
     var compressedMovements = rawMovements
       .filter((_, index) => index % sampleRate === 0)
