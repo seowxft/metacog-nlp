@@ -298,7 +298,7 @@ class MemTask extends React.Component {
         else if (this.state.taskSection === "confidence") sectionTag = "conf";
         else if (this.state.taskSection === "rating") sectionTag = "r";
         else if (this.state.taskSection === "break") sectionTag = "b";
-        else if (this.state.taskSection === "domain") sectionTag = "d";
+        else if (this.state.taskSection === "global") sectionTag = "d";
 
         const currentCoord = {
           x: event.clientX,
@@ -791,7 +791,7 @@ class MemTask extends React.Component {
           <form onSubmit={this.handleGlobalSubmit}>
             <label>
               <textarea
-                key={postGlobalState} // <--- ADD THIS KEY
+                key={501} // <--- ADD THIS KEY
                 placeholder={`${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
