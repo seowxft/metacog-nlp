@@ -272,53 +272,44 @@ class MemTask extends React.Component {
   }
 
   // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
-  // --- Mouse Movement Handler (Stores array per active page key) ---
   handleGlobalMouseMove(event) {
-    if (!this.ticking) {
-      window.requestAnimationFrame(() => {
-        const now = Math.round(performance.now());
-        const relativePageTime = now - this.state.pageStartTime;
-        const activePage = this.state.currentPageName;
+    // Check condition: Track ONLY if active trial screen is mounted
+    const isTrackingScreen =
+      this.state.taskScreen ||
+      this.state.quizScreen ||
+      this.state.taskSection === "break";
 
-        // Properly declare and assign sectionTag here
+    if (isTrackingScreen && !this.ticking) {
+      window.requestAnimationFrame(() => {
+        // Calculate timestamp relative to when this specific individual trial began
+        const relativeTime = Math.round(
+          performance.now() - this.state.trialTime,
+        );
+
+        // Maps section keys to short IDs to keep character count down
+        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
         let sectionTag = "unmapped";
-        if (activePage === "instructions") {
-          sectionTag = "mh";
-        } else {
-          sectionTag = activePage;
-        }
+        if (this.state.taskSection === "iti") sectionTag = "i";
+        else if (this.state.taskSection === "fixation") sectionTag = "f";
+        else if (this.state.taskSection === "stimulus") sectionTag = "s";
+        else if (this.state.taskSection === "choice") sectionTag = "c";
+        else if (this.state.taskSection === "encode") sectionTag = "e";
+        else if (this.state.taskSection === "choiceFeedback") sectionTag = "fb";
+        else if (this.state.taskSection === "confidence") sectionTag = "conf";
+        else if (this.state.taskSection === "rating") sectionTag = "r";
+        else if (this.state.taskSection === "break") sectionTag = "b";
+        else if (this.state.taskSection === "global") sectionTag = "d";
 
         const currentCoord = {
           x: event.clientX,
           y: event.clientY,
-          t: relativePageTime,
-          p: sectionTag, // Assigns 'mh' during instructions, or the page name elsewhere
+          t: relativeTime,
+          p: sectionTag, // 'p' for Phase property
         };
 
-        this.setState((prevState) => {
-          if (activePage === "instructions") {
-            // Treat mouseMovements as a flat array
-            // Safety check: ensure prevState.mouseMovements is actually an array before spreading
-            const prevMovements = Array.isArray(prevState.mouseMovements)
-              ? prevState.mouseMovements
-              : [];
-
-            return {
-              mouseMovements: [...prevMovements, currentCoord],
-            };
-          } else {
-            // Treat mouseMovements as an object grouped by page name
-            const existingPageMovements =
-              prevState.mouseMovements[activePage] || [];
-
-            return {
-              mouseMovements: {
-                ...prevState.mouseMovements,
-                [activePage]: [...existingPageMovements, currentCoord],
-              },
-            };
-          }
-        });
+        this.setState((prevState) => ({
+          mouseMovements: [...prevState.mouseMovements, currentCoord],
+        }));
 
         this.ticking = false;
       });

@@ -141,6 +141,7 @@ class Questionnaires extends React.Component {
     window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
+  // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
   // --- Mouse Movement Handler (Stores array per active page key) ---
   handleGlobalMouseMove(event) {
     if (!this.ticking) {
@@ -152,7 +153,7 @@ class Questionnaires extends React.Component {
         // Properly declare and assign sectionTag here
         let sectionTag = "unmapped";
         if (activePage === "instructions") {
-          sectionTag = "p";
+          sectionTag = "mh";
         } else {
           sectionTag = activePage;
         }
@@ -161,19 +162,32 @@ class Questionnaires extends React.Component {
           x: event.clientX,
           y: event.clientY,
           t: relativePageTime,
-          p: sectionTag, // Assigns 'p' during instructions, or the page name elsewhere
+          p: sectionTag, // Assigns 'mh' during instructions, or the page name elsewhere
         };
 
         this.setState((prevState) => {
-          const existingPageMovements =
-            prevState.mouseMovements[activePage] || [];
+          if (activePage === "instructions") {
+            // Treat mouseMovements as a flat array
+            // Safety check: ensure prevState.mouseMovements is actually an array before spreading
+            const prevMovements = Array.isArray(prevState.mouseMovements)
+              ? prevState.mouseMovements
+              : [];
 
-          return {
-            mouseMovements: {
-              ...prevState.mouseMovements,
-              [activePage]: [...existingPageMovements, currentCoord],
-            },
-          };
+            return {
+              mouseMovements: [...prevMovements, currentCoord],
+            };
+          } else {
+            // Treat mouseMovements as an object grouped by page name
+            const existingPageMovements =
+              prevState.mouseMovements[activePage] || [];
+
+            return {
+              mouseMovements: {
+                ...prevState.mouseMovements,
+                [activePage]: [...existingPageMovements, currentCoord],
+              },
+            };
+          }
         });
 
         this.ticking = false;
