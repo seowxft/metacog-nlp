@@ -35,7 +35,7 @@ export const phq = [
       },
       {
         value: "ATTEN_2",
-        text: "I am currently reading these statements as part of a questionnaire.",
+        text: "I have completed this questionnaire without reading any of the statements.",
       },
       {
         value: "PHQ_9",
