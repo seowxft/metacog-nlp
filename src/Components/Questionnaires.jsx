@@ -89,7 +89,7 @@ class Questionnaires extends React.Component {
       textTime: null,
       selfKnowledge: "",
       wordCount: 0,
-      minWordCount: 5, //50
+      minWordCount: 50, //50
 
       // Display screens
       instructScreen: true,

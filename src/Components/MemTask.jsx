@@ -130,7 +130,7 @@ class MemTask extends React.Component {
     });
 
     // if
-    var trialNumTotal = 8; //should be 80, 4 blocks of 20 trials
+    var trialNumTotal = 80; //should be 80, 4 blocks of 20 trials
     var blockNumTotal = 4; // should be 7
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
@@ -201,7 +201,7 @@ class MemTask extends React.Component {
       textTime: null,
       selfKnowledge: [],
       wordCount: 0,
-      minWordCount: 5, //50
+      minWordCount: 50, //50
 
       // staircase parameters
       responseMatrix: [], // <-- Change from [true, true] to []

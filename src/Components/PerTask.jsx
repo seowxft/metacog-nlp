@@ -70,7 +70,7 @@ class PerTask extends React.Component {
 
     // if
 
-    var trialNumTotal = 8; //should be 80, for 4 blocks of 20 trials
+    var trialNumTotal = 80; //should be 80, for 4 blocks of 20 trials
     var blockNumTotal = 4; // should be 4
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
@@ -140,7 +140,7 @@ class PerTask extends React.Component {
       textTime: null,
       selfKnowledge: [],
       wordCount: 0,
-      minWordCount: 10,
+      minWordCount: 50, //50
 
       //dot paramters
       dotRadius: 5,

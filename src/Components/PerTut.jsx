@@ -108,7 +108,7 @@ class PerTut extends React.Component {
       //trial parameters
       exampleNumTotal: exampleNumTotal,
       trialNumTotal: trialNumTotal,
-      fullTrialNumTotal: 40, //this needs to match the real task number of trials
+      fullTrialNumTotal: 80, //this needs to match the real task number of trials
       blockCondTotal: blockCondTotal,
       trialStaircaseSwitch: trialStaircaseSwitch,
       stimPosList: pracStimPos,
@@ -1110,8 +1110,17 @@ class PerTut extends React.Component {
 
   gConfBegin() {
     //randomise the pre-post initial conf value - this has changed to a scale of 0 to 40
-    console.log("Does it come here?");
-    var initialValue = utils.randomInt(15, 25);
+
+    var initialValuePre = this.state.trialNumTotal / 2;
+
+    // 0.125 means the offset is 12.5% of the total.
+    // Math.round ensures the offset remains an integer.
+    var offset = Math.round(this.state.trialNumTotal * 0.125);
+
+    var initialValue = utils.randomInt(
+      initialValuePre - offset,
+      initialValuePre + offset,
+    );
 
     this.setState({
       confInitial: initialValue,
