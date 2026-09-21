@@ -171,10 +171,7 @@ class Questionnaires extends React.Component {
           return {
             mouseMovements: {
               ...prevState.mouseMovements,
-              [activePage]: [
-                ...(existingPageNavments || existingPageMovements),
-                currentCoord,
-              ],
+              [activePage]: [...existingPageMovements, currentCoord],
             },
           };
         });
