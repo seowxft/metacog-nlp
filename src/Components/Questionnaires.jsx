@@ -266,6 +266,23 @@ class Questionnaires extends React.Component {
         }
       }
 
+      // --- ADD THIS SAFETY CHECK ---
+      if (!Array.isArray(pageArray)) return;
+
+      let pageString = pageArray
+        .filter((_, index) => index % sampleRate === 0)
+        .map((m) => `${m.x},${m.y},${m.t}`)
+        .join("|");
+
+      // --- FAILSAFE: Truncate if page string exceeds equal share limit ---
+      if (pageString.length > maxCharsPerPage) {
+        pageString = pageString.substring(0, maxCharsPerPage);
+        const lastPipe = pageString.lastIndexOf("|");
+        if (lastPipe !== -1) {
+          pageString = pageString.substring(0, lastPipe);
+        }
+      }
+
       compressedMovements[pageName] = pageString;
     });
 
@@ -300,6 +317,7 @@ class Questionnaires extends React.Component {
       pageStartTime: now,
       qnStart: now,
       qnTime: now,
+      mouseMovements: {}, // <-- ADD THIS: Reset to clean object for the survey
     });
   }
 
@@ -387,7 +405,7 @@ class Questionnaires extends React.Component {
     let saveString = {
       prolificID: this.state.prolificID,
       condition: this.state.condition,
-      task: null,
+      task: "psych",
       userID: this.state.userID,
       date: this.state.date,
       startTime: this.state.startTime,

@@ -1465,6 +1465,8 @@ class MemTask extends React.Component {
     this.setState({
       taskSection: "global",
       mouseMovements: [],
+      selfKnowledge: "", // <-- ADD THIS to clear the text
+      wordCount: 0, // <-- ADD THIS to reset validation
     });
   }
 
