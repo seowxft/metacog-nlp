@@ -250,31 +250,18 @@ class Questionnaires extends React.Component {
     const compressedMovements = {};
 
     pages.forEach((pageName) => {
-      const pageArray = this.state.mouseMovements[pageName] || [];
+      const pageArray = this.state.mouseMovements[pageName];
 
-      let pageString = pageArray
-        .filter((_, index) => index % sampleRate === 0)
-        .map((m) => `${m.x},${m.y},${m.t}`)
-        .join("|");
-
-      // --- FAILSAFE: Truncate if page string exceeds equal share limit ---
-      if (pageString.length > maxCharsPerPage) {
-        pageString = pageString.substring(0, maxCharsPerPage);
-        const lastPipe = pageString.lastIndexOf("|");
-        if (lastPipe !== -1) {
-          pageString = pageString.substring(0, lastPipe);
-        }
-      }
-
-      // --- ADD THIS SAFETY CHECK ---
+      // Safety check: ensure it's an array before filtering
       if (!Array.isArray(pageArray)) return;
 
+      // Create the string (only using 'let' once!)
       let pageString = pageArray
         .filter((_, index) => index % sampleRate === 0)
         .map((m) => `${m.x},${m.y},${m.t}`)
         .join("|");
 
-      // --- FAILSAFE: Truncate if page string exceeds equal share limit ---
+      // Failsafe: Truncate if page string exceeds equal share limit
       if (pageString.length > maxCharsPerPage) {
         pageString = pageString.substring(0, maxCharsPerPage);
         const lastPipe = pageString.lastIndexOf("|");
