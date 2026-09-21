@@ -1289,7 +1289,7 @@ class MemTut extends React.Component {
   trialExample() {
     var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
     var choicePos = Math.random() < 0.5 ? 1 : 2;
-    var stimNum = 6;
+    var stimNum = 5;
 
     // shuffle the  list of stimuli
     var stim = this.state.statePic;
