@@ -19,6 +19,7 @@ export const phq = [
         text: "Trouble falling or staying asleep, or sleeping too much.",
       },
       { value: "PHQ_4", text: "Feeling tired or having little energy." },
+
       { value: "PHQ_5", text: "Poor appetite or overeating." },
       {
         value: "PHQ_6",
@@ -31,6 +32,10 @@ export const phq = [
       {
         value: "PHQ_8",
         text: "Moving or speaking so slowly that other people could have noticed, or so fidgety or restless that you have been moving a lot more than usual.",
+      },
+      {
+        value: "ATTEN_2",
+        text: "I am currently reading these statements as part of a questionnaire.",
       },
       {
         value: "PHQ_9",

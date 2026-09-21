@@ -23,6 +23,10 @@ export const gad = [
         value: "GAD_5",
         text: "Being so restless that it’s hard to sit still.",
       },
+      {
+        value: "ATTEN_1",
+        text: "I am capable of physically traveling back in time to fix my past mistakes.",
+      },
       { value: "GAD_6", text: "Becoming easily annoyed or irritable." },
       {
         value: "GAD_7",
