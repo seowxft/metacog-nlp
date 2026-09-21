@@ -272,44 +272,53 @@ class MemTask extends React.Component {
   }
 
   // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
+  // --- Mouse Movement Handler (Stores array per active page key) ---
   handleGlobalMouseMove(event) {
-    // Check condition: Track ONLY if active trial screen is mounted
-    const isTrackingScreen =
-      this.state.taskScreen ||
-      this.state.quizScreen ||
-      this.state.taskSection === "break";
-
-    if (isTrackingScreen && !this.ticking) {
+    if (!this.ticking) {
       window.requestAnimationFrame(() => {
-        // Calculate timestamp relative to when this specific individual trial began
-        const relativeTime = Math.round(
-          performance.now() - this.state.trialTime,
-        );
+        const now = Math.round(performance.now());
+        const relativePageTime = now - this.state.pageStartTime;
+        const activePage = this.state.currentPageName;
 
-        // Maps section keys to short IDs to keep character count down
-        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
+        // Properly declare and assign sectionTag here
         let sectionTag = "unmapped";
-        if (this.state.taskSection === "iti") sectionTag = "i";
-        else if (this.state.taskSection === "fixation") sectionTag = "f";
-        else if (this.state.taskSection === "stimulus") sectionTag = "s";
-        else if (this.state.taskSection === "choice") sectionTag = "c";
-        else if (this.state.taskSection === "encode") sectionTag = "e";
-        else if (this.state.taskSection === "choiceFeedback") sectionTag = "fb";
-        else if (this.state.taskSection === "confidence") sectionTag = "conf";
-        else if (this.state.taskSection === "rating") sectionTag = "r";
-        else if (this.state.taskSection === "break") sectionTag = "b";
-        else if (this.state.taskSection === "global") sectionTag = "d";
+        if (activePage === "instructions") {
+          sectionTag = "mh";
+        } else {
+          sectionTag = activePage;
+        }
 
         const currentCoord = {
           x: event.clientX,
           y: event.clientY,
-          t: relativeTime,
-          p: sectionTag, // 'p' for Phase property
+          t: relativePageTime,
+          p: sectionTag, // Assigns 'mh' during instructions, or the page name elsewhere
         };
 
-        this.setState((prevState) => ({
-          mouseMovements: [...prevState.mouseMovements, currentCoord],
-        }));
+        this.setState((prevState) => {
+          if (activePage === "instructions") {
+            // Treat mouseMovements as a flat array
+            // Safety check: ensure prevState.mouseMovements is actually an array before spreading
+            const prevMovements = Array.isArray(prevState.mouseMovements)
+              ? prevState.mouseMovements
+              : [];
+
+            return {
+              mouseMovements: [...prevMovements, currentCoord],
+            };
+          } else {
+            // Treat mouseMovements as an object grouped by page name
+            const existingPageMovements =
+              prevState.mouseMovements[activePage] || [];
+
+            return {
+              mouseMovements: {
+                ...prevState.mouseMovements,
+                [activePage]: [...existingPageMovements, currentCoord],
+              },
+            };
+          }
+        });
 
         this.ticking = false;
       });
