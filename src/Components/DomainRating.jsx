@@ -54,7 +54,7 @@ class RatingDomain extends React.Component {
       //section paramters
       sectionTime: sectionTime,
       section: "domain",
-      quizState: "domain",
+      quizState: "domain pre",
       ratingDomain: null,
       textTime: null,
       selfKnowledge: "",

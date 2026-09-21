@@ -143,7 +143,6 @@ class Bonus extends React.Component {
       console.log("Cant post?", e);
     });
 
-    alert("Thanks for your feedback!");
     event.preventDefault();
 
     setTimeout(

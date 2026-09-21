@@ -1333,7 +1333,7 @@ class PerTask extends React.Component {
 
   renderGlobalSave() {
     var prolificID = this.state.prolificID;
-    var task = "memory";
+    var task = "perception";
 
     // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
