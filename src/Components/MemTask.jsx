@@ -374,7 +374,16 @@ class MemTask extends React.Component {
 
   handlePaste(event) {
     event.preventDefault();
-    alert("Pasting is not allowed in this field."); // Optional: Notify the user
+
+    // Set the error state to show the message inline
+    this.setState({
+      error: "Pasting is not allowed in this field.",
+    });
+
+    // Optional: Clear the error message after 3 seconds so it doesn't stay there forever
+    setTimeout(() => {
+      this.setState({ error: null });
+    }, 3000);
   }
 
   handleSubmit(event) {
@@ -1385,6 +1394,8 @@ class MemTask extends React.Component {
       textTime: 0,
       selfKnowledge: null,
       mouseMovements: [],
+      selfKnowledge: "", // <-- ADD THIS to clear the text
+      wordCount: 0, // <-- ADD THIS to reset validation
     });
 
     if (this.state.trialNum === this.state.trialNumTotal) {
@@ -1501,7 +1512,7 @@ class MemTask extends React.Component {
       userID: this.state.userID,
       date: this.state.date,
       startTime: this.state.startTime,
-      section: this.state.section,
+      section: "domain",
       sectionTime: this.state.sectionTime,
       blockNum: this.state.blockNum,
       quizState: "domain post",
@@ -1531,6 +1542,8 @@ class MemTask extends React.Component {
       instructNum: 5,
       taskSection: null,
       mouseMovements: [],
+      selfKnowledge: "", // <-- ADD THIS to clear the text
+      wordCount: 0, // <-- ADD THIS to reset validation
     });
   }
 
@@ -1543,6 +1556,8 @@ class MemTask extends React.Component {
       textTime: null,
       trialTime: Math.round(performance.now()), // for the mouse tracker
       mouseMovements: [],
+      selfKnowledge: "", // <-- ADD THIS to clear the text
+      wordCount: 0, // <-- ADD THIS to reset validation
     });
   }
 

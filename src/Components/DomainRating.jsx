@@ -137,7 +137,16 @@ class RatingDomain extends React.Component {
 
   handlePaste(event) {
     event.preventDefault();
-    alert("Pasting is not allowed in this field."); // Optional: Notify the user
+
+    // Set the error state to show the message inline
+    this.setState({
+      error: "Pasting is not allowed in this field.",
+    });
+
+    // Optional: Clear the error message after 3 seconds so it doesn't stay there forever
+    setTimeout(() => {
+      this.setState({ error: null });
+    }, 3000);
   }
 
   handleSubmit(event) {
