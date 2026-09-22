@@ -86,7 +86,7 @@ class RatingDomain extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlePaste = this.handlePaste.bind(this);
-
+    this.handleInstruct = this.handleInstruct.bind(this);
     // --- Bind Mouse Tracker Event Handler ---
     this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
     this.ticking = false; // Performance flag for requestAnimationFrame
@@ -179,9 +179,21 @@ class RatingDomain extends React.Component {
     );
   }
 
+  handleInstruct(keyPressed) {
+    var curInstructNum = this.state.instructNum;
+    var whichButton = keyPressed;
+
+    if (whichButton === 1 && curInstructNum === 2) {
+      // from page 2 , I can move back a page
+      this.setState({ instructNum: curInstructNum - 1 });
+    } else if (whichButton === 2 && curInstructNum === 1) {
+      // from page 1 , I can move forward a page
+      this.setState({ instructNum: curInstructNum + 1 });
+    }
+  }
   instructText(instructNum) {
     var explain;
-    if (this.state.domain[instructNum - 1] === "memory") {
+    if (this.state.domain[instructNum - 2] === "memory") {
       //if the curren domain is memory
       explain = (
         <span>
@@ -196,7 +208,7 @@ class RatingDomain extends React.Component {
           <br /> <br />
         </span>
       );
-    } else if (this.state.domain[instructNum - 1] === "perception") {
+    } else if (this.state.domain[instructNum - 2] === "perception") {
       explain = (
         <span>
           Think about situations when you need to make a judgement about what
@@ -216,6 +228,31 @@ class RatingDomain extends React.Component {
 
     let instruct_text1 = (
       <div>
+        <span>
+          Wellcome to the task!
+          <br />
+          <br />
+          Before we begin, please <strong>do not</strong> use AI tools (e.g.,
+          ChatGPT, Calude, Gemini, etc.) to generate your responses. We require
+          all answers to be written in your own words, and choices to be
+          performed by you.
+          <br />
+          <br />
+          Submissions that appear to have been produced by AI{" "}
+          <strong>will be rejected</strong>.
+          <br />
+          <br />
+          <center>
+            <button onClick={() => this.handleInstruct(2)}>
+              <strong>Next →</strong>
+            </button>
+          </center>
+        </span>
+      </div>
+    );
+
+    let instruct_text2 = (
+      <div>
         Think of a recent situation where you had to work something out or make
         a decision. Briefly describe the situation and what you noticed about
         your thoughts and feelings as you dealt with it.
@@ -227,32 +264,6 @@ class RatingDomain extends React.Component {
         situations?
         <br />
         <br />
-        <center>
-          <form onSubmit={this.handleSubmit}>
-            <label>
-              <textarea
-                key={instructNum} // <--- ADD THIS KEY
-                placeholder={`${this.state.minWordCount} words minimum.`}
-                value={this.state.selfKnowledge}
-                onChange={this.handleChange}
-                onPaste={this.handlePaste}
-              />
-            </label>
-            <br /> <br />
-            <input type="submit" value="Submit & Continue" />
-            <br />
-            <br />
-            {this.state.error}
-          </form>
-          Please do not write any self-identifiying information (e.g., your
-          name, your address, etc.).
-        </center>
-      </div>
-    );
-
-    let instruct_text2 = (
-      <div>
-        {explain}
         <center>
           <form onSubmit={this.handleSubmit}>
             <label>
@@ -302,6 +313,32 @@ class RatingDomain extends React.Component {
       </div>
     );
 
+    let instruct_text4 = (
+      <div>
+        {explain}
+        <center>
+          <form onSubmit={this.handleSubmit}>
+            <label>
+              <textarea
+                key={instructNum} // <--- ADD THIS KEY
+                placeholder={`${this.state.minWordCount} words minimum.`}
+                value={this.state.selfKnowledge}
+                onChange={this.handleChange}
+                onPaste={this.handlePaste}
+              />
+            </label>
+            <br /> <br />
+            <input type="submit" value="Submit & Continue" />
+            <br />
+            <br />
+            {this.state.error}
+          </form>
+          Please do not write any self-identifiying information (e.g., your
+          name, your address, etc.).
+        </center>
+      </div>
+    );
+
     // have to use button to go to next page, because pressing spacebar when typing feedback will make it go forward prematurely
     switch (instructNum) {
       case 1:
@@ -310,13 +347,15 @@ class RatingDomain extends React.Component {
         return <div>{instruct_text2}</div>;
       case 3:
         return <div>{instruct_text3}</div>;
+      case 4:
+        return <div>{instruct_text4}</div>;
       default:
     }
   }
 
   renderRatingSave() {
     var prolificID = this.state.prolificID;
-    var task = this.state.domain[this.state.instructNum - 1];
+    var task = this.state.domain[this.state.instructNum - 2];
 
     console.log("this.state.instructNum: " + this.state.instructNum);
     console.log("this.state.domain: " + this.state.domain);
@@ -385,7 +424,7 @@ class RatingDomain extends React.Component {
   nextPg() {
     var instructNum = this.state.instructNum;
     console.log(instructNum);
-    if ((instructNum === 1) | (instructNum === 2)) {
+    if ((instructNum === 2) | (instructNum === 3)) {
       //move to page 2
       this.setState({
         instructNum: this.state.instructNum + 1,
@@ -394,7 +433,7 @@ class RatingDomain extends React.Component {
         selfKnowledge: "", // Change from [] to ""
         wordCount: 0, // Reset the word count to 0!
       });
-    } else if (instructNum === 3) {
+    } else if (instructNum === 4) {
       // move to real task!
       setTimeout(
         function () {
