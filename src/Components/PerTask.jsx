@@ -375,7 +375,7 @@ class PerTask extends React.Component {
     }
     // --- End Validation ---
     var timePressed = Math.round(performance.now());
-    var textTime = timePressed - this.state.sectionTime;
+    var textTime = timePressed - this.state.trialTime;
 
     this.setState({
       selfKnowledge: this.state.selfKnowledge,
@@ -1348,6 +1348,7 @@ class PerTask extends React.Component {
       mouseMovements: [],
       selfKnowledge: "", // <-- ADD THIS to clear the text
       wordCount: 0, // <-- ADD THIS to reset validation
+      trialTime: Math.round(performance.now()),
     });
   }
 
