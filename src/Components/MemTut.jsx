@@ -9,21 +9,21 @@ import * as ConfSliderGlobal from "./drawassets/DrawConfSliderGlobal.jsx";
 import * as staircase from "./MemStaircase.jsx";
 import * as staircaseEasy from "./MemStaircaseEasy.jsx";
 
-import butterfly from "./ani-stim/butterfly.jpg";
-import ladybug from "./ani-stim/ladybug.jpg";
-import snail from "./ani-stim/snail.jpg";
-import frog from "./ani-stim/frog.jpg";
-import beetle from "./ani-stim/beetle.jpg";
-import ant from "./ani-stim/ant.jpg";
-import camel from "./ani-stim/camel.jpg";
-import owl from "./ani-stim/owl.jpg";
-import tiger from "./ani-stim/tiger.jpg";
-import panther from "./ani-stim/panther.jpg";
-import bear from "./ani-stim/bear.jpg";
-import snake from "./ani-stim/snake.jpg";
-import gorilla from "./ani-stim/gorilla.jpg";
-import spider from "./ani-stim/spider.jpg";
-import buffalo from "./ani-stim/buffalo.jpg";
+import stim0 from "./ani-stim/x7f9a2.jpg"; // butterfly
+import stim1 from "./ani-stim/b3m1q8.jpg"; // ladybug
+import stim2 from "./ani-stim/v9k4p1.jpg"; // snail
+import stim3 from "./ani-stim/j2r5z7.jpg"; // frog
+import stim4 from "./ani-stim/m6t8w3.jpg"; // beetle
+import stim5 from "./ani-stim/c1n4h9.jpg"; // ant
+import stim6 from "./ani-stim/y4f2d6.jpg"; // camel
+import stim7 from "./ani-stim/k8b3g5.jpg"; // owl
+import stim8 from "./ani-stim/p7v1x2.jpg"; // tiger
+import stim9 from "./ani-stim/q5h9l4.jpg"; // panther
+import stim10 from "./ani-stim/w2j8c1.jpg"; // bear
+import stim11 from "./ani-stim/r6m3n8.jpg"; // snake
+import stim12 from "./ani-stim/z1t5k9.jpg"; // gorilla
+import stim13 from "./ani-stim/d9f4p2.jpg"; // spider
+import stim14 from "./ani-stim/l3x7b6.jpg"; // buffalo
 
 import style from "./style/memTaskStyle.module.css";
 import astrodude from "./img/astronaut.png";
@@ -71,6 +71,7 @@ class MemTut extends React.Component {
       perCorrectPer = 0;
 
       ////////////////
+      ////////////////
       stateWord = [
         "butterfly",
         "ladybug",
@@ -78,6 +79,7 @@ class MemTut extends React.Component {
         "frog",
         "beetle",
         "ant",
+        "camel",
         "owl",
         "tiger",
         "panther",
@@ -85,26 +87,25 @@ class MemTut extends React.Component {
         "snake",
         "gorilla",
         "spider",
-        "camel",
         "buffalo",
       ];
 
       statePic = [
-        butterfly,
-        ladybug,
-        snail,
-        frog,
-        beetle,
-        ant,
-        owl,
-        tiger,
-        panther,
-        bear,
-        snake,
-        gorilla,
-        spider,
-        camel,
-        buffalo,
+        stim0,
+        stim1,
+        stim2,
+        stim3,
+        stim4,
+        stim5,
+        stim6,
+        stim7,
+        stim8,
+        stim9,
+        stim10,
+        stim11,
+        stim12,
+        stim13,
+        stim14,
       ];
 
       console.log("DEBUG MODE: Using hardcoded values.");
