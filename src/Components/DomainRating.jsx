@@ -229,11 +229,11 @@ class RatingDomain extends React.Component {
     let instruct_text1 = (
       <div>
         <span>
-          Wellcome to the task!
+          Welcome to the task!
           <br />
           <br />
           Before we begin, please <strong>do not</strong> use AI tools (e.g.,
-          ChatGPT, Calude, Gemini, etc.) to generate your responses. We require
+          ChatGPT, Claude, Gemini, etc.) to generate your responses. We require
           all answers to be written in your own words, and choices to be
           performed by you.
           <br />
