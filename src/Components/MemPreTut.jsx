@@ -41,7 +41,7 @@ class MemPreTut extends React.Component {
 
     ////////////////
     ////////////////
-    stateWord = [
+    var stateWord = [
       "butterfly",
       "ladybug",
       "snail",
@@ -59,7 +59,7 @@ class MemPreTut extends React.Component {
       "buffalo",
     ];
 
-    statePic = [
+    var statePic = [
       stim0,
       stim1,
       stim2,
