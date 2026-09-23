@@ -1722,7 +1722,7 @@ class PerTut extends React.Component {
       quizState: this.state.quizState,
       confInitial: this.state.confInitial,
       confLevel: this.state.confLevel,
-      textTime: this.state.confTime,
+      textTime: this.state.textTime,
       selfKnowledge: null,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
