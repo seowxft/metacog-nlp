@@ -1,4 +1,5 @@
 import React from "react";
+import HiddenNotice from "./HiddenNotice.jsx";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 
@@ -650,6 +651,7 @@ class MemTask extends React.Component {
           <br />
           <br />
           <center>
+            <HiddenNotice />
             <form onSubmit={this.handleSubmit}>
               <label>
                 <textarea
@@ -798,6 +800,7 @@ class MemTask extends React.Component {
         <br />
         <br />
         <center>
+          <HiddenNotice />
           <form onSubmit={this.handleGlobalSubmit}>
             <label>
               <textarea

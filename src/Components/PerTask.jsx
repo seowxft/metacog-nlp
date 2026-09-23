@@ -1,4 +1,5 @@
 import React from "react";
+import HiddenNotice from "./HiddenNotice.jsx";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 import * as staircase from "./PerStaircase.jsx";
@@ -591,6 +592,7 @@ class PerTask extends React.Component {
           <br />
           <br />
           <center>
+            <HiddenNotice />
             <form onSubmit={this.handleSubmit}>
               <label>
                 <textarea
@@ -743,6 +745,7 @@ class PerTask extends React.Component {
         <br />
         <br />
         <center>
+          <HiddenNotice />
           <form onSubmit={this.handleGlobalSubmit}>
             <label>
               <textarea

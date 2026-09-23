@@ -1,4 +1,5 @@
 import React from "react";
+import HiddenNotice from "./HiddenNotice.jsx";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 
@@ -489,6 +490,7 @@ class Questionnaires extends React.Component {
           <br />
           <br />
           <center>
+            <HiddenNotice />
             <form onSubmit={this.handleSubmit}>
               <label>
                 <textarea
