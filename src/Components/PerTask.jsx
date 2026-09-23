@@ -442,17 +442,17 @@ class PerTask extends React.Component {
 
     var correct = response ? 1 : 0;
 
-    var newCorrectMat = responseMatrix.concat(correct); // using concat for broad compatibility
+    var newCorrectMat = correctMat.concat(correct); // using concat for broad compatibility
     var stateUpdates = {
       responseKey: keyPressed,
       choice: choice,
       respTime: respTime,
       correct: correct,
       responseMatrix: responseMatrix.concat(response),
-      correctMat: correctMat.concat(correct),
+      correctMat: newCorrectMat.concat(correct),
       correctPer:
         Math.round(
-          (utils.getAvg(correctMat.concat(correct)) + Number.EPSILON) * 100,
+          (utils.getAvg(newCorrectMat.concat(correct)) + Number.EPSILON) * 100,
         ) / 100,
     };
 

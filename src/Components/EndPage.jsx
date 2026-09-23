@@ -185,17 +185,6 @@ class EndPage extends React.Component {
                   this.openInNewTab("https://ocdaction.org.uk/");
                 }}
               >
-                <u>OCD Action</u>&nbsp;
-              </span>
-              (Helpline: 0300 636 5478)
-            </li>
-            <li>
-              <span
-                className={style.link}
-                onClick={() => {
-                  this.openInNewTab("https://www.samaritans.org/");
-                }}
-              >
                 <u>Samaritans</u>&nbsp;
               </span>
               (Helpline: 116 123)
