@@ -52,7 +52,7 @@ export function shuffleSame() {
   }
 
   while (arrLength) {
-    rnd = Math.round(Math.random() * arrLength);
+    rnd = Math.floor(Math.random() * arrLength);
     arrLength -= 1;
     for (argsIndex = 0; argsIndex < argsLength; argsIndex += 1) {
       tmp = arguments[argsIndex][arrLength];
