@@ -80,17 +80,6 @@ class EndPage extends React.Component {
   // This handles instruction screen within the component USING KEYBOARD
 
   handleInstruct(keyPressed) {
-    var curText = this.state.instructNum;
-    var whichButton = keyPressed;
-
-    if (whichButton === 1 && curText > 1) {
-      this.setState({ instructNum: curText - 1 });
-    } else if (whichButton === 2 && curText <= 2) {
-      this.setState({ instructNum: curText + 1 });
-    }
-  }
-  // handle key keyPressed
-  handleInstruct(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
 
@@ -255,6 +244,8 @@ class EndPage extends React.Component {
       case 1:
         return <div>{instruct_text1}</div>;
       case 2:
+        return <div>{instruct_text2}</div>;
+      case 3:
         return <div>{instruct_text3}</div>;
 
       default:
