@@ -1085,6 +1085,17 @@ class MemTask extends React.Component {
       fixTime: fixTime,
     });
 
+    //  console.log("trialNumInBlock Save: " + this.state.trialNumInBlock);
+    if (this.state.blockCond == "easy") {
+      this.setState({
+        stimNumEasy: this.state.stimNum,
+      });
+    } else if (this.state.blockCond == "hard") {
+      this.setState({
+        stimNumHard: this.state.stimNum,
+      });
+    }
+
     setTimeout(
       function () {
         this.renderEncode();
