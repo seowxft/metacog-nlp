@@ -503,21 +503,23 @@ class MemTask extends React.Component {
     }
 
     var newCorrectMat = correctMat.concat(correct);
+    var newResponseMatrix = responseMatrix.concat(response);
     var stateUpdates = {
       responseKey: keyPressed,
       choice: choice,
       respTime: respTime,
       correct: correct,
+      responseMatrix: newResponseMatrix,
       correctMat: newCorrectMat,
       correctPer:
         Math.round((utils.getAvg(newCorrectMat) + Number.EPSILON) * 100) / 100,
-      responseMatrix: responseMatrix.concat(response),
     };
 
     if (blockCond === "easy") {
       var newCorrectMatEasy = correctMatEasy.concat(correct);
+      var newResponseMatrixEasy = responseMatrixEasy.concat(response);
       Object.assign(stateUpdates, {
-        responseMatrixEasy: responseMatrixEasy.concat(response),
+        responseMatrixEasy: newResponseMatrixEasy,
         correctMatEasy: newCorrectMatEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
@@ -526,8 +528,9 @@ class MemTask extends React.Component {
       });
     } else if (blockCond === "hard") {
       var newCorrectMatHard = correctMatHard.concat(correct);
+      var newResponseMatrixHard = responseMatrixHard.concat(response);
       Object.assign(stateUpdates, {
-        responseMatrixHard: responseMatrixHard.concat(response),
+        responseMatrixHard: newResponseMatrixHard,
         correctMatHard: newCorrectMatHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
@@ -536,14 +539,10 @@ class MemTask extends React.Component {
       });
     }
 
-    this.setState(stateUpdates);
-
-    setTimeout(
-      function () {
-        this.renderChoiceFb();
-      }.bind(this),
-      0,
-    );
+    // With this cleaner version:
+    this.setState(stateUpdates, () => {
+      this.renderChoiceFb();
+    });
   }
 
   handleConfResp(keyPressed) {
