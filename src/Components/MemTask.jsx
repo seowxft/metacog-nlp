@@ -905,6 +905,8 @@ class MemTask extends React.Component {
     var stairDir = this.state.stairDir;
     var responseMatrix = this.state.responseMatrix;
     var s2; // Declare s2 outside the if/else block
+    var stimNumEasy = this.state.stimNumEasy;
+    var stimNumHard = this.state.stimNumHard;
 
     if (this.state.blockCond === "easy") {
       condEasyTrialNum = condEasyTrialNum + 1;
@@ -915,6 +917,7 @@ class MemTask extends React.Component {
         condEasyTrialNum,
       );
       stimNum = s2.stimNum;
+      stimNumEasy = stimNum;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     } else if (this.state.blockCond === "hard") {
@@ -927,6 +930,7 @@ class MemTask extends React.Component {
       );
 
       stimNum = s2.stimNum;
+      stimNumHard = stimNum;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
     }
@@ -1031,6 +1035,8 @@ class MemTask extends React.Component {
       choiceShownWordRight: choiceShownWordRight,
 
       stimNum: stimNum,
+      stimNumEasy: stimNumEasy,
+      stimNumHard: stimNumHard,
       reversals: reversals,
       stairDir: stairDir,
       responseMatrix: responseMatrix,
