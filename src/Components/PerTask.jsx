@@ -157,12 +157,14 @@ class PerTask extends React.Component {
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
       responseMatrixEasy: [],
+      stairCountEasy: [],
       stairDirEasy: [],
       dotStairEasy: dotStairEasy,
 
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
       responseMatrixHard: [],
+      stairCountHard: [],
       stairDirHard: [],
       dotStairHard: dotStairHard,
 
@@ -460,6 +462,7 @@ class PerTask extends React.Component {
       var newResponseMatrixEasy = responseMatrixEasy.concat(response);
       Object.assign(stateUpdates, {
         responseMatrixEasy: newResponseMatrixEasy,
+        stairCountEasy: this.state.stairCountEasy.concat(response),
         correctMatEasy: newCorrectMatEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
@@ -471,6 +474,7 @@ class PerTask extends React.Component {
       var newResponseMatrixHard = responseMatrixHard.concat(response);
       Object.assign(stateUpdates, {
         responseMatrixHard: newResponseMatrixHard,
+        stairCountHard: this.state.stairCountHard.concat(response),
         correctMatHard: newCorrectMatHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
@@ -852,24 +856,27 @@ class PerTask extends React.Component {
     var dotStair = this.state.dotStair;
     var stairDir = this.state.stairDir;
     var responseMatrix = this.state.responseMatrix;
+    var stairCountEasy = this.state.stairCountEasy;
+    var stairCountHard = this.state.stairCountHard;
     var s2; // Declare s2 outside the if/else block
 
     if (this.state.blockCond === "easy") {
       condEasyTrialNum = condEasyTrialNum + 1;
       s2 = staircaseEasy.staircase(
         this.state.dotStairEasy,
-        this.state.responseMatrixEasy,
+        this.state.stairCountEasy,
         this.state.stairDirEasy,
         condEasyTrialNum,
       );
       dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountEasy = s2.stepcount;
     } else if (this.state.blockCond === "hard") {
       condHardTrialNum = condHardTrialNum + 1;
       s2 = staircase.staircase(
         this.state.dotStairHard,
-        this.state.responseMatrixHard,
+        this.state.stairCountHard,
         this.state.stairDirHard,
         condHardTrialNum,
       );
@@ -877,6 +884,7 @@ class PerTask extends React.Component {
       dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountHard = s2.stepcount;
     }
 
     //  console.log("dotsStair: " + choiceCor);
@@ -928,6 +936,8 @@ class PerTask extends React.Component {
       reversals: reversals,
       stairDir: stairDir,
       responseMatrix: responseMatrix,
+      stairCountEasy: stairCountEasy,
+      stairCountHard: stairCountHard,
       //Calculate the for the paramters for the stim
       dotDiffStim1: Math.round(Math.exp(dotStair)),
       dotDiffStim2: 0,

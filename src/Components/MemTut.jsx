@@ -208,6 +208,7 @@ class MemTut extends React.Component {
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
       responseMatrixEasy: [],
+      stairCountEasy: [],
 
       stairDirEasy: null,
       stimNumEasy: null,
@@ -215,6 +216,7 @@ class MemTut extends React.Component {
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
       responseMatrixHard: [],
+      stairCountHard: [],
       stairDirHard: null,
       stimNumHard: null,
 
@@ -445,6 +447,7 @@ class MemTut extends React.Component {
       var newCorrectMatEasy = correctMatEasy.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixEasy: responseMatrixEasy.concat(response),
+        stairCountEasy: this.state.stairCountEasy.concat(response),
         correctMatEasy: newCorrectMatEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
@@ -455,6 +458,7 @@ class MemTut extends React.Component {
       var newCorrectMatHard = correctMatHard.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixHard: responseMatrixHard.concat(response),
+        stairCountHard: this.state.stairCountHard.concat(response),
         correctMatHard: newCorrectMatHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
@@ -1415,12 +1419,14 @@ class MemTut extends React.Component {
         correctMatEasy: [], //put correct in vector, to cal perf %
         correctPerEasy: 0,
         responseMatrixEasy: [],
+        stairCountEasy: [],
         stairDirEasy: ["up", "up"],
         stimNumEasy: 6,
 
         correctMatHard: [], //put correct in vector, to cal perf %
         correctPerHard: 0,
         responseMatrixHard: [],
+        stairCountHard: [],
         stairDirHard: ["up", "up"],
         stimNumHard: 6,
       },
@@ -1518,6 +1524,8 @@ class MemTut extends React.Component {
     var stimNum = this.state.stimNum;
     var stairDir = this.state.stairDir;
     var responseMatrix = this.state.responseMatrix;
+    var stairCountEasy = this.state.stairCountEasy;
+    var stairCountHard = this.state.stairCountHard;
 
     // run staircase
     var blockCond;
@@ -1533,13 +1541,14 @@ class MemTut extends React.Component {
 
       s2 = staircaseEasy.staircase(
         this.state.stimNumEasy,
-        this.state.responseMatrixEasy,
+        this.state.stairCountEasy,
         this.state.stairDirEasy,
         trialNum,
       );
       stimNum = s2.stimNum;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountEasy = s2.stepcount;
 
       console.log(blockCond);
     } else if (trialNum >= this.state.trialStaircaseSwitch) {
@@ -1548,7 +1557,7 @@ class MemTut extends React.Component {
 
       s2 = staircase.staircase(
         this.state.stimNumHard,
-        this.state.responseMatrixHard,
+        this.state.stairCountHard,
         this.state.stairDirHard,
         trialNum - this.state.trialStaircaseSwitch + 1,
       );
@@ -1556,6 +1565,7 @@ class MemTut extends React.Component {
       stimNum = s2.stimNum;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountHard = s2.stepcount;
     }
 
     console.log("stimNum: " + stimNum);
@@ -1658,6 +1668,8 @@ class MemTut extends React.Component {
       stairDir: stairDir,
       reversals: reversals,
       responseMatrix: responseMatrix,
+      stairCountEasy: stairCountEasy,
+      stairCountHard: stairCountHard,
 
       choiceFbLeft: style.choiceWord,
       choiceFbRight: style.choiceWord,

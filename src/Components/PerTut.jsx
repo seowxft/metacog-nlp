@@ -158,12 +158,14 @@ class PerTut extends React.Component {
       correctMatEasy: [], //put correct in vector, to cal perf %
       correctPerEasy: 0,
       responseMatrixEasy: [],
+      stairCountEasy: [],
       stairDirEasy: null,
       dotStairEasy: null,
 
       correctMatHard: [], //put correct in vector, to cal perf %
       correctPerHard: 0,
       responseMatrixHard: [],
+      stairCountHard: [],
       stairDirHard: null,
       dotStairHard: null,
 
@@ -383,6 +385,7 @@ class PerTut extends React.Component {
       var newCorrectMatEasy = correctMatEasy.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixEasy: responseMatrixEasy.concat(response),
+        stairCountEasy: this.state.stairCountEasy.concat(response),
         correctMatEasy: newCorrectMatEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
@@ -393,6 +396,7 @@ class PerTut extends React.Component {
       var newCorrectMatHard = correctMatHard.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixHard: responseMatrixHard.concat(response),
+        stairCountHard: this.state.stairCountHard.concat(response),
         correctMatHard: newCorrectMatHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
@@ -1237,11 +1241,13 @@ class PerTut extends React.Component {
         correctMatEasy: [],
         correctPerEasy: 0,
         responseMatrixEasy: [],
+        stairCountEasy: [],
         stairDirEasy: ["up", "up"],
         dotStairEasy: 4.65,
         correctMatHard: [],
         correctPerHard: 0,
         responseMatrixHard: [],
+        stairCountHard: [],
         stairDirHard: ["up", "up"],
         dotStairHard: 4.65,
       },
@@ -1337,6 +1343,8 @@ class PerTut extends React.Component {
     var dotStair = this.state.dotStair;
     var stairDir = this.state.stairDir;
     var responseMatrix = this.state.responseMatrix;
+    var stairCountEasy = this.state.stairCountEasy;
+    var stairCountHard = this.state.stairCountHard;
 
     // run staircase
     var blockCond;
@@ -1352,13 +1360,14 @@ class PerTut extends React.Component {
 
       s2 = staircaseEasy.staircase(
         this.state.dotStairEasy,
-        this.state.responseMatrixEasy,
+        this.state.stairCountEasy,
         this.state.stairDirEasy,
         trialNum,
       );
       dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountEasy = s2.stepcount;
 
       console.log(blockCond);
     } else if (trialNum >= this.state.trialStaircaseSwitch) {
@@ -1367,7 +1376,7 @@ class PerTut extends React.Component {
 
       s2 = staircase.staircase(
         this.state.dotStairHard,
-        this.state.responseMatrixHard,
+        this.state.stairCountHard,
         this.state.stairDirHard,
         trialNum - this.state.trialStaircaseSwitch + 1,
       );
@@ -1375,6 +1384,7 @@ class PerTut extends React.Component {
       dotStair = s2.diff;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountHard = s2.stepcount;
     }
 
     console.log("dotStair: " + dotStair);
@@ -1423,6 +1433,8 @@ class PerTut extends React.Component {
         stimPos: stimPos,
         reversals: reversals,
         responseMatrix: responseMatrix,
+        stairCountEasy: stairCountEasy,
+        stairCountHard: stairCountHard,
         stairDir: stairDir,
 
         //Calculate the for the paramters for the stim
