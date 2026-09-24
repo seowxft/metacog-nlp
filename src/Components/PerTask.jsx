@@ -32,7 +32,6 @@ class PerTask extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-    // --- Declare variables OUTSIDE the if/else ---
     let userID,
       prolificID,
       studyID,
@@ -45,27 +44,25 @@ class PerTask extends React.Component {
       dotStairEasy,
       dotStairHard;
 
-    var debug = false; // Still using manual flag for now
+    var debug = false;
 
     if (debug === true) {
-      // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
       studyID = 100;
       sessionID = 100;
-      date = 100; // Note: You might want a real date string here for debugging
-      startTime = 100; // Note: You might want a real timestamp for debugging
+      date = 100;
+      startTime = 100;
       condition = 1;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
       dotStairEasy = 2;
       dotStairHard = 1;
-
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
-      studyID = this.state.studyID;
-      sessionID = this.state.sessionID;
+      studyID = this.props.state.studyID;
+      sessionID = this.props.state.sessionID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
@@ -76,10 +73,8 @@ class PerTask extends React.Component {
       perCorrectPer = this.props.state.perCorrectPer;
     }
 
-    // if
-
-    var trialNumTotal = 80; //should be 80, for 4 blocks of 20 trials
-    var blockNumTotal = 4; // should be 4
+    var trialNumTotal = 80;
+    var blockNumTotal = 4;
     var trialNumPerBlock = Math.round(trialNumTotal / blockNumTotal);
 
     var condScrabble1 = ["easy", "hard"];
@@ -88,13 +83,11 @@ class PerTask extends React.Component {
     utils.shuffle(condScrabble2);
     var blockCondTotal = [...condScrabble1, ...condScrabble2];
 
-    //the stim position
     var stimPos = Array(Math.round(trialNumTotal / 2))
       .fill(1)
       .concat(Array(Math.round(trialNumTotal / 2)).fill(2));
     utils.shuffle(stimPos);
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     // SET STATES
     this.state = {
@@ -109,19 +102,18 @@ class PerTask extends React.Component {
       sectionTime: sectionTime,
 
       // trial timings in ms
-      fixTimeLag: 1000, //1000
-      stimTimeLag: 300, //300
+      fixTimeLag: 1000,
+      stimTimeLag: 300,
       respFbTimeLag: 700,
 
-      //trial parameters
+      // trial parameters
       trialNumTotal: trialNumTotal,
       trialNumPerBlock: trialNumPerBlock,
       blockNumTotal: blockNumTotal,
       blockCondTotal: blockCondTotal,
       stimPosList: stimPos,
-      //  respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
 
-      //trial by trial paramters
+      // trial by trial parameters
       blockNum: 1,
       blockCond: null,
       condEasyTrialNum: 0,
@@ -143,47 +135,48 @@ class PerTask extends React.Component {
       confLevel: null,
       confTime: 0,
       confInitial: null,
-      //    confMove: null, //can only move to next trial if conf was toggled
       correct: null,
-      correctMat: [], //put correct in vector, to cal perf %
+      correctMat: [],
       correctPer: 0,
       textTime: null,
       selfKnowledge: [],
       wordCount: 0,
-      minWordCount: 50, //50
+      minWordCount: 50,
 
-      //dot paramters
+      // dot parameters
       dotRadius: 5,
 
-      // staircase parameters
+      // --- responseMatrix: combined log of all responses (easy + hard), updated only in handleResp ---
       responseMatrix: [],
+
       reversals: 0,
-      stairDir: [],
-      dotStair: null, //in log space; this is about 104 dots which is 70 dots shown for the first one
+      stairDir: null,
+      dotStair: null,
       dotStairLeft: 0,
       dotStairRight: 0,
 
-      correctMatEasy: [], //put correct in vector, to cal perf %
+      // --- Easy block: response log and staircase step history kept strictly separate ---
+      correctMatEasy: [],
       correctPerEasy: 0,
-      responseMatrixEasy: [],
-      stairCountEasy: [],
-      stairDirEasy: [],
+      responseMatrixEasy: [], // per-trial response log, updated only in handleResp
+      stairCountEasy: [], // staircase step history, updated only in trialReset
+      stairDirEasy: ["up", "up"],
       dotStairEasy: dotStairEasy,
 
-      correctMatHard: [], //put correct in vector, to cal perf %
+      // --- Hard block: same separation ---
+      correctMatHard: [],
       correctPerHard: 0,
-      responseMatrixHard: [],
-      stairCountHard: [],
-      stairDirHard: [],
+      responseMatrixHard: [], // per-trial response log, updated only in handleResp
+      stairCountHard: [], // staircase step history, updated only in trialReset
+      stairDirHard: ["up", "up"],
       dotStairHard: dotStairHard,
 
-      //quiz
+      // quiz
       quizState: "post",
 
       // screen parameters
       instructScreen: true,
       instructNum: 1,
-
       postGlobalState: "domain",
       quizScreen: false,
       taskScreen: false,
@@ -192,14 +185,11 @@ class PerTask extends React.Component {
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
 
-      // --- MOUSE TRACKING STATE ---
       mouseMovements: [],
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /* prevents page from going down when space bar is hit .*/
     window.addEventListener("keyup", function (e) {
       if (e.keyCode === 32 && e.target === document.body) {
         e.preventDefault();
@@ -207,10 +197,8 @@ class PerTask extends React.Component {
     });
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
 
     this.handleInstruct = this.handleInstruct.bind(this);
-
     this.handleGlobalSubmit = this.handleGlobalSubmit.bind(this);
     this.handleBegin = this.handleBegin.bind(this);
     this.handleResp = this.handleResp.bind(this);
@@ -221,16 +209,14 @@ class PerTask extends React.Component {
     this.instructText = this.instructText.bind(this);
     this.quizText = this.quizText.bind(this);
 
-    // --- Bind Mouse Tracker Event Handler ---
     this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
-    this.ticking = false; // Performance flag for requestAnimationFrame
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //End constructor props
+    this.ticking = false;
   }
 
-  // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // MOUSE TRACKING
+
   handleGlobalMouseMove(event) {
-    // Check condition: Track ONLY if active trial screen is mounted
     const isTrackingScreen =
       this.state.taskScreen ||
       this.state.quizScreen ||
@@ -238,13 +224,10 @@ class PerTask extends React.Component {
 
     if (isTrackingScreen && !this.ticking) {
       window.requestAnimationFrame(() => {
-        // Calculate timestamp relative to when this specific individual trial began
         const relativeTime = Math.round(
           performance.now() - this.state.trialTime,
         );
 
-        // Maps section keys to short IDs to keep character count down
-        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
         let sectionTag = "unmapped";
         if (this.state.taskSection === "iti") sectionTag = "i";
         else if (this.state.taskSection === "fixation") sectionTag = "f";
@@ -260,7 +243,7 @@ class PerTask extends React.Component {
           x: event.clientX,
           y: event.clientY,
           t: relativeTime,
-          p: sectionTag, // 'p' for Phase property
+          p: sectionTag,
         };
 
         this.setState((prevState) => ({
@@ -273,21 +256,20 @@ class PerTask extends React.Component {
     }
   }
 
-  // This handles instruction screen within the component USING KEYBOARD
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // KEYBOARD / CLICK HANDLES
+
   handleInstruct(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
 
     if (whichButton === 1 && curInstructNum === 2) {
-      // from page 2 , I can move back a page
       this.setState({ instructNum: curInstructNum - 1 });
     } else if (whichButton === 2 && curInstructNum === 1) {
-      // from page 1 , I can move forward a page
       this.setState({ instructNum: curInstructNum + 1 });
     }
   }
 
-  //for the submitting the text plus moving to next page
   handleChange(event) {
     var text = event.target.value;
     var trimmedText = text.trim();
@@ -302,22 +284,17 @@ class PerTask extends React.Component {
 
   handlePaste(event) {
     event.preventDefault();
-
-    // Set the error state to show the message inline
     this.setState({
       error: "Pasting or dropping text is not allowed in this field.",
     });
-
-    // Optional: Clear the error message after 3 seconds so it doesn't stay there forever
     setTimeout(() => {
       this.setState({ error: null });
     }, 3000);
   }
 
   handleSubmit(event) {
-    event.preventDefault(); // Always call this first!
+    event.preventDefault();
 
-    // --- Validation Check ---
     if (this.state.wordCount < this.state.minWordCount) {
       this.setState({
         error:
@@ -325,57 +302,33 @@ class PerTask extends React.Component {
           this.state.minWordCount +
           " words to continue.",
       });
-      return; // Stop the submission
+      return;
     }
-    // --- End Validation ---
+
     var timePressed = Math.round(performance.now());
     var textTime = timePressed - this.state.trialTime;
 
-    this.setState({
-      selfKnowledge: this.state.selfKnowledge,
-      textTime: textTime,
-    });
-
-    setTimeout(
-      function () {
-        this.renderRatingSave();
-      }.bind(this),
-      0,
-    );
+    // Pass textTime directly to renderRatingSave to avoid setState/read race
+    this.renderRatingSave(textTime);
   }
 
+  // handleBegin: no setState here, call targets directly
   handleBegin(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
 
     if (whichButton === 3 && curInstructNum === 2) {
-      setTimeout(
-        function () {
-          this.taskBegin();
-        }.bind(this),
-        10,
-      );
+      this.taskBegin();
     } else if (whichButton === 3 && curInstructNum === 4) {
-      setTimeout(
-        function () {
-          this.quizBegin();
-        }.bind(this),
-        10,
-      );
+      this.quizBegin();
     } else if (whichButton === 3 && curInstructNum === 5) {
-      setTimeout(
-        function () {
-          this.redirectToNextTask();
-        }.bind(this),
-        0,
-      );
+      this.redirectToNextTask();
     }
   }
 
   handleGlobalSubmit(event) {
-    event.preventDefault(); // Always call this first!
+    event.preventDefault();
 
-    // --- Validation Check ---
     if (this.state.wordCount < this.state.minWordCount) {
       this.setState({
         error:
@@ -383,23 +336,14 @@ class PerTask extends React.Component {
           this.state.minWordCount +
           " words to continue.",
       });
-      return; // Stop the submission
+      return;
     }
-    // --- End Validation ---
+
     var timePressed = Math.round(performance.now());
     var textTime = timePressed - this.state.trialTime;
 
-    this.setState({
-      selfKnowledge: this.state.selfKnowledge,
-      textTime: textTime,
-    });
-
-    setTimeout(
-      function () {
-        this.renderGlobalSave();
-      }.bind(this),
-      0,
-    );
+    // Pass textTime directly to renderGlobalSave to avoid setState/read race
+    this.renderGlobalSave(textTime);
   }
 
   handleGlobalConf(keyPressed) {
@@ -411,17 +355,7 @@ class PerTask extends React.Component {
       this.state.confLevel !== null
     ) {
       var textTime = timePressed - this.state.trialTime;
-
-      this.setState({
-        textTime: textTime,
-      });
-
-      setTimeout(
-        function () {
-          this.renderQuizSave();
-        }.bind(this),
-        0,
-      );
+      this.setState({ textTime: textTime }, () => this.renderQuizSave());
     }
   }
 
@@ -433,9 +367,8 @@ class PerTask extends React.Component {
       dotDiffLeft,
       dotDiffRight,
       blockCond,
-      stairDir,
-      responseMatrix,
       correctMat,
+      responseMatrix,
       responseMatrixEasy,
       correctMatEasy,
       responseMatrixHard,
@@ -453,8 +386,10 @@ class PerTask extends React.Component {
 
     var correct = response ? 1 : 0;
 
-    var newCorrectMat = correctMat.concat(correct); // using concat for broad compatibility
-    var newResponseMatrix = responseMatrix.concat(response);
+    var newCorrectMat = correctMat.concat(correct);
+    // Combined log across all trials regardless of block
+    var newResponseMatrix = responseMatrix.concat(response ? 1 : 0);
+
     var stateUpdates = {
       responseKey: keyPressed,
       choice: choice,
@@ -468,43 +403,33 @@ class PerTask extends React.Component {
 
     if (blockCond === "easy") {
       var newCorrectMatEasy = correctMatEasy.concat(correct);
-      var newResponseMatrixEasy = responseMatrixEasy.concat(response);
+      var newResponseMatrixEasy = responseMatrixEasy.concat(response ? 1 : 0);
       Object.assign(stateUpdates, {
         responseMatrixEasy: newResponseMatrixEasy,
-        stairCountEasy: this.state.stairCountEasy.concat(response),
         correctMatEasy: newCorrectMatEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
           100,
-        stairDirEasy: stairDir,
       });
     } else if (blockCond === "hard") {
       var newCorrectMatHard = correctMatHard.concat(correct);
-      var newResponseMatrixHard = responseMatrixHard.concat(response);
+      var newResponseMatrixHard = responseMatrixHard.concat(response ? 1 : 0);
       Object.assign(stateUpdates, {
         responseMatrixHard: newResponseMatrixHard,
-        stairCountHard: this.state.stairCountHard.concat(response),
         correctMatHard: newCorrectMatHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
           100,
-        stairDirHard: stairDir,
       });
     }
 
-    this.setState(stateUpdates);
-
-    // With this cleaner version:
-    this.setState(stateUpdates, () => {
-      this.renderChoiceFb();
-    });
+    this.setState(stateUpdates, () => this.renderChoiceFb());
   }
 
   handleConfResp(keyPressed) {
     var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (whichButton === 3 && this.state.confLevel !== null) {
-      //  console.log("conf level: " + this.state.confLevel);
       var confTime =
         timePressed -
         [
@@ -515,16 +440,7 @@ class PerTask extends React.Component {
             this.state.respFbTime,
         ];
 
-      this.setState({
-        confTime: confTime,
-      });
-
-      setTimeout(
-        function () {
-          this.renderTaskSave();
-        }.bind(this),
-        10,
-      );
+      this.setState({ confTime: confTime }, () => this.renderTaskSave());
     }
   }
 
@@ -532,8 +448,9 @@ class PerTask extends React.Component {
     this.setState({ confLevel: callBackValue });
   }
 
-  // To ask them for the valence rating of the noises
-  // before we start the task
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // INSTRUCTION TEXT
+
   instructText(instructNum) {
     let instruct_text1 = (
       <div>
@@ -673,6 +590,7 @@ class PerTask extends React.Component {
       case 5:
         return <div>{instruct_text5}</div>;
       default:
+        return null;
     }
   }
 
@@ -744,6 +662,7 @@ class PerTask extends React.Component {
       case "post":
         return <div>{quiz_text2}</div>;
       default:
+        return null;
     }
   }
 
@@ -762,7 +681,7 @@ class PerTask extends React.Component {
           <form onSubmit={this.handleGlobalSubmit}>
             <label>
               <textarea
-                key={500} // <--- ADD THIS KEY
+                key={500}
                 placeholder={`${this.state.minWordCount} words minimum.`}
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
@@ -786,18 +705,16 @@ class PerTask extends React.Component {
       case "domain":
         return <div>{quiz_text1}</div>;
       default:
+        return null;
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // TASK TOGGLES
+
   quizBegin() {
-    //randomise the pre-post initial conf value - this has changed to a scale of 0 to 40
-
     var initialValuePre = this.state.trialNumTotal / 2;
-
-    // 0.125 means the offset is 12.5% of the total.
-    // Math.round ensures the offset remains an integer.
     var offset = Math.round(this.state.trialNumTotal * 0.125);
-
     var initialValue = utils.randomInt(
       initialValuePre - offset,
       initialValuePre + offset,
@@ -807,8 +724,7 @@ class PerTask extends React.Component {
       confInitial: initialValue,
       confLevel: null,
       trialTime: Math.round(performance.now()),
-      textTIme: null,
-      //  confMove: null,
+      textTime: null,
       quizScreen: true,
       instructScreen: false,
       taskScreen: false,
@@ -818,25 +734,20 @@ class PerTask extends React.Component {
   }
 
   taskBegin() {
-    // push to render fixation for the first trial
     var blockCond = this.state.blockCondTotal[this.state.blockNum - 1];
 
     console.log(this.state.blockCondTotal);
     console.log(blockCond);
 
-    // Determine the correct stimNum based on the condition
     var nextDotStair =
       blockCond === "easy" ? this.state.dotStairEasy : this.state.dotStairHard;
 
-    // Update state and fire trialReset ONLY after the update completes
     this.setState(
       {
         blockCond: blockCond,
         dotStair: nextDotStair,
       },
-      () => {
-        this.trialReset(); // This is the setState callback
-      },
+      () => this.trialReset(),
     );
   }
 
@@ -850,26 +761,30 @@ class PerTask extends React.Component {
     });
   }
 
-  //////////////////////////////////////////////////////////////////////////////////
-  // FOUR COMPONENTS OF THE TASK, Fixation, Stimulus/Response, Feedback and Confidence
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // TRIAL FLOW
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // trialReset
+  //
+  // Owns: stairCountEasy, stairCountHard, dotStairEasy, dotStairHard,
+  //       stairDirEasy, stairDirHard
+  //
+  // Does NOT touch: responseMatrix, responseMatrixEasy, responseMatrixHard,
+  //                 correctMat, correctMatEasy, correctMatHard (those belong to handleResp)
+  // ─────────────────────────────────────────────────────────────────────────
   trialReset() {
-    //this is the dot array to be saved
     this.extractedLeft = null;
     this.extractedRight = null;
 
-    var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
+    var trialNum = this.state.trialNum + 1;
     var trialNumInBlock = this.state.trialNumInBlock + 1;
-    var stimPos = this.state.stimPosList[trialNum - 1]; //shuffle the order for the dotDiffLeft
+    var stimPos = this.state.stimPosList[trialNum - 1];
     var condEasyTrialNum = this.state.condEasyTrialNum;
     var condHardTrialNum = this.state.condHardTrialNum;
 
-    console.log(this.state.blockCond);
-    var dotStair = this.state.dotStair;
-    var stairDir = this.state.stairDir;
-    var responseMatrix = this.state.responseMatrix;
-    var stairCountEasy = this.state.stairCountEasy;
-    var stairCountHard = this.state.stairCountHard;
-    var s2; // Declare s2 outside the if/else block
+    var dotStair, stairDir, newStairCountEasy, newStairCountHard;
+    var s2;
 
     if (this.state.blockCond === "easy") {
       condEasyTrialNum = condEasyTrialNum + 1;
@@ -881,8 +796,8 @@ class PerTask extends React.Component {
       );
       dotStair = s2.diff;
       stairDir = s2.direction;
-      responseMatrix = s2.stepcount;
-      stairCountEasy = s2.stepcount;
+      newStairCountEasy = s2.stepcount;
+      newStairCountHard = this.state.stairCountHard; // unchanged this trial
     } else if (this.state.blockCond === "hard") {
       condHardTrialNum = condHardTrialNum + 1;
       s2 = staircase.staircase(
@@ -891,194 +806,137 @@ class PerTask extends React.Component {
         this.state.stairDirHard,
         condHardTrialNum,
       );
-
       dotStair = s2.diff;
       stairDir = s2.direction;
-      responseMatrix = s2.stepcount;
-      stairCountHard = s2.stepcount;
+      newStairCountHard = s2.stepcount;
+      newStairCountEasy = this.state.stairCountEasy; // unchanged this trial
     }
-
-    //  console.log("dotsStair: " + choiceCor);
-    //  console.log("stairDir: " + stairDir);
-    //  console.log("responseMat: " + responseMatrix);
 
     var reversals = s2 && s2.reversal ? 1 : 0;
 
-    var dotDiffLeft;
-    var dotDiffRight;
-    var dotStairLeft;
-    var dotStairRight;
+    var dotStairLeft, dotStairRight, dotDiffLeft, dotDiffRight;
 
     if (stimPos === 1) {
       dotStairLeft = dotStair;
       dotStairRight = 0;
       dotDiffLeft = Math.round(Math.exp(dotStairLeft));
-      dotDiffRight = dotStairRight; //should be 0
+      dotDiffRight = 0;
     } else {
       dotStairLeft = 0;
       dotStairRight = dotStair;
-      dotDiffLeft = dotStairLeft; //should be 0
+      dotDiffLeft = 0;
       dotDiffRight = Math.round(Math.exp(dotStairRight));
     }
 
-    //Reset all parameters
-    this.setState({
-      instructScreen: false,
-      taskScreen: true,
-      quizScreen: false,
-      trialNum: trialNum,
-      condHardTrialNum: condHardTrialNum,
-      condEasyTrialNum: condEasyTrialNum,
-      trialNumInBlock: trialNumInBlock,
-      taskSection: "iti",
-      fixTime: 0,
-      stimTime: 0,
-      responseKey: 0,
-      respTime: 0,
-      respFbTime: 0,
-      confInitial: null,
-      confLevel: null,
-      confTime: 0,
-      //  confMove: false,
-      choice: null,
-      correct: null,
-      correctPer: null,
-      stimPos: stimPos,
-      reversals: reversals,
-      stairDir: stairDir,
-      responseMatrix: responseMatrix,
-      stairCountEasy: stairCountEasy,
-      stairCountHard: stairCountHard,
-      //Calculate the for the paramters for the stim
-      dotDiffStim1: Math.round(Math.exp(dotStair)),
-      dotDiffStim2: 0,
-      dotStair: dotStair,
-      dotStairLeft: dotStairLeft,
-      dotStairRight: dotStairRight,
-      dotDiffLeft: dotDiffLeft,
-      dotDiffRight: dotDiffRight,
-      mouseMovements: [],
-    });
-
-    setTimeout(
-      function () {
-        this.renderFix();
-      }.bind(this),
-      0,
+    this.setState(
+      {
+        instructScreen: false,
+        taskScreen: true,
+        quizScreen: false,
+        trialNum: trialNum,
+        condHardTrialNum: condHardTrialNum,
+        condEasyTrialNum: condEasyTrialNum,
+        trialNumInBlock: trialNumInBlock,
+        taskSection: "iti",
+        fixTime: 0,
+        stimTime: 0,
+        responseKey: 0,
+        respTime: 0,
+        respFbTime: 0,
+        confInitial: null,
+        confLevel: null,
+        confTime: 0,
+        choice: null,
+        correct: null,
+        correctPer: null,
+        stimPos: stimPos,
+        reversals: reversals,
+        stairDir: stairDir,
+        stairCountEasy: newStairCountEasy, // single source of truth for staircase history
+        stairCountHard: newStairCountHard, // single source of truth for staircase history
+        dotDiffStim1: Math.round(Math.exp(dotStair)),
+        dotDiffStim2: 0,
+        dotStair: dotStair,
+        dotStairLeft: dotStairLeft,
+        dotStairRight: dotStairRight,
+        dotDiffLeft: dotDiffLeft,
+        dotDiffRight: dotDiffRight,
+        mouseMovements: [],
+      },
+      () => this.renderFix(),
     );
   }
 
   renderFix() {
-    //console.log("trialNumInBlock Fix: " + this.state.trialNumInBlock);
-
     var trialTime = Math.round(performance.now());
-    //  console.log("render fix");
-    //Show fixation
     this.setState({
-      //  instructScreen: false,
-      //  taskScreen: true,
       taskSection: "fixation",
       trialTime: trialTime,
     });
 
-    setTimeout(
-      function () {
-        this.renderStim();
-      }.bind(this),
-      this.state.fixTimeLag,
-    );
+    // Deliberate timing delay — keep setTimeout
+    setTimeout(() => this.renderStim(), this.state.fixTimeLag);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderStim() {
     var fixTime = Math.round(performance.now()) - this.state.trialTime;
-    //  console.log("render stim");
+
     this.setState({
       instructScreen: false,
       taskScreen: true,
       taskSection: "stimulus",
       fixTime: fixTime,
+      // Update the active block's dotStair in the same setState call
+      ...(this.state.blockCond === "easy"
+        ? { dotStairEasy: this.state.dotStair }
+        : { dotStairHard: this.state.dotStair }),
     });
 
-    //  console.log("trialNumInBlock Save: " + this.state.trialNumInBlock);
-    if (this.state.blockCond == "easy") {
-      this.setState({
-        dotStairEasy: this.state.dotStair,
-      });
-    } else if (this.state.blockCond == "hard") {
-      this.setState({
-        dotStairHard: this.state.dotStair,
-      });
-    }
-
-    setTimeout(
-      function () {
-        this.renderChoice();
-      }.bind(this),
-      this.state.stimTimeLag,
-    );
+    // Deliberate timing delay — keep setTimeout
+    setTimeout(() => this.renderChoice(), this.state.stimTimeLag);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoice() {
     var stimTime =
       Math.round(performance.now()) -
-      [this.state.trialTime + this.state.fixTime];
+      (this.state.trialTime + this.state.fixTime);
 
     this.setState({
-      //  instructScreen: false,
-      //  taskScreen: true,
       taskSection: "choice",
       stimTime: stimTime,
     });
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-    this.setState({
-      //    instructScreen: false,
-      //    taskScreen: true,
-      taskSection: "choiceFeedback",
-    });
+    this.setState({ taskSection: "choiceFeedback" });
 
-    setTimeout(
-      function () {
-        this.renderConfScale();
-      }.bind(this),
-      this.state.respFbTimeLag,
-    );
+    // Deliberate timing delay — keep setTimeout
+    setTimeout(() => this.renderConfScale(), this.state.respFbTimeLag);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderConfScale() {
     var initialValue = utils.randomInt(70, 80);
-
     var respFbTime =
       Math.round(performance.now()) -
-      [
-        this.state.trialTime +
-          this.state.fixTime +
-          this.state.stimTime +
-          this.state.respTime,
-      ];
+      (this.state.trialTime +
+        this.state.fixTime +
+        this.state.stimTime +
+        this.state.respTime);
 
     this.setState({
-      //      instructScreen: false,
-      //      taskScreen: true,
       taskSection: "confidence",
       confInitial: initialValue,
       respFbTime: respFbTime,
     });
-
-    // it will deploy the next trial with spacebar keypress
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // SAVE FUNCTIONS
 
   renderTaskSave() {
     var prolificID = this.state.prolificID;
     var blockCond = this.state.blockCond;
 
-    // 1. Calculate the new staircase values locally BEFORE saving
-    // Initialize with current state so we don't overwrite the inactive one with undefined
     var newDotStairEasy = this.state.dotStairEasy;
     var newDotStairHard = this.state.dotStairHard;
 
@@ -1088,10 +946,8 @@ class PerTask extends React.Component {
       newDotStairHard = this.state.dotStair;
     }
 
-    // 2. Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
-
+    var maxChars = 9000;
     var rawMovements = this.state.mouseMovements || [];
 
     var compressedMovements = rawMovements
@@ -1099,7 +955,6 @@ class PerTask extends React.Component {
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
 
-    // --- FAILSAFE: Truncate if trial string exceeds limit ---
     if (compressedMovements.length > maxChars) {
       compressedMovements = compressedMovements.substring(0, maxChars);
       const lastPipe = compressedMovements.lastIndexOf("|");
@@ -1108,7 +963,6 @@ class PerTask extends React.Component {
       }
     }
 
-    // NEW: Compress the coordinates you extracted into a clean string (e.g., "150,200|155,210")
     var compressedLeft = (this.extractedLeft || [])
       .map((d) => `${Math.round(d.x)},${Math.round(d.y)}`)
       .join("|");
@@ -1117,7 +971,6 @@ class PerTask extends React.Component {
       .map((d) => `${Math.round(d.x)},${Math.round(d.y)}`)
       .join("|");
 
-    // 3. Build the save string using the FRESH local variables
     let saveString = {
       prolificID: this.state.prolificID,
       studyID: this.state.studyID,
@@ -1134,7 +987,6 @@ class PerTask extends React.Component {
       condEasyTrialNum: this.state.condEasyTrialNum,
       condHardTrialNum: this.state.condHardTrialNum,
       trialNumInBlock: this.state.trialNumInBlock,
-
       trialTime: this.state.trialTime,
       fixTime: this.state.fixTime,
       stimTime: this.state.stimTime,
@@ -1154,30 +1006,31 @@ class PerTask extends React.Component {
       correctMat: this.state.correctMat,
       correctPer: this.state.correctPer,
 
-      // staircase parameters
+      // Combined response log across all blocks
       responseMatrix: this.state.responseMatrix,
+
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
       dotStair: this.state.dotStair,
 
-      // Use the newly calculated variables here
+      // Easy block
       dotStairEasy: newDotStairEasy,
       correctMatEasy: this.state.correctMatEasy,
       correctPerEasy: this.state.correctPerEasy,
       responseMatrixEasy: this.state.responseMatrixEasy,
+      stairCountEasy: this.state.stairCountEasy, // ← now saved
       stairDirEasy: this.state.stairDirEasy,
 
-      // Use the newly calculated variables here
+      // Hard block
       dotStairHard: newDotStairHard,
       correctMatHard: this.state.correctMatHard,
       correctPerHard: this.state.correctPerHard,
       responseMatrixHard: this.state.responseMatrixHard,
+      stairCountHard: this.state.stairCountHard, // ← now saved
       stairDirHard: this.state.stairDirHard,
 
       dotStairLeft: this.state.dotStairLeft,
       dotStairRight: this.state.dotStairRight,
-
-      // NEW: Add the compressed strings to your payload
       leftDotsArray: compressedLeft,
       rightDotsArray: compressedRight,
       windowWidth: window.innerWidth,
@@ -1196,34 +1049,28 @@ class PerTask extends React.Component {
       console.log("Cant post?", e);
     });
 
-    // 5. Update state and trigger the next block/trial in the callback
     this.setState(
       {
         dotStairEasy: newDotStairEasy,
         dotStairHard: newDotStairHard,
       },
       () => {
-        // This runs exactly after the state is safely updated
         if (this.state.trialNumInBlock === this.state.trialNumPerBlock) {
-          // Both the end of a block AND the end of the total task run restBlock()
           this.restBlock();
-        } else if (this.state.trialNumInBlock !== this.state.trialNumPerBlock) {
-          this.trialReset();
         } else {
-          console.log("ERROR I HAVENT ACCOUNTED FOR");
+          this.trialReset();
         }
       },
     );
   }
 
-  renderRatingSave() {
+  // textTime passed as parameter to avoid setState/read race
+  renderRatingSave(textTime) {
     var prolificID = this.state.prolificID;
     var task = "perception";
 
-    // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
-
+    var maxChars = 9000;
     var rawMovements = this.state.mouseMovements || [];
 
     var compressedMovements = rawMovements
@@ -1231,7 +1078,6 @@ class PerTask extends React.Component {
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
 
-    // --- FAILSAFE: Truncate if trial string exceeds limit ---
     if (compressedMovements.length > maxChars) {
       compressedMovements = compressedMovements.substring(0, maxChars);
       const lastPipe = compressedMovements.lastIndexOf("|");
@@ -1255,7 +1101,7 @@ class PerTask extends React.Component {
       quizState: "block",
       confInitial: null,
       confLevel: null,
-      textTime: this.state.textTime,
+      textTime: textTime, // ← use parameter directly
       selfKnowledge: this.state.selfKnowledge,
       clientFlags: clientFlags.snapshot(),
       windowWidth: window.innerWidth,
@@ -1270,60 +1116,45 @@ class PerTask extends React.Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(saveString),
-    }).catch((e) => {
-      console.log("Cant post?", e);
-    });
-
-    // Go back to the trials using a clean arrow function
-    setTimeout(() => {
-      this.contBlock();
-    }, 10);
+    })
+      .then(() => this.contBlock())
+      .catch((e) => {
+        console.log("Cant post?", e);
+        this.contBlock(); // still advance even if save fails
+      });
   }
 
   contBlock() {
-    // continue after a block break
     var blockNum = this.state.blockNum + 1;
 
-    this.setState({
-      instructScreen: false,
-      taskScreen: true,
-      taskSection: "iti",
-      trialNumInBlock: 0,
-      blockNum: blockNum,
-      textTime: 0,
-      selfKnowledge: null,
-      mouseMovements: [],
-      selfKnowledge: "", // <-- ADD THIS to clear the text
-      wordCount: 0, // <-- ADD THIS to reset validation
-    });
-
-    if (this.state.trialNum === this.state.trialNumTotal) {
-      //end the task
-      setTimeout(
-        function () {
+    this.setState(
+      {
+        instructScreen: false,
+        taskScreen: true,
+        taskSection: "iti",
+        trialNumInBlock: 0,
+        blockNum: blockNum,
+        textTime: 0,
+        selfKnowledge: "",
+        wordCount: 0,
+        mouseMovements: [],
+      },
+      () => {
+        if (this.state.trialNum === this.state.trialNumTotal) {
           this.taskEnd();
-        }.bind(this),
-        10,
-      );
-    } else {
-      //go back to the trials
-      setTimeout(
-        function () {
+        } else {
           this.taskBegin();
-        }.bind(this),
-        10,
-      );
-    }
+        }
+      },
+    );
   }
 
   renderQuizSave() {
     var prolificID = this.state.prolificID;
     var task = "perception";
 
-    // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
-
+    var maxChars = 9000;
     var rawMovements = this.state.mouseMovements || [];
 
     var compressedMovements = rawMovements
@@ -1331,7 +1162,6 @@ class PerTask extends React.Component {
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
 
-    // --- FAILSAFE: Truncate if trial string exceeds limit ---
     if (compressedMovements.length > maxChars) {
       compressedMovements = compressedMovements.substring(0, maxChars);
       const lastPipe = compressedMovements.lastIndexOf("|");
@@ -1373,24 +1203,23 @@ class PerTask extends React.Component {
     }).catch((e) => {
       console.log("Cant post?", e);
     });
-    //return to go to the global rating
+
     this.setState({
       taskSection: "global",
       mouseMovements: [],
-      selfKnowledge: "", // <-- ADD THIS to clear the text
-      wordCount: 0, // <-- ADD THIS to reset validation
+      selfKnowledge: "",
+      wordCount: 0,
       trialTime: Math.round(performance.now()),
     });
   }
 
-  renderGlobalSave() {
+  // textTime passed as parameter to avoid setState/read race
+  renderGlobalSave(textTime) {
     var prolificID = this.state.prolificID;
     var task = "perception";
 
-    // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
-
+    var maxChars = 9000;
     var rawMovements = this.state.mouseMovements || [];
 
     var compressedMovements = rawMovements
@@ -1398,7 +1227,6 @@ class PerTask extends React.Component {
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
 
-    // --- FAILSAFE: Truncate if trial string exceeds limit ---
     if (compressedMovements.length > maxChars) {
       compressedMovements = compressedMovements.substring(0, maxChars);
       const lastPipe = compressedMovements.lastIndexOf("|");
@@ -1422,7 +1250,7 @@ class PerTask extends React.Component {
       quizState: "domain post",
       confInitial: null,
       confLevel: null,
-      textTime: this.state.textTime,
+      textTime: textTime, // ← use parameter directly
       selfKnowledge: this.state.selfKnowledge,
       clientFlags: clientFlags.snapshot(),
       windowWidth: window.innerWidth,
@@ -1441,7 +1269,6 @@ class PerTask extends React.Component {
       console.log("Cant post?", e);
     });
 
-    //return to instructions
     this.setState({
       instructScreen: true,
       taskScreen: false,
@@ -1449,8 +1276,8 @@ class PerTask extends React.Component {
       instructNum: 5,
       taskSection: null,
       mouseMovements: [],
-      selfKnowledge: "", // <-- ADD THIS to clear the text
-      wordCount: 0, // <-- ADD THIS to reset validation
+      selfKnowledge: "",
+      wordCount: 0,
     });
   }
 
@@ -1460,10 +1287,10 @@ class PerTask extends React.Component {
       instructNum: 3,
       taskScreen: false,
       taskSection: "break",
-      trialTime: Math.round(performance.now()), // for the mouse tracker
+      trialTime: Math.round(performance.now()),
       mouseMovements: [],
-      selfKnowledge: "", // <-- ADD THIS to clear the text
-      wordCount: 0, // <-- ADD THIS to reset validation
+      selfKnowledge: "",
+      wordCount: 0,
     });
   }
 
@@ -1474,10 +1301,8 @@ class PerTask extends React.Component {
 
     var condUrl;
     if (condition === 1) {
-      //Sent to memory task for part 2
       condUrl = "/MemPreTut?PROLIFIC_PID=";
     } else {
-      //Sent to insight page
       condUrl = "/Bonus?PROLIFIC_PID=";
     }
 
@@ -1496,19 +1321,22 @@ class PerTask extends React.Component {
     });
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // LIFECYCLE
+
   componentDidMount() {
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
-    // --- Attach mouse listener when screen loads ---
     window.addEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
   componentWillUnmount() {
-    // --- Clean up listener to prevent catastrophic memory leaks ---
     window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
-  ///////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // RENDER
+
   render() {
     let text;
 
@@ -1517,33 +1345,23 @@ class PerTask extends React.Component {
       this.state.taskScreen === false &&
       this.state.quizScreen === false
     ) {
-      text = <div> {this.instructText(this.state.instructNum)}</div>;
-      //    console.log("Page: " + this.state.instructNum);
+      text = <div>{this.instructText(this.state.instructNum)}</div>;
     } else if (
-      this.state.instructScreen === false &&
-      this.state.taskScreen === false &&
       this.state.quizScreen === true &&
       this.state.taskSection === "rating"
     ) {
-      text = <div> {this.quizText(this.state.quizState)}</div>;
-      //    console.log("Quiz state: " + this.state.quizState);
+      text = <div>{this.quizText(this.state.quizState)}</div>;
     } else if (
-      this.state.instructScreen === false &&
-      this.state.taskScreen === false &&
       this.state.quizScreen === true &&
       this.state.taskSection === "global"
     ) {
-      text = <div> {this.domainGlobalPost(this.state.postGlobalState)}</div>;
+      text = <div>{this.domainGlobalPost(this.state.postGlobalState)}</div>;
     } else if (
-      this.state.instructScreen === false &&
-      this.state.quizScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "iti"
     ) {
       text = <div className={style.boxStyle}></div>;
     } else if (
-      this.state.instructScreen === false &&
-      this.state.quizScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "fixation"
     ) {
@@ -1553,8 +1371,6 @@ class PerTask extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
-      this.state.quizScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "stimulus"
     ) {
@@ -1572,8 +1388,6 @@ class PerTask extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
-      this.state.quizScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "choice"
     ) {
@@ -1583,8 +1397,6 @@ class PerTask extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
-      this.state.quizScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "choiceFeedback"
     ) {
@@ -1594,8 +1406,6 @@ class PerTask extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
-      this.state.quizScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "confidence"
     ) {

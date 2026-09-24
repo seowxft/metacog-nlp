@@ -44,7 +44,10 @@ class StartPage extends React.Component {
     } else {
       // The rest of your logic remains the same
 
-      userID = Math.floor(100000 + Math.random() * 900000);
+      // --- NEW SECURE ID GENERATION ---
+      const secureArray = new Uint32Array(1);
+      window.crypto.getRandomValues(secureArray);
+      userID = secureArray[0] + 1000000000;
 
       prolificID = userID;
       studyID = userID;

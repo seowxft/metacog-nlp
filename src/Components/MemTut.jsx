@@ -47,7 +47,6 @@ class MemTut extends React.Component {
 
     var sectionTime = Math.round(performance.now());
 
-    // --- Declare variables OUTSIDE the if/else ---
     let userID,
       prolificID,
       studyID,
@@ -60,22 +59,19 @@ class MemTut extends React.Component {
       statePic,
       stateWord;
 
-    var debug = false; // Still using manual flag for now
+    var debug = false;
 
     if (debug === true) {
-      // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
       studyID = 100;
       sessionID = 100;
-      date = 100; // Note: You might want a real date string here for debugging
-      startTime = 100; // Note: You might want a real timestamp for debugging
+      date = 100;
+      startTime = 100;
       condition = 1;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
 
-      ////////////////
-      ////////////////
       stateWord = [
         "butterfly",
         "ladybug",
@@ -115,15 +111,14 @@ class MemTut extends React.Component {
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
-      studyID = this.state.studyID;
-      sessionID = this.state.sessionID;
+      studyID = this.props.state.studyID;
+      sessionID = this.props.state.sessionID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
       startTime = this.props.state.startTime;
       memCorrectPer = this.props.state.memCorrectPer;
       perCorrectPer = this.props.state.perCorrectPer;
-
       statePic = this.props.state.statePic;
       stateWord = this.props.state.stateWord;
     }
@@ -131,30 +126,26 @@ class MemTut extends React.Component {
     statePic = statePic.filter(function (val) {
       return val !== undefined;
     });
-
     stateWord = stateWord.filter(function (val) {
       return val !== undefined;
     });
 
     var exampleNumTotal = 2;
-    var trialNumTotal = 20; //26
+    var trialNumTotal = 20;
     var blockCondTotal = ["easy", "hard"];
     var trialStaircaseSwitch = Math.round(trialNumTotal / 2);
 
-    //the stim position
     var choicePos = Array(Math.round(trialNumTotal / 2))
       .fill(1)
       .concat(Array(Math.round(trialNumTotal / 2)).fill(2));
     utils.shuffle(choicePos);
 
-    var stateNum = stateWord.length; //26
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    var stateNum = stateWord.length;
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     // SET STATES
     this.state = {
-      // demo paramters
       prolificID: prolificID,
-
       studyID: studyID,
       sessionID: sessionID,
       condition: condition,
@@ -163,16 +154,16 @@ class MemTut extends React.Component {
       startTime: startTime,
       astrodude: astrodude,
 
-      //section paramters
       sectionTime: sectionTime,
       section: "tutorial",
       tutorialTry: 1,
+
       // trial timings in ms
-      fixTimeLag: 1000, //1000
-      stimTimeLag: 300, //1000
+      fixTimeLag: 1000,
+      stimTimeLag: 1000,
       encodeTimeLag: 500,
-      respFbTimeLag: 700, //
-      fbTimeLag: 500, //500 correct or wrong
+      respFbTimeLag: 700,
+      fbTimeLag: 500,
 
       // stimuli
       stateNum: stateNum,
@@ -180,16 +171,14 @@ class MemTut extends React.Component {
       statePic: statePic,
       choicePosList: choicePos,
 
-      //trial parameters
+      // trial parameters
       exampleNumTotal: exampleNumTotal,
       trialNumTotal: trialNumTotal,
-      fullTrialNumTotal: 80, //this needs to match the real task number of trials
+      fullTrialNumTotal: 80,
       blockCondTotal: blockCondTotal,
       trialStaircaseSwitch: trialStaircaseSwitch,
 
-      //  respKeyCode: [87, 79], // for left and right choice keys, currently it is W and O
-
-      //trial by trial paramters
+      // trial by trial parameters
       trialNum: 0,
       trialTime: 0,
       fixTime: 0,
@@ -203,35 +192,36 @@ class MemTut extends React.Component {
       choice: null,
       confLevel: null,
       confTime: 0,
-
       correct: null,
-      correctMat: [], //put correct in vector, to cal perf %
+      correctMat: [],
       correctPer: 0,
 
-      // staircase parameters
+      // --- responseMatrix: combined log of all responses (easy + hard), updated only in handleResp ---
       responseMatrix: [],
+
       reversals: 0,
       stairDir: null,
       stimNum: null,
 
-      correctMatEasy: [], //put correct in vector, to cal perf %
+      // --- Easy block: response log and staircase step history kept strictly separate ---
+      correctMatEasy: [],
       correctPerEasy: 0,
-      responseMatrixEasy: [],
-      stairCountEasy: [],
-
-      stairDirEasy: null,
+      responseMatrixEasy: [], // per-trial response log, updated only in handleResp
+      stairCountEasy: [], // staircase step history, updated only in trialReset
+      stairDirEasy: ["up", "up"],
       stimNumEasy: null,
 
-      correctMatHard: [], //put correct in vector, to cal perf %
+      // --- Hard block: same separation ---
+      correctMatHard: [],
       correctPerHard: 0,
-      responseMatrixHard: [],
-      stairCountHard: [],
-      stairDirHard: null,
+      responseMatrixHard: [], // per-trial response log, updated only in handleResp
+      stairCountHard: [], // staircase step history, updated only in trialReset
+      stairDirHard: ["up", "up"],
       stimNumHard: null,
 
       quizState: "pre",
 
-      //quiz paramters
+      // quiz parameters
       quizTry: 1,
       quizNumTotal: 5,
       quizNum: 0,
@@ -242,28 +232,23 @@ class MemTut extends React.Component {
 
       // screen parameters
       instructScreen: true,
-      instructNum: 1, //start from 1
+      instructNum: 1,
       taskScreen: false,
       taskSection: null,
       debug: debug,
-
       memCorrectPer: memCorrectPer,
       perCorrectPer: perCorrectPer,
-
       mouseMovements: [],
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////////////
 
-    /* prevents page from going down when space bar is hit .*/
     window.addEventListener("keyup", function (e) {
       if (e.keyCode === 32 && e.target === document.body) {
         e.preventDefault();
       }
     });
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     this.handleInstruct = this.handleInstruct.bind(this);
@@ -273,33 +258,23 @@ class MemTut extends React.Component {
     this.handleQuizResp = this.handleQuizResp.bind(this);
     this.instructText = this.instructText.bind(this);
     this.quizText = this.quizText.bind(this);
-
     this.globalConfText = this.globalConfText.bind(this);
 
-    // --- Bind Mouse Tracker Event Handler ---
     this.handleGlobalMouseMove = this.handleGlobalMouseMove.bind(this);
-    this.ticking = false; // Performance flag for requestAnimationFrame
+    this.ticking = false;
     this.renderImages = this.renderImages.bind(this);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //End constructor props
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
-  /// KEYBOARD HANDLES ////
+  // MOUSE TRACKING
 
-  // --- MODIFIED MOUSE TRACKING EVENT HANDLER ---
   handleGlobalMouseMove(event) {
-    // Check condition: Track ONLY if active trial screen is mounted
     if (this.state.taskScreen && !this.ticking) {
       window.requestAnimationFrame(() => {
-        // Calculate timestamp relative to when this specific individual trial began
         const relativeTime = Math.round(
           performance.now() - this.state.trialTime,
         );
 
-        // Maps section keys to short IDs to keep character count down
-        // i = iti, f = fixation, s = stimulus, c = choice, fb = choiceFeedback, conf = confidence
         let sectionTag = "unmapped";
         if (this.state.taskSection === "gConf") sectionTag = "r";
 
@@ -307,7 +282,7 @@ class MemTut extends React.Component {
           x: event.clientX,
           y: event.clientY,
           t: relativeTime,
-          p: sectionTag, // 'p' for Phase property
+          p: sectionTag,
         };
 
         this.setState((prevState) => ({
@@ -320,73 +295,52 @@ class MemTut extends React.Component {
     }
   }
 
-  // This handles instruction screen within the component USING KEYBOARD
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // KEYBOARD / CLICK HANDLES
+
   handleInstruct(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
 
     if (whichButton === 1 && curInstructNum >= 2 && curInstructNum <= 6) {
-      // from page 2 to 6, I can move back a page
       this.setState({ instructNum: curInstructNum - 1 });
     } else if (
       whichButton === 2 &&
       curInstructNum >= 1 &&
       curInstructNum <= 5
     ) {
-      // from page 1 to 5, I can move forward a page
       this.setState({ instructNum: curInstructNum + 1 });
     } else if (
       whichButton === 1 &&
       curInstructNum >= 9 &&
       curInstructNum <= 12
     ) {
-      // from page 9 to 12, I can move back a page
       this.setState({ instructNum: curInstructNum - 1 });
     } else if (
       whichButton === 2 &&
       curInstructNum >= 8 &&
       curInstructNum <= 11
     ) {
-      // from page 8 to 11, I can move forward a page
       this.setState({ instructNum: curInstructNum + 1 });
     }
 
     console.log(this.state.instructNum + 1);
   }
 
+  // handleBegin: no setState here, call targets directly
   handleBegin(keyPressed) {
     var curInstructNum = this.state.instructNum;
     var whichButton = keyPressed;
 
     if (whichButton === 3 && curInstructNum === 6) {
-      setTimeout(
-        function () {
-          this.exampleBegin();
-        }.bind(this),
-        0,
-      );
+      this.exampleBegin();
     } else if (whichButton === 3 && curInstructNum === 7) {
       console.log("START TUTORIAL");
-      setTimeout(
-        function () {
-          this.tutorBegin();
-        }.bind(this),
-        0,
-      );
+      this.tutorBegin();
     } else if (whichButton === 3 && curInstructNum === 12) {
-      setTimeout(
-        function () {
-          this.quizBegin();
-        }.bind(this),
-        0,
-      );
+      this.quizBegin();
     } else if (whichButton === 3 && curInstructNum === 13) {
-      setTimeout(
-        function () {
-          this.redirectToNextTask();
-        }.bind(this),
-        0,
-      );
+      this.redirectToNextTask();
     }
   }
 
@@ -395,20 +349,19 @@ class MemTut extends React.Component {
     var whichButton = keyPressed;
     if (whichButton === 3 && this.state.confLevel !== null) {
       var textTime = timePressed - this.state.trialTime;
-
-      this.setState({
-        textTime: textTime,
-      });
-
-      setTimeout(
-        function () {
-          this.renderGConfSave();
-        }.bind(this),
-        10,
-      );
+      this.setState({ textTime: textTime }, () => this.renderGConfSave());
     }
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // handleResp
+  //
+  // Owns: responseMatrix (combined), responseMatrixEasy, responseMatrixHard,
+  //       correctMat, correctMatEasy, correctMatHard
+  //
+  // Does NOT touch: stairCountEasy, stairCountHard, stairDirEasy, stairDirHard
+  //                 (those belong to trialReset)
+  // ─────────────────────────────────────────────────────────────────────────
   handleResp(keyPressed) {
     var {
       trialTime,
@@ -417,9 +370,8 @@ class MemTut extends React.Component {
       encodeTime,
       choiceCor,
       blockCond,
-      stairDir,
-      responseMatrix,
       correctMat,
+      responseMatrix,
       responseMatrixEasy,
       correctMatEasy,
       responseMatrixHard,
@@ -441,53 +393,47 @@ class MemTut extends React.Component {
     }
 
     var newCorrectMat = correctMat.concat(correct);
+    // Combined log across all trials regardless of block
+    var newResponseMatrix = responseMatrix.concat(response ? 1 : 0);
+
     var stateUpdates = {
       responseKey: keyPressed,
       choice: choice,
       respTime: respTime,
       correct: correct,
       correctMat: newCorrectMat,
+      responseMatrix: newResponseMatrix,
       correctPer:
         Math.round((utils.getAvg(newCorrectMat) + Number.EPSILON) * 100) / 100,
-      responseMatrix: responseMatrix.concat(response),
     };
 
     if (blockCond === "easy") {
       var newCorrectMatEasy = correctMatEasy.concat(correct);
+      var newResponseMatrixEasy = responseMatrixEasy.concat(response ? 1 : 0);
       Object.assign(stateUpdates, {
-        responseMatrixEasy: responseMatrixEasy.concat(response),
-        stairCountEasy: this.state.stairCountEasy.concat(response),
+        responseMatrixEasy: newResponseMatrixEasy,
         correctMatEasy: newCorrectMatEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
           100,
-        stairDirEasy: stairDir,
       });
     } else if (blockCond === "hard") {
       var newCorrectMatHard = correctMatHard.concat(correct);
+      var newResponseMatrixHard = responseMatrixHard.concat(response ? 1 : 0);
       Object.assign(stateUpdates, {
-        responseMatrixHard: responseMatrixHard.concat(response),
-        stairCountHard: this.state.stairCountHard.concat(response),
+        responseMatrixHard: newResponseMatrixHard,
         correctMatHard: newCorrectMatHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
           100,
-        stairDirHard: stairDir,
       });
     }
 
-    this.setState(stateUpdates);
-
-    setTimeout(
-      function () {
-        this.renderChoiceFb();
-      }.bind(this),
-      0,
-    );
+    // renderChoiceFb reads this.state.choice — use callback to ensure state is flushed
+    this.setState(stateUpdates, () => this.renderChoiceFb());
   }
 
   handleNextResp(keyPressed) {
-    var timePressed = Math.round(performance.now());
     var whichButton = keyPressed;
     if (whichButton === 3) {
       var rewFbTime =
@@ -501,17 +447,7 @@ class MemTut extends React.Component {
             this.state.respFbTime,
         ];
 
-      this.setState({
-        rewFbTime: rewFbTime,
-      });
-
-      //  document.removeEventListener("keyup", this._handleNextRespKey);
-      setTimeout(
-        function () {
-          this.renderTutorSave();
-        }.bind(this),
-        0,
-      );
+      this.setState({ rewFbTime: rewFbTime }, () => this.renderTutorSave());
     }
   }
 
@@ -521,28 +457,14 @@ class MemTut extends React.Component {
     var whichButton = keyPressed;
 
     var quizTime = timePressed - this.state.trialTime;
-
     var quizCorTotal = this.state.quizCorTotal;
     var quizCor;
 
-    // calculate if quiz was correct or not
     if (whichButton === this.state.quizAns[quizNum - 1]) {
       quizCorTotal = quizCorTotal + 1;
       quizCor = 1;
-      this.setState({
-        quizPressed: whichButton,
-        quizCor: quizCor,
-        quizCorTotal: quizCorTotal,
-        quizTime: quizTime,
-      });
     } else {
-      //if was incorrect
       quizCor = 0;
-      this.setState({
-        quizPressed: whichButton,
-        quizCor: quizCor,
-        quizTime: quizTime,
-      });
     }
 
     console.log("Keypress: " + whichButton);
@@ -553,19 +475,21 @@ class MemTut extends React.Component {
     console.log("QuizAns: " + this.state.quizAns);
     console.log("quizNumTotal: " + this.state.quizNumTotal);
 
-    setTimeout(
-      function () {
-        this.renderQuizSave();
-      }.bind(this),
-      0,
+    this.setState(
+      {
+        quizPressed: whichButton,
+        quizCor: quizCor,
+        quizCorTotal: quizCorTotal,
+        quizTime: quizTime,
+      },
+      () => this.renderQuizSave(),
     );
   }
 
   handleCallbackConf(callBackValue) {
-    this.setState({ confValue: callBackValue });
+    this.setState({ confLevel: callBackValue });
   }
 
-  // handle key keyPressed
   _handleQuizKey = (event) => {
     var keyPressed;
     var timePressed;
@@ -596,15 +520,12 @@ class MemTut extends React.Component {
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////
-  /// INSTRUCTION TEXT ////
+  // INSTRUCTION TEXT
 
-  // To ask them for the valence rating of the noises
-  // before we start the task
   instructText(instructNum) {
     let text;
     let text2;
 
-    //If fail quiz once, this brings me to instruct before confidence
     if (this.state.quizTry === 1) {
       text2 = (
         <span>
@@ -628,9 +549,7 @@ class MemTut extends React.Component {
           <br />
         </span>
       );
-    }
-    //If fail quiz more than once, this brings me to the beginning of the instruct
-    else if (this.state.quizTry >= 4) {
+    } else if (this.state.quizTry >= 4) {
       text = (
         <span>
           You scored {this.state.quizCorTotal}/{this.state.quizNumTotal} on the
@@ -1086,12 +1005,12 @@ class MemTut extends React.Component {
       case 13:
         return <div>{instruct_text13}</div>;
       default:
+        return null;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
-  /// QUIZ TEXT ////
-  // Do I need to randomise this?
+  // QUIZ TEXT
 
   quizText(quizNum) {
     let quiz_text1 = (
@@ -1205,15 +1124,12 @@ class MemTut extends React.Component {
       case 5:
         return <div>{quiz_text5}</div>;
       default:
+        return null;
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
-  /// TASK TOGGLES ////
-
-  handleCallbackConf(callBackValue) {
-    this.setState({ confLevel: callBackValue });
-  }
+  // TASK TOGGLES
 
   globalConfText(quizState) {
     let gConf_text1 = (
@@ -1249,18 +1165,14 @@ class MemTut extends React.Component {
       case "pre":
         return <div>{gConf_text1}</div>;
       default:
+        return null;
     }
   }
 
   gConfBegin() {
-    //randomise the pre-post initial conf value - this has changed to a scale of 0 to 40
     console.log("Does it come here?");
     var initialValuePre = this.state.fullTrialNumTotal / 2;
-
-    // 0.125 means the offset is 12.5% of the total.
-    // Math.round ensures the offset remains an integer.
     var offset = Math.round(this.state.fullTrialNumTotal * 0.125);
-
     var initialValue = utils.randomInt(
       initialValuePre - offset,
       initialValuePre + offset,
@@ -1279,33 +1191,30 @@ class MemTut extends React.Component {
   }
 
   exampleBegin() {
-    console.log("Are we even hitting here yet?");
-    this.setState({
-      trialNum: 0,
-      reversals: null,
-      responseMatrix: [],
-      stairDir: null,
-      confLevel: null,
-      confMove: false,
-      confTime: 0,
-      blockCond: "example",
-    });
-
-    setTimeout(
-      function () {
-        this.trialExample();
-      }.bind(this),
-      10,
+    console.log("Example begin.");
+    this.setState(
+      {
+        trialNum: 0,
+        reversals: null,
+        responseMatrix: [],
+        stairDir: null,
+        confLevel: null,
+        confMove: false,
+        confTime: 0,
+        blockCond: "example",
+      },
+      () => this.trialExample(),
     );
   }
 
-  // FOUR COMPONENTS OF THE TASK, Fixation, Stimulus/Response, Feedback and Confidence
+  // ─────────────────────────────────────────────────────────────────────────
+  // trialExample: setState callback replaces setTimeout
+  // ─────────────────────────────────────────────────────────────────────────
   trialExample() {
-    var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
+    var trialNum = this.state.trialNum + 1;
     var choicePos = Math.random() < 0.5 ? 1 : 2;
     var stimNum = 5;
 
-    // shuffle the  list of stimuli
     var stim = this.state.statePic;
     var stimWord = this.state.stateWord;
     utils.shuffleSame(stim, stimWord);
@@ -1321,15 +1230,10 @@ class MemTut extends React.Component {
     var stimPick = stim.slice([-stimPickNum]);
     var stimWordPick = stimWord.slice([-stimPickNum]);
 
-    console.log("stimPickNum: " + stimPickNum);
-    console.log("stimPick: " + stimPick);
-    console.log("stimWordPick: " + stimWordPick);
-
-    //this is the stim that is shown
     var stimPickShown = stimPick.slice(0, stimNum);
     var stimWordPickShown = stimWordPick.slice(0, stimNum);
 
-    utils.shuffleSame(stimPickShown, stimWordPickShown); //shuffle the order shown
+    utils.shuffleSame(stimPickShown, stimWordPickShown);
 
     stimPickShown = stimPickShown.filter(function (val) {
       return val !== undefined;
@@ -1338,20 +1242,10 @@ class MemTut extends React.Component {
       return val !== undefined;
     });
 
-    console.log("stimPickShown: " + stimPickShown);
-    console.log("stimWordPickShown: " + stimWordPickShown);
-
-    //this is the stim for the 2AFC
     var choicePickShown = stimPick.slice(-2);
     var choiceWordPickShown = stimWordPick.slice(-2);
 
-    console.log("choicePickShown: " + choicePickShown);
-    console.log("choiceWordPickShown: " + choiceWordPickShown);
-
-    // have to do shuffling of the answers
-    var choiceShownWordLeft;
-    var choiceShownWordRight;
-    var choiceCor;
+    var choiceShownWordLeft, choiceShownWordRight, choiceCor;
     if (choicePos === 1) {
       choiceShownWordLeft = choiceWordPickShown[0];
       choiceShownWordRight = choiceWordPickShown[1];
@@ -1362,92 +1256,73 @@ class MemTut extends React.Component {
       choiceCor = "right";
     }
 
-    //Reset all parameters
-    this.setState({
-      instructScreen: false,
-      taskScreen: true,
-      taskSection: "iti",
-      trialNum: trialNum,
-      fixTime: 0,
-      stimTime: 0,
-      responseKey: 0,
-      respTime: 0,
-      respFbTime: 0,
-      rewFbTime: 0,
-      choice: null,
-      correct: null,
-      correctPer: null,
-      choicePos: choicePos,
-      choiceCor: choiceCor,
-
-      stimPick: stimPick,
-      stimWordPick: stimWordPick,
-      stimShown: stimPickShown,
-      stimWordShown: stimWordPickShown,
-      choiceShownWordStim1: choiceWordPickShown[0],
-      choiceShownWordStim2: choiceWordPickShown[1],
-      choiceShownWordLeft: choiceShownWordLeft,
-      choiceShownWordRight: choiceShownWordRight,
-
-      choiceFbLeft: style.choiceWord,
-      choiceFbRight: style.choiceWord,
-      choiceFbRewLeft: style.choiceWord,
-      choiceFbRewRight: style.choiceWord,
-
-      stimNum: stimNum,
-    });
-
-    if (trialNum < this.state.exampleNumTotal + 1) {
-      console.log("Example trial next one.");
-      setTimeout(
-        function () {
+    this.setState(
+      {
+        instructScreen: false,
+        taskScreen: true,
+        taskSection: "iti",
+        trialNum: trialNum,
+        fixTime: 0,
+        stimTime: 0,
+        responseKey: 0,
+        respTime: 0,
+        respFbTime: 0,
+        rewFbTime: 0,
+        choice: null,
+        correct: null,
+        correctPer: null,
+        choicePos: choicePos,
+        choiceCor: choiceCor,
+        stimPick: stimPick,
+        stimWordPick: stimWordPick,
+        stimShown: stimPickShown,
+        stimWordShown: stimWordPickShown,
+        choiceShownWordStim1: choiceWordPickShown[0],
+        choiceShownWordStim2: choiceWordPickShown[1],
+        choiceShownWordLeft: choiceShownWordLeft,
+        choiceShownWordRight: choiceShownWordRight,
+        choiceFbLeft: style.choiceWord,
+        choiceFbRight: style.choiceWord,
+        choiceFbRewLeft: style.choiceWord,
+        choiceFbRewRight: style.choiceWord,
+        stimNum: stimNum,
+      },
+      () => {
+        if (trialNum < this.state.exampleNumTotal + 1) {
+          console.log("Example trial: " + trialNum);
           this.renderFix();
-        }.bind(this),
-        10,
-      );
-    } else {
-      // if the trials have reached the total trial number
-      console.log("End example trials.");
-      setTimeout(
-        function () {
+        } else {
+          console.log("End of example trials.");
           this.gConfBegin();
-        }.bind(this),
-        10,
-      );
-    }
+        }
+      },
+    );
   }
 
   tutorBegin() {
     this.setState(
       {
-        // trial by trial parameters
         trialNum: 0,
         blockCond: null,
         trialTime: 0,
-        // ... keep all your other state initializations ...
-        correctMatEasy: [], //put correct in vector, to cal perf %
+        correctMatEasy: [],
         correctPerEasy: 0,
         responseMatrixEasy: [],
         stairCountEasy: [],
         stairDirEasy: ["up", "up"],
         stimNumEasy: 6,
-
-        correctMatHard: [], //put correct in vector, to cal perf %
+        correctMatHard: [],
         correctPerHard: 0,
         responseMatrixHard: [],
         stairCountHard: [],
         stairDirHard: ["up", "up"],
         stimNumHard: 6,
       },
-      () => {
-        // THIS CALLBACK EXECUTES EXACTLY AFTER STATE IS UPDATED
-        this.trialReset();
-      },
+      () => this.trialReset(),
     );
   }
 
   tutorEnd() {
-    // change state to make sure the screen is changed for the task
     this.setState({
       instructScreen: true,
       taskScreen: false,
@@ -1474,17 +1349,14 @@ class MemTut extends React.Component {
     var trialTime = Math.round(performance.now());
 
     if (quizNum < this.state.quizNumTotal) {
-      //go to next quiz qn
       this.setState({
         quizNum: quizNum + 1,
         trialTime: trialTime,
       });
     } else if (quizNum === this.state.quizNumTotal) {
-      //   document.removeEventListener("keyup", this._handleQuizKey);
-      //end quiz, head back to instructions
       var quizTry = this.state.quizTry;
       var tutorialTry = this.state.tutorialTry;
-      //if full marks
+
       if (quizCorTotal === this.state.quizNumTotal) {
         console.log("PASS QUIZ");
         this.setState({
@@ -1494,8 +1366,7 @@ class MemTut extends React.Component {
           taskSection: "instruct",
         });
       } else if (quizCorTotal !== this.state.quizNumTotal && quizTry <= 2) {
-        //if they got wrong for at least three times
-        console.log("fAIL QUIZ");
+        console.log("FAIL QUIZ");
         quizTry = quizTry + 1;
         this.setState({
           instructScreen: true,
@@ -1505,9 +1376,7 @@ class MemTut extends React.Component {
           quizTry: quizTry,
         });
       } else if (quizCorTotal !== this.state.quizNumTotal && quizTry > 2) {
-        //if they got more than one wrong
         tutorialTry = tutorialTry + 1;
-        //  console.log("FAIL QUIZ");
         quizTry = quizTry + 1;
         this.setState({
           instructScreen: true,
@@ -1521,32 +1390,31 @@ class MemTut extends React.Component {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////
-  // FOUR COMPONENTS OF THE TASK, Fixation, Stimulus/Response, Feedback and Confidence
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // TRIAL FLOW
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // trialReset
+  //
+  // Owns: stairCountEasy, stairCountHard, stimNumEasy, stimNumHard,
+  //       stairDirEasy, stairDirHard
+  //
+  // Does NOT touch: responseMatrix, responseMatrixEasy, responseMatrixHard,
+  //                 correctMat, correctMatEasy, correctMatHard (those belong to handleResp)
+  // ─────────────────────────────────────────────────────────────────────────
   trialReset() {
-    var trialNum = this.state.trialNum + 1; //trialNum is 0, so it starts from 1
-    var choicePos = this.state.choicePosList[trialNum - 1]; //shuffle the order for the choice
+    var trialNum = this.state.trialNum + 1;
+    var choicePos = this.state.choicePosList[trialNum - 1];
 
     console.log(trialNum);
     console.log(choicePos);
 
-    var stimNum = this.state.stimNum;
-    var stairDir = this.state.stairDir;
-    var responseMatrix = this.state.responseMatrix;
-    var stairCountEasy = this.state.stairCountEasy;
-    var stairCountHard = this.state.stairCountHard;
-
-    // run staircase
+    var stimNum, stairDir, newStairCountEasy, newStairCountHard;
     var blockCond;
     var s2;
 
     if (trialNum <= this.state.trialStaircaseSwitch) {
-      console.log("in here easy");
-      console.log(this.state.stimNumEasy);
-      console.log(this.state.responseMatrixEasy);
-      console.log(this.state.stairDirEasy);
-
-      blockCond = this.state.blockCondTotal[0];
+      blockCond = this.state.blockCondTotal[0]; // "easy"
 
       s2 = staircaseEasy.staircase(
         this.state.stimNumEasy,
@@ -1556,13 +1424,12 @@ class MemTut extends React.Component {
       );
       stimNum = s2.stimNum;
       stairDir = s2.direction;
-      responseMatrix = s2.stepcount;
-      stairCountEasy = s2.stepcount;
+      newStairCountEasy = s2.stepcount;
+      newStairCountHard = this.state.stairCountHard; // unchanged this trial
 
-      console.log(blockCond);
-    } else if (trialNum > this.state.trialStaircaseSwitch) {
-      console.log("in here hard");
-      blockCond = this.state.blockCondTotal[1];
+      console.log("Easy block — stimNum:", stimNum, "stairDir:", stairDir);
+    } else {
+      blockCond = this.state.blockCondTotal[1]; // "hard"
 
       s2 = staircase.staircase(
         this.state.stimNumHard,
@@ -1570,20 +1437,17 @@ class MemTut extends React.Component {
         this.state.stairDirHard,
         trialNum - this.state.trialStaircaseSwitch + 1,
       );
-
       stimNum = s2.stimNum;
       stairDir = s2.direction;
-      responseMatrix = s2.stepcount;
-      stairCountHard = s2.stepcount;
-    }
+      newStairCountHard = s2.stepcount;
+      newStairCountEasy = this.state.stairCountEasy; // unchanged this trial
 
-    console.log("stimNum: " + stimNum);
-    console.log("stairDir: " + stairDir);
-    console.log("responseMat: " + responseMatrix);
+      console.log("Hard block — stimNum:", stimNum, "stairDir:", stairDir);
+    }
 
     var reversals = s2 && s2.reversal ? 1 : 0;
 
-    // shuffle the  list of stimuli
+    // Shuffle stimuli
     var stim = this.state.statePic;
     var stimWord = this.state.stateWord;
     utils.shuffleSame(stim, stimWord);
@@ -1595,20 +1459,14 @@ class MemTut extends React.Component {
       return val !== undefined;
     });
 
-    //pick the number of stim to be shown, plus 1 more for the other option of 2AFC
     var stimPickNum = stimNum + 1;
     var stimPick = stim.slice([-stimPickNum]);
     var stimWordPick = stimWord.slice([-stimPickNum]);
 
-    console.log("stimPickNum: " + stimPickNum);
-    console.log("stimPick: " + stimPick);
-    console.log("stimWordPick: " + stimWordPick);
-
-    //this is the stim that is shown
     var stimPickShown = stimPick.slice(0, stimNum);
     var stimWordPickShown = stimWordPick.slice(0, stimNum);
 
-    utils.shuffleSame(stimPickShown, stimWordPickShown); //shuffle the order shown
+    utils.shuffleSame(stimPickShown, stimWordPickShown);
 
     stimPickShown = stimPickShown.filter(function (val) {
       return val !== undefined;
@@ -1617,20 +1475,10 @@ class MemTut extends React.Component {
       return val !== undefined;
     });
 
-    console.log("stimPickShown: " + stimPickShown);
-    console.log("stimWordPickShown: " + stimWordPickShown);
-
-    //this is the stim for the 2AFC
     var choicePickShown = stimPick.slice(-2);
     var choiceWordPickShown = stimWordPick.slice(-2);
 
-    console.log("choicePickShown: " + choicePickShown);
-    console.log("choiceWordPickShown: " + choiceWordPickShown);
-
-    // have to do shuffling of the answers
-    var choiceShownWordLeft;
-    var choiceShownWordRight;
-    var choiceCor;
+    var choiceShownWordLeft, choiceShownWordRight, choiceCor;
     if (choicePos === 1) {
       choiceShownWordLeft = choiceWordPickShown[0];
       choiceShownWordRight = choiceWordPickShown[1];
@@ -1641,77 +1489,58 @@ class MemTut extends React.Component {
       choiceCor = "right";
     }
 
-    //Reset all parameters
-    this.setState({
-      instructScreen: false,
-      taskScreen: true,
-      taskSection: "iti",
-      blockCond: blockCond,
-      trialNum: trialNum,
-      fixTime: 0,
-      stimTime: 0,
-      encodeTime: 0,
-      responseKey: 0,
-      respTime: 0,
-      respFbTime: 0,
-      rewFbTime: 0,
-      confLevel: null,
-      confTime: 0,
-
-      choice: null,
-      correct: null,
-      correctPer: null,
-      choiceCor: choiceCor,
-      choicePos: choicePos,
-
-      stimPick: stimPick,
-      stimWordPick: stimWordPick,
-      stimShown: stimPickShown,
-      stimWordShown: stimWordPickShown,
-      choiceShownWordStim1: choiceWordPickShown[0],
-      choiceShownWordStim2: choiceWordPickShown[1],
-      choiceShownWordLeft: choiceShownWordLeft,
-      choiceShownWordRight: choiceShownWordRight,
-
-      stimNum: stimNum,
-      stairDir: stairDir,
-      reversals: reversals,
-      responseMatrix: responseMatrix,
-      stairCountEasy: stairCountEasy,
-      stairCountHard: stairCountHard,
-
-      choiceFbLeft: style.choiceWord,
-      choiceFbRight: style.choiceWord,
-      choiceFbRewLeft: style.choiceWord,
-      choiceFbRewRight: style.choiceWord,
-    });
-
-    console.log(this.state.trialNum);
-    console.log(this.state.trialNumTotal);
-
-    if (trialNum < this.state.trialNumTotal + 1) {
-      console.log("START TRIAL");
-      setTimeout(
-        function () {
+    this.setState(
+      {
+        instructScreen: false,
+        taskScreen: true,
+        taskSection: "iti",
+        blockCond: blockCond,
+        trialNum: trialNum,
+        fixTime: 0,
+        stimTime: 0,
+        encodeTime: 0,
+        responseKey: 0,
+        respTime: 0,
+        respFbTime: 0,
+        rewFbTime: 0,
+        confLevel: null,
+        confTime: 0,
+        choice: null,
+        correct: null,
+        correctPer: null,
+        choiceCor: choiceCor,
+        choicePos: choicePos,
+        stimPick: stimPick,
+        stimWordPick: stimWordPick,
+        stimShown: stimPickShown,
+        stimWordShown: stimWordPickShown,
+        choiceShownWordStim1: choiceWordPickShown[0],
+        choiceShownWordStim2: choiceWordPickShown[1],
+        choiceShownWordLeft: choiceShownWordLeft,
+        choiceShownWordRight: choiceShownWordRight,
+        stimNum: stimNum,
+        stairDir: stairDir,
+        reversals: reversals,
+        stairCountEasy: newStairCountEasy, // single source of truth for staircase history
+        stairCountHard: newStairCountHard, // single source of truth for staircase history
+        choiceFbLeft: style.choiceWord,
+        choiceFbRight: style.choiceWord,
+        choiceFbRewLeft: style.choiceWord,
+        choiceFbRewRight: style.choiceWord,
+      },
+      () => {
+        if (trialNum < this.state.trialNumTotal + 1) {
+          console.log("START TRIAL");
           this.renderFix();
-        }.bind(this),
-        10,
-      );
-    } else {
-      // if the trials have reached the total trial number
-      setTimeout(
-        function () {
+        } else {
           this.tutorEnd();
-        }.bind(this),
-        10,
-      );
-    }
+        }
+      },
+    );
   }
 
   renderFix() {
     var trialTime = Math.round(performance.now());
-
-    //Show fixation
     this.setState({
       instructScreen: false,
       taskScreen: true,
@@ -1719,18 +1548,12 @@ class MemTut extends React.Component {
       trialTime: trialTime,
     });
 
-    setTimeout(
-      function () {
-        this.renderStim();
-      }.bind(this),
-      this.state.fixTimeLag,
-    );
+    // Deliberate timing delay — keep setTimeout
+    setTimeout(() => this.renderStim(), this.state.fixTimeLag);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderStim() {
     var fixTime = Math.round(performance.now()) - this.state.trialTime;
-
     this.setState({
       instructScreen: false,
       taskScreen: true,
@@ -1738,19 +1561,14 @@ class MemTut extends React.Component {
       fixTime: fixTime,
     });
 
-    setTimeout(
-      function () {
-        this.renderEncode();
-      }.bind(this),
-      this.state.stimTimeLag,
-    );
+    // Deliberate timing delay — keep setTimeout
+    setTimeout(() => this.renderEncode(), this.state.stimTimeLag);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderEncode() {
     var stimTime =
       Math.round(performance.now()) -
-      [this.state.trialTime + this.state.fixTime];
+      (this.state.trialTime + this.state.fixTime);
 
     this.setState({
       instructScreen: false,
@@ -1759,20 +1577,14 @@ class MemTut extends React.Component {
       stimTime: stimTime,
     });
 
-    setTimeout(
-      function () {
-        this.renderChoice();
-      }.bind(this),
-      this.state.encodeTimeLag,
-    );
+    // Deliberate timing delay — keep setTimeout
+    setTimeout(() => this.renderChoice(), this.state.encodeTimeLag);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoice() {
-    //   document.addEventListener("keyup", this._handleRespKey);
     var encodeTime =
       Math.round(performance.now()) -
-      [this.state.trialTime + this.state.fixTime + this.state.stimTime];
+      (this.state.trialTime + this.state.fixTime + this.state.stimTime);
 
     this.setState({
       instructScreen: false,
@@ -1782,13 +1594,9 @@ class MemTut extends React.Component {
     });
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderChoiceFb() {
-    //   document.removeEventListener("keyup", this._handleRespKey);
-
     var choice = this.state.choice;
-    var choiceFbLeft;
-    var choiceFbRight;
+    var choiceFbLeft, choiceFbRight;
 
     if (choice === "left") {
       choiceFbLeft = style.choiceWordChosen;
@@ -1811,33 +1619,22 @@ class MemTut extends React.Component {
       choiceFbRight: choiceFbRight,
     });
 
-    setTimeout(
-      function () {
-        this.renderCorFb();
-      }.bind(this),
-      this.state.respFbTimeLag,
-    );
+    // Deliberate timing delay — keep setTimeout
+    setTimeout(() => this.renderCorFb(), this.state.respFbTimeLag);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////
   renderCorFb() {
-    //   document.addEventListener("keyup", this._handleNextRespKey);
-
     var respFbTime =
       Math.round(performance.now()) -
-      [
-        this.state.trialTime +
-          this.state.fixTime +
-          this.state.stimTime +
-          this.state.encodeTime +
-          this.state.respTime,
-      ];
+      (this.state.trialTime +
+        this.state.fixTime +
+        this.state.stimTime +
+        this.state.encodeTime +
+        this.state.respTime);
 
     var choice = this.state.choice;
     var correct = this.state.correct;
-    var choiceFbRewLeft;
-    var choiceFbRewRight;
-    var choiceFbRewText;
+    var choiceFbRewLeft, choiceFbRewRight, choiceFbRewText;
 
     console.log(choice);
     console.log(correct);
@@ -1875,30 +1672,36 @@ class MemTut extends React.Component {
     });
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // SAVE FUNCTIONS
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // renderTutorSave
+  //
+  // Saves per-trial data. Includes:
+  //   - responseMatrix (combined log)
+  //   - responseMatrixEasy / responseMatrixHard (block-specific logs)
+  //   - stairCountEasy / stairCountHard (now saved, previously missing)
+  // Then updates stimNumEasy / stimNumHard and calls the next trial.
+  // ─────────────────────────────────────────────────────────────────────────
   renderTutorSave() {
     var prolificID = this.state.prolificID;
-
     var blockCond = this.state.blockCond;
 
-    // 1. Calculate the new values BEFORE setting state
-    var newstimNumEasy = this.state.stimNumEasy;
-    var newstimNumHard = this.state.stimNumHard;
+    var newStimNumEasy = this.state.stimNumEasy;
+    var newStimNumHard = this.state.stimNumHard;
 
     if (blockCond === "easy") {
       console.log("Saving stimNum in easy block.");
-      newstimNumEasy = this.state.stimNum;
+      newStimNumEasy = this.state.stimNum;
     } else if (blockCond === "hard") {
-      console.log("Saving stimNum in easy block.");
-      newstimNumHard = this.state.stimNum;
+      console.log("Saving stimNum in hard block.");
+      newStimNumHard = this.state.stimNum;
     } else {
       console.log("stimNum saving as null (examples).");
-      newstimNumEasy = null;
-      newstimNumHard = null;
+      newStimNumEasy = null;
+      newStimNumHard = null;
     }
-
-    //  var stimPickShown = this.state.stimPickShown.substring(0, 50);
-    var stimShown = null;
-    var stimPick = null;
 
     let saveString = {
       prolificID: this.state.prolificID,
@@ -1915,7 +1718,6 @@ class MemTut extends React.Component {
       blockCond: this.state.blockCond,
       choicePos: this.state.choicePos,
       choiceCor: this.state.choiceCor,
-
       trialTime: this.state.trialTime,
       fixTime: this.state.fixTime,
       stimTime: this.state.stimTime,
@@ -1932,25 +1734,32 @@ class MemTut extends React.Component {
       confLevel: this.state.confLevel,
 
       stimNum: this.state.stimNum,
+
+      // Combined response log across all blocks
       responseMatrix: this.state.responseMatrix,
+
       reversals: this.state.reversals,
       stairDir: this.state.stairDir,
 
+      // Easy block
       correctMatEasy: this.state.correctMatEasy,
       correctPerEasy: this.state.correctPerEasy,
       responseMatrixEasy: this.state.responseMatrixEasy,
+      stairCountEasy: this.state.stairCountEasy, // ← now saved
       stairDirEasy: this.state.stairDirEasy,
-      stimNumEasy: newstimNumEasy,
+      stimNumEasy: newStimNumEasy,
 
+      // Hard block
       correctMatHard: this.state.correctMatHard,
       correctPerHard: this.state.correctPerHard,
       responseMatrixHard: this.state.responseMatrixHard,
+      stairCountHard: this.state.stairCountHard, // ← now saved
       stairDirHard: this.state.stairDirHard,
-      stimNumHard: newstimNumHard,
+      stimNumHard: newStimNumHard,
 
-      stimPick: stimPick,
+      stimPick: null,
       stimWordPick: this.state.stimWordPick,
-      stimShown: stimShown,
+      stimShown: null,
       stimWordShown: this.state.stimWordShown,
       choiceShownWordStim1: this.state.choiceShownWordStim1,
       choiceShownWordStim2: this.state.choiceShownWordStim2,
@@ -1971,14 +1780,12 @@ class MemTut extends React.Component {
       console.log("Cant post?", e);
     });
 
-    // 4. Update the state, and use the callback to trigger the next phase
     this.setState(
       {
-        stimNumEasy: newstimNumEasy,
-        stimNumHard: newstimNumHard,
+        stimNumEasy: newStimNumEasy,
+        stimNumHard: newStimNumHard,
       },
       () => {
-        // This runs exactly after the state is safely updated
         if (this.state.blockCond === "example") {
           console.log("blockCond is example");
           this.trialExample();
@@ -2003,11 +1810,9 @@ class MemTut extends React.Component {
       startTime: this.state.startTime,
       section: this.state.section,
       sectionTime: this.state.sectionTime,
-      //quiz paramters
       quizTry: this.state.quizTry,
       quizNumTotal: this.state.quizNumTotal,
       quizNum: this.state.quizNum,
-
       quizTime: this.state.trialTime,
       quizResp: this.state.quizPressed,
       quizRT: this.state.quizTime,
@@ -2023,26 +1828,20 @@ class MemTut extends React.Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(saveString),
-    }).catch((e) => {
-      console.log("Cant post?", e);
-    });
-
-    setTimeout(
-      function () {
-        this.quizReset();
-      }.bind(this),
-      10,
-    );
+    })
+      .then(() => this.quizReset())
+      .catch((e) => {
+        console.log("Cant post?", e);
+        this.quizReset(); // still advance even if save fails
+      });
   }
 
   renderGConfSave() {
     var prolificID = this.state.prolificID;
     var task = "memory";
 
-    // Downsample processing logic to keep character count below DB limits
     var sampleRate = 3;
-    var maxChars = 9000; // Failsafe budget for DB text column limit (10000)
-
+    var maxChars = 9000;
     var rawMovements = this.state.mouseMovements || [];
 
     var compressedMovements = rawMovements
@@ -2050,7 +1849,6 @@ class MemTut extends React.Component {
       .map((m) => `${m.x},${m.y},${m.t},${m.p}`)
       .join("|");
 
-    // --- FAILSAFE: Truncate if trial string exceeds limit ---
     if (compressedMovements.length > maxChars) {
       compressedMovements = compressedMovements.substring(0, maxChars);
       const lastPipe = compressedMovements.lastIndexOf("|");
@@ -2093,7 +1891,6 @@ class MemTut extends React.Component {
       console.log("Cant post?", e);
     });
 
-    //return to instructions
     this.setState({
       instructScreen: true,
       taskScreen: false,
@@ -2125,21 +1922,19 @@ class MemTut extends React.Component {
     console.log("UserID is: " + this.state.userID);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // LIFECYCLE
+
   componentDidMount() {
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
-
     window.addEventListener("mousemove", this.handleGlobalMouseMove);
 
     var statePic = this.state.statePic;
-
     [statePic].forEach((image) => {
       new Image().src = image;
     });
-
-    this.setState({
-      statePic: statePic,
-    });
+    this.setState({ statePic: statePic });
   }
 
   renderImages(number, imageArray, className) {
@@ -2154,31 +1949,29 @@ class MemTut extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // Check if the instructNum state has changed since the last render
     if (prevState.instructNum !== this.state.instructNum) {
-      console.log("instructNum has changed to:", this.state.instructNum);
+      console.log("instructNum changed to:", this.state.instructNum);
     }
   }
 
   componentWillUnmount() {
-    // This safely removes the tracker only when the component is destroyed
     window.removeEventListener("mousemove", this.handleGlobalMouseMove);
   }
 
-  ///////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////
+  // RENDER
+
   render() {
     let text;
 
     if (this.state.instructScreen === true && this.state.taskScreen === false) {
-      text = <div> {this.instructText(this.state.instructNum)}</div>;
+      text = <div>{this.instructText(this.state.instructNum)}</div>;
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "iti"
     ) {
       text = <div className={style.boxStyle}></div>;
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "fixation"
     ) {
@@ -2192,7 +1985,6 @@ class MemTut extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "stimulus"
     ) {
@@ -2216,13 +2008,11 @@ class MemTut extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "encode"
     ) {
       text = <div className={style.boxStyle}></div>;
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "choice"
     ) {
@@ -2250,7 +2040,6 @@ class MemTut extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "choiceFeedback"
     ) {
@@ -2278,7 +2067,6 @@ class MemTut extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "corFeedback"
     ) {
@@ -2308,7 +2096,6 @@ class MemTut extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "quiz"
     ) {
@@ -2321,11 +2108,10 @@ class MemTut extends React.Component {
         </div>
       );
     } else if (
-      this.state.instructScreen === false &&
       this.state.taskScreen === true &&
       this.state.taskSection === "gConf"
     ) {
-      text = <div> {this.globalConfText(this.state.quizState)}</div>;
+      text = <div>{this.globalConfText(this.state.quizState)}</div>;
     }
 
     return (
