@@ -223,12 +223,14 @@ class MemTask extends React.Component {
       correctMatEasy: [],
       correctPerEasy: 0,
       responseMatrixEasy: [], // <-- Change from [true, true] to []
+      stairCountEasy: [],
       stairDirEasy: [],
       stimNumEasy: stimNumEasy,
 
       correctMatHard: [],
       correctPerHard: 0,
       responseMatrixHard: [], // <-- Change from [true, true] to []
+      stairCountHard: [],
       stairDirHard: [],
       stimNumHard: stimNumHard,
 
@@ -529,6 +531,7 @@ class MemTask extends React.Component {
       var newResponseMatrixEasy = responseMatrixEasy.concat(response);
       Object.assign(stateUpdates, {
         responseMatrixEasy: newResponseMatrixEasy,
+        stairCountEasy: this.state.stairCountEasy.concat(response),
         correctMatEasy: newCorrectMatEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
@@ -540,6 +543,7 @@ class MemTask extends React.Component {
       var newResponseMatrixHard = responseMatrixHard.concat(response);
       Object.assign(stateUpdates, {
         responseMatrixHard: newResponseMatrixHard,
+        stairCountHard: this.state.stairCountHard.concat(response),
         correctMatHard: newCorrectMatHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
@@ -917,24 +921,27 @@ class MemTask extends React.Component {
     var stimNum = this.state.stimNum;
     var stairDir = this.state.stairDir;
     var responseMatrix = this.state.responseMatrix;
+    var stairCountEasy = this.state.stairCountEasy;
+    var stairCountHard = this.state.stairCountHard;
     var s2; // Declare s2 outside the if/else block
 
     if (this.state.blockCond === "easy") {
       condEasyTrialNum = condEasyTrialNum + 1;
       s2 = staircaseEasy.staircase(
         this.state.stimNumEasy,
-        this.state.responseMatrixEasy,
+        this.state.stairCountEasy,
         this.state.stairDirEasy,
         condEasyTrialNum,
       );
       stimNum = s2.stimNum;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountEasy = s2.stepcount;
     } else if (this.state.blockCond === "hard") {
       condHardTrialNum = condHardTrialNum + 1;
       s2 = staircase.staircase(
         this.state.stimNumHard,
-        this.state.responseMatrixHard,
+        this.state.stairCountHard,
         this.state.stairDirHard,
         condHardTrialNum,
       );
@@ -942,6 +949,7 @@ class MemTask extends React.Component {
       stimNum = s2.stimNum;
       stairDir = s2.direction;
       responseMatrix = s2.stepcount;
+      stairCountHard = s2.stepcount;
     }
 
     //  console.log("dotsStair: " + choiceCor);
@@ -1047,6 +1055,8 @@ class MemTask extends React.Component {
       reversals: reversals,
       stairDir: stairDir,
       responseMatrix: responseMatrix,
+      stairCountEasy: stairCountEasy,
+      stairCountHard: stairCountHard,
 
       choiceFbLeft: style.choiceWord,
       choiceFbRight: style.choiceWord,
