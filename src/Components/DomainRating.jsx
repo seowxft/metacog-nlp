@@ -141,7 +141,7 @@ class RatingDomain extends React.Component {
 
     // Set the error state to show the message inline
     this.setState({
-      error: "Pasting is not allowed in this field.",
+      error: "Pasting or dropping text is not allowed in this field.",
     });
 
     // Optional: Clear the error message after 3 seconds so it doesn't stay there forever
@@ -275,6 +275,7 @@ class RatingDomain extends React.Component {
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
                 onPaste={this.handlePaste}
+                onDrop={this.handlePaste}
               />
             </label>
             <br /> <br />
@@ -302,6 +303,7 @@ class RatingDomain extends React.Component {
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
                 onPaste={this.handlePaste}
+                onDrop={this.handlePaste}
               />
             </label>
             <br /> <br />
@@ -329,6 +331,7 @@ class RatingDomain extends React.Component {
                 value={this.state.selfKnowledge}
                 onChange={this.handleChange}
                 onPaste={this.handlePaste}
+                onDrop={this.handlePaste}
               />
             </label>
             <br /> <br />
