@@ -88,6 +88,8 @@ class MemPreTut extends React.Component {
     // --- Declare variables OUTSIDE the if/else ---
     let userID,
       prolificID,
+      studyID,
+      sessionID,
       date,
       startTime,
       condition,
@@ -101,6 +103,8 @@ class MemPreTut extends React.Component {
 
       userID = 100;
       prolificID = 100;
+      studyID = 100;
+      sessionID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
       condition = 100;
@@ -114,6 +118,8 @@ class MemPreTut extends React.Component {
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
+      sessionID = this.props.state.sessionID;
+      studyID = this.props.state.studyID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
@@ -140,6 +146,8 @@ class MemPreTut extends React.Component {
     this.state = {
       // demo paramters
       prolificID: prolificID,
+      sessionID: sessionID,
+      studyID: studyID,
       condition: condition,
       userID: userID,
       date: date,
@@ -1006,6 +1014,8 @@ class MemPreTut extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       userID: this.state.userID,
       date: this.state.date,
@@ -1063,6 +1073,8 @@ class MemPreTut extends React.Component {
     this.props.navigate("/MemTut?PROLIFIC_PID=" + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
+        studyID: this.state.studyID,
+        sessionID: this.state.sessionID,
         condition: this.state.condition,
         userID: this.state.userID,
         date: this.state.date,

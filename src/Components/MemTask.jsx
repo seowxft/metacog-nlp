@@ -47,6 +47,8 @@ class MemTask extends React.Component {
     // --- Declare variables OUTSIDE the if/else ---
     let userID,
       prolificID,
+      studyID,
+      sessionID,
       date,
       startTime,
       condition,
@@ -63,6 +65,8 @@ class MemTask extends React.Component {
       // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
+      studyID = 100;
+      sessionID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
       condition = 1;
@@ -111,6 +115,8 @@ class MemTask extends React.Component {
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
+      studyID = this.state.studyID;
+      sessionID = this.state.sessionID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
@@ -154,6 +160,8 @@ class MemTask extends React.Component {
     // SET STATES
     this.state = {
       prolificID: prolificID,
+      studyID: studyID,
+      sessionID: sessionID,
       condition: condition,
       userID: userID,
       date: date,
@@ -163,8 +171,8 @@ class MemTask extends React.Component {
 
       // trial timings in ms
       fixTimeLag: 1000, //1000
-      stimTimeLag: 1000, //1500
-      encodeTimeLag: 1000,
+      stimTimeLag: 300, //1000
+      encodeTimeLag: 500,
       respFbTimeLag: 700,
 
       //trial parameters
@@ -1230,6 +1238,8 @@ class MemTask extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       userID: this.state.userID,
       date: this.state.date,
@@ -1370,6 +1380,8 @@ class MemTask extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       task: task,
       userID: this.state.userID,
@@ -1470,6 +1482,8 @@ class MemTask extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       task: task,
       userID: this.state.userID,
@@ -1483,6 +1497,7 @@ class MemTask extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: null,
+      clientFlags: null,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
@@ -1535,6 +1550,8 @@ class MemTask extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       task: task,
       userID: this.state.userID,
@@ -1609,6 +1626,8 @@ class MemTask extends React.Component {
     this.props.navigate(condUrl + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
+        studyID: this.state.studyID,
+        sessionID: this.state.sessionID,
         userID: this.state.userID,
         condition: this.state.condition,
         date: this.state.date,

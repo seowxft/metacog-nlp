@@ -50,6 +50,8 @@ class MemTut extends React.Component {
     // --- Declare variables OUTSIDE the if/else ---
     let userID,
       prolificID,
+      studyID,
+      sessionID,
       date,
       startTime,
       condition,
@@ -64,6 +66,8 @@ class MemTut extends React.Component {
       // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
+      studyID = 100;
+      sessionID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
       condition = 1;
@@ -111,6 +115,8 @@ class MemTut extends React.Component {
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
+      studyID = this.state.studyID;
+      sessionID = this.state.sessionID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
@@ -148,6 +154,9 @@ class MemTut extends React.Component {
     this.state = {
       // demo paramters
       prolificID: prolificID,
+
+      studyID: studyID,
+      sessionID: sessionID,
       condition: condition,
       userID: userID,
       date: date,
@@ -160,8 +169,8 @@ class MemTut extends React.Component {
       tutorialTry: 1,
       // trial timings in ms
       fixTimeLag: 1000, //1000
-      stimTimeLag: 1000, //1500
-      encodeTimeLag: 1000,
+      stimTimeLag: 300, //1000
+      encodeTimeLag: 500,
       respFbTimeLag: 700, //
       fbTimeLag: 500, //500 correct or wrong
 
@@ -1523,7 +1532,7 @@ class MemTut extends React.Component {
     var blockCond;
     var s2;
 
-    if (trialNum < this.state.trialStaircaseSwitch) {
+    if (trialNum <= this.state.trialStaircaseSwitch) {
       console.log("in here easy");
       console.log(this.state.stimNumEasy);
       console.log(this.state.responseMatrixEasy);
@@ -1542,7 +1551,7 @@ class MemTut extends React.Component {
       responseMatrix = s2.stepcount;
 
       console.log(blockCond);
-    } else if (trialNum >= this.state.trialStaircaseSwitch) {
+    } else if (trialNum > this.state.trialStaircaseSwitch) {
       console.log("in here hard");
       blockCond = this.state.blockCondTotal[1];
 
@@ -1881,6 +1890,8 @@ class MemTut extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       userID: this.state.userID,
       date: this.state.date,
@@ -1972,6 +1983,8 @@ class MemTut extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       userID: this.state.userID,
       date: this.state.date,
@@ -2036,6 +2049,8 @@ class MemTut extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       task: task,
       userID: this.state.userID,
@@ -2049,6 +2064,7 @@ class MemTut extends React.Component {
       confLevel: this.state.confLevel,
       textTime: this.state.textTime,
       selfKnowledge: null,
+      clientFlags: null,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
@@ -2079,6 +2095,8 @@ class MemTut extends React.Component {
     this.props.navigate("/MemTask?PROLIFIC_PID=" + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
+        studyID: this.state.studyID,
+        sessionID: this.state.sessionID,
         condition: this.state.condition,
         userID: this.state.userID,
         date: this.state.date,

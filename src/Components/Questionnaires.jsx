@@ -29,19 +29,23 @@ class Questionnaires extends React.Component {
     super(props);
 
     const sectionTime = Math.round(performance.now());
-    let userID, prolificID, date, startTime, condition;
+    let userID, prolificID, studyID, sessionID, date, startTime, condition;
 
     var debug = false; // Set flag as needed
 
     if (debug === true) {
       userID = 100;
       prolificID = 100;
+      studyID = 100;
+      sessionID = 100;
       date = "100";
       startTime = 100;
       condition = 1;
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
+      studyID = this.state.studyID;
+      sessionID = this.state.sessionID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
@@ -75,6 +79,8 @@ class Questionnaires extends React.Component {
     this.state = {
       // User and session info
       prolificID,
+      studyID,
+      sessionID,
       condition,
       userID,
       date,
@@ -237,6 +243,8 @@ class Questionnaires extends React.Component {
 
     // Set metadata fields
     survey.setValue("prolificID", this.state.prolificID);
+    survey.setValue("studyID", this.state.studyID);
+    survey.setValue("sessionID", this.state.sessionID);
     survey.setValue("condition", this.state.condition);
     survey.setValue("userID", this.state.userID);
     survey.setValue("date", this.state.date);
@@ -407,6 +415,10 @@ class Questionnaires extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       task: "psych",
       userID: this.state.userID,

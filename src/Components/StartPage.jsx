@@ -8,7 +8,7 @@ import { LayeredDarkPanelless } from "survey-core/themes";
 import "survey-core/survey-core.css";
 import "./style/surveyStyle.css"; // Your custom styles
 
-import { json } from "./consent/consentFull.jsx";
+import { json } from "./consent/consentFull2.jsx";
 
 class StartPage extends React.Component {
   constructor(props) {
@@ -19,7 +19,14 @@ class StartPage extends React.Component {
     survey.applyTheme(LayeredDarkPanelless); // Apply your chosen theme
 
     // --- Declare variables OUTSIDE the if/else ---
-    let userID, prolificID, startTime, condition;
+    let userID,
+      prolificID,
+      studyID,
+      sessionID,
+      startTime,
+      dateString,
+      dateTime,
+      condition;
 
     var debug = false; // Still using manual flag for now
 
@@ -27,8 +34,10 @@ class StartPage extends React.Component {
       // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
-      var date = 100; // Note: You might want a real date string here for debugging
-      var dateTime = 100;
+      studyID = 100;
+      sessionID = 100;
+      dateString = 100;
+      dateTime = 100;
       startTime = 100; // Note: You might want a real timestamp for debugging
       condition = 1;
       console.log("DEBUG MODE: Using hardcoded values.");
@@ -36,8 +45,16 @@ class StartPage extends React.Component {
       // The rest of your logic remains the same
 
       userID = Math.floor(100000 + Math.random() * 900000);
+
       prolificID = userID;
-      // prolificID = this.props.state.prolificID;// change this back for prolific
+      studyID = userID;
+      sessionID = userID;
+
+      //for prolific
+      // prolificID = this.props.state.prolificID;
+      // studyID = this.props.state.studyID;
+      // sessionID = this.props.state.sessionID;
+
       dateTime = new Date().toLocaleString();
 
       var currentDate = new Date();
@@ -45,7 +62,7 @@ class StartPage extends React.Component {
       var m = currentDate.getMonth() + 1;
       var y = currentDate.getFullYear();
       // Using backticks ensures this is treated as a String
-      var dateString = `${d}-${m}-${y}`;
+      dateString = `${d}-${m}-${y}`;
 
       startTime = currentDate.toTimeString();
       if (userID % 2 === 0) {
@@ -60,6 +77,8 @@ class StartPage extends React.Component {
     this.state = {
       userID: userID,
       prolificID: prolificID,
+      sessionID: sessionID,
+      studyID: studyID,
       condition: condition,
       date: dateString,
       dateTime: dateTime,
@@ -93,6 +112,8 @@ class StartPage extends React.Component {
       state: {
         prolificID: this.state.prolificID,
         userID: this.state.userID,
+        sessionID: this.state.sessionID,
+        studyID: this.state.studyID,
         condition: condition,
         date: this.state.date,
         startTime: this.state.startTime,

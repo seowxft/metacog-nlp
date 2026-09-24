@@ -11,12 +11,16 @@ class Home extends React.Component {
     // ID number - either set or get from url
     const queryParams = new URLSearchParams(window.location.search);
     const prolific_id = queryParams.get("PROLIFIC_PID");
+    const session_id = queryParams.get("SESSION_PID");
+    const study_id = queryParams.get("STUDY_PID");
 
     console.log("ID: " + prolific_id); //pizza
 
     // Set state
     this.state = {
       prolificID: prolific_id,
+      sessionID: session_id,
+      studyID: study_id,
     };
 
     this.redirectToTarget = this.redirectToTarget.bind(this);
@@ -27,6 +31,8 @@ class Home extends React.Component {
     this.props.navigate("/StartPage?PROLIFIC_PID=" + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
+        sessionID: this.state.sessionID,
+        studyID: this.state.studyID,
       },
     });
 
