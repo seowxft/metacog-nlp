@@ -1,5 +1,6 @@
 import React from "react";
 import HiddenNotice from "./HiddenNotice.jsx";
+import * as clientFlags from "./func/clientFlags.jsx";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 
@@ -419,6 +420,7 @@ class Questionnaires extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      clientFlags: clientFlags.snapshot(),
       // --- ADDED TRACKING KEY ---
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,

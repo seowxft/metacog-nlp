@@ -1,5 +1,6 @@
 import React from "react";
 import HiddenNotice from "./HiddenNotice.jsx";
+import * as clientFlags from "./func/clientFlags.jsx";
 import withRouter from "./func/withRouter.jsx";
 import * as utils from "./func/utils.jsx";
 
@@ -1380,6 +1381,7 @@ class MemTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      clientFlags: clientFlags.snapshot(),
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
@@ -1544,6 +1546,7 @@ class MemTask extends React.Component {
       confLevel: null,
       textTime: this.state.textTime,
       selfKnowledge: this.state.selfKnowledge,
+      clientFlags: clientFlags.snapshot(),
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       mouseMovements: compressedMovements,
