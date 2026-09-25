@@ -58,7 +58,7 @@ class MemTask extends React.Component {
       stateWord,
       statePic;
 
-    var debug = true;
+    var debug = false;
 
     if (debug === true) {
       userID = 100;

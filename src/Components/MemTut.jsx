@@ -59,7 +59,7 @@ class MemTut extends React.Component {
       statePic,
       stateWord;
 
-    var debug = true;
+    var debug = false;
 
     if (debug === true) {
       userID = 100;

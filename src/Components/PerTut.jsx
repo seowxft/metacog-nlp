@@ -51,7 +51,7 @@ class PerTut extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = true;
+    var debug = false;
 
     if (debug === true) {
       userID = 100;
@@ -1091,7 +1091,7 @@ class PerTut extends React.Component {
   trialExample() {
     var trialNum = this.state.trialNum + 1;
     var stimPos = Math.random() < 0.5 ? 1 : 2;
-    var dotStair = 4.65;
+    var dotStair = 4;
 
     var dotStairLeft, dotStairRight, dotDiffLeft, dotDiffRight;
 

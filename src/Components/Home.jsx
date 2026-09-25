@@ -11,8 +11,8 @@ class Home extends React.Component {
     // ID number - either set or get from url
     const queryParams = new URLSearchParams(window.location.search);
     const prolific_id = queryParams.get("PROLIFIC_PID");
-    const session_id = queryParams.get("SESSION_PID");
-    const study_id = queryParams.get("STUDY_PID");
+    const session_id = queryParams.get("SESSION_ID");
+    const study_id = queryParams.get("STUDY_ID");
 
     console.log("ID: " + prolific_id); //pizza
 

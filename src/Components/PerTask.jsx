@@ -44,7 +44,7 @@ class PerTask extends React.Component {
       dotStairEasy,
       dotStairHard;
 
-    var debug = true;
+    var debug = false;
 
     if (debug === true) {
       userID = 100;
