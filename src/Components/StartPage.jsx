@@ -49,14 +49,14 @@ class StartPage extends React.Component {
       window.crypto.getRandomValues(secureArray);
       userID = secureArray[0] + 1000000000;
 
-      prolificID = userID;
-      studyID = userID;
-      sessionID = userID;
+      // prolificID = userID;
+      // studyID = userID;
+      // sessionID = userID;
 
       //for prolific
-      // prolificID = this.props.state.prolificID;
-      // studyID = this.props.state.studyID;
-      // sessionID = this.props.state.sessionID;
+      prolificID = this.props.state.prolificID;
+      studyID = this.props.state.studyID;
+      sessionID = this.props.state.sessionID;
 
       dateTime = new Date().toLocaleString();
 
