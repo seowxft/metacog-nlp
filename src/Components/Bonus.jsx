@@ -24,17 +24,21 @@ class Bonus extends React.Component {
     // --- Declare variables OUTSIDE the if/else ---
     let userID,
       prolificID,
+      studyID,
+      sessionID,
       date,
       startTime,
       condition,
       memCorrectPer,
       perCorrectPer;
 
-    var debug = false; // Still using manual flag for now
+    var debug = true; // Still using manual flag for now
 
     if (debug === true) {
       // --- Assign debug values ---
       userID = 100;
+      sessionID = 100;
+      studyID = 100;
       prolificID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
@@ -44,6 +48,8 @@ class Bonus extends React.Component {
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
+      sessionID = this.props.state.sessionID;
+      studyID = this.props.state.studyID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
@@ -65,6 +71,8 @@ class Bonus extends React.Component {
     this.state = {
       // demo paramters
       prolificID: prolificID,
+      studyID: studyID,
+      sessionID: sessionID,
       condition: condition,
       userID: userID,
       date: date,
@@ -120,6 +128,8 @@ class Bonus extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       userID: this.state.userID,
       date: this.state.date,
@@ -221,6 +231,8 @@ class Bonus extends React.Component {
       {
         state: {
           prolificID: this.state.prolificID,
+          studyID: this.state.studyID,
+          sessionID: this.state.sessionID,
           condition: this.state.condition,
           userID: this.state.userID,
           date: this.state.date,
