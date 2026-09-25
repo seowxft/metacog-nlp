@@ -28,13 +28,21 @@ class Home extends React.Component {
 
   redirectToTarget() {
     //On click consent, sent to tutorial page with the props
-    this.props.navigate("/StartPage?PROLIFIC_PID=" + this.state.prolificID, {
-      state: {
-        prolificID: this.state.prolificID,
-        sessionID: this.state.sessionID,
-        studyID: this.state.studyID,
+    this.props.navigate(
+      "/StartPage?PROLIFIC_PID=" +
+        this.state.prolificID +
+        "&SESSION_ID=" +
+        this.state.sessionID +
+        "&STUDY_ID=" +
+        this.state.studyID,
+      {
+        state: {
+          prolificID: this.state.prolificID,
+          sessionID: this.state.sessionID,
+          studyID: this.state.studyID,
+        },
       },
-    });
+    );
 
     console.log("prolificID: " + this.state.prolificID);
   }

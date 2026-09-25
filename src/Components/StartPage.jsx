@@ -54,9 +54,10 @@ class StartPage extends React.Component {
       // sessionID = userID;
 
       //for prolific
-      prolificID = this.props.state.prolificID;
-      studyID = this.props.state.studyID;
-      sessionID = this.props.state.sessionID;
+      const queryParams = new URLSearchParams(window.location.search);
+      prolificID = queryParams.get("PROLIFIC_PID");
+      studyID = queryParams.get("STUDY_ID");
+      sessionID = queryParams.get("SESSION_ID");
 
       dateTime = new Date().toLocaleString();
 
