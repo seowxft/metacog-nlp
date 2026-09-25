@@ -155,23 +155,24 @@ class PerTut extends React.Component {
       dotStairLeft: 0,
       dotStairRight: 0,
 
-      // --- responseMatrix: combined log of all responses (easy + hard), updated only in handleResp ---
-      responseMatrix: [],
+      responseMatrix: [], // combined log of all responses
 
-      // --- Easy block: response log and staircase step history kept strictly separate ---
       correctMatEasy: [],
       correctPerEasy: 0,
-      responseMatrixEasy: [], // per-trial response log, updated only in handleResp
-      stairCountEasy: [], // staircase step history, updated only in trialReset
-      stairDirEasy: null,
+      responseMatrixEasy: [],
+      // FIX 1: stairCountEasy receives correct/incorrect outcomes from handleResp
+      // so the staircase function can read back1/back2/back3 on every trial.
+      stairCountEasy: [],
+      // FIX 2: stairDirEasy is written back after every step so reversal
+      // detection carries forward correctly across trials.
+      stairDirEasy: ["up", "up"],
       dotStairEasy: 4.65,
 
-      // --- Hard block: same separation ---
       correctMatHard: [],
       correctPerHard: 0,
-      responseMatrixHard: [], // per-trial response log, updated only in handleResp
-      stairCountHard: [], // staircase step history, updated only in trialReset
-      stairDirHard: null,
+      responseMatrixHard: [],
+      stairCountHard: [], // same fix as stairCountEasy
+      stairDirHard: ["up", "up"], // same fix as stairDirEasy
       dotStairHard: 4.65,
 
       // quiz parameters
@@ -344,9 +345,13 @@ class PerTut extends React.Component {
     if (blockCond === "easy") {
       var newResponseMatrixEasy = responseMatrixEasy.concat(response ? 1 : 0);
       var newCorrectMatEasy = this.state.correctMatEasy.concat(correct);
+      // FIX 1: append this trial's outcome to stairCountEasy so the staircase
+      // function can read back1/back2/back3 correctly on the next trial.
+      var newStairCountEasy = this.state.stairCountEasy.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixEasy: newResponseMatrixEasy,
         correctMatEasy: newCorrectMatEasy,
+        stairCountEasy: newStairCountEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
           100,
@@ -354,9 +359,12 @@ class PerTut extends React.Component {
     } else if (blockCond === "hard") {
       var newResponseMatrixHard = responseMatrixHard.concat(response ? 1 : 0);
       var newCorrectMatHard = this.state.correctMatHard.concat(correct);
+      // FIX 1: same as above for the hard block.
+      var newStairCountHard = this.state.stairCountHard.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixHard: newResponseMatrixHard,
         correctMatHard: newCorrectMatHard,
+        stairCountHard: newStairCountHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
           100,
@@ -1232,11 +1240,14 @@ class PerTut extends React.Component {
   // ─────────────────────────────────────────────────────────────────────────
   // trialReset
   //
-  // Owns: stairCountEasy, stairCountHard, dotStairEasy, dotStairHard,
-  //       stairDirEasy, stairDirHard
+  // Owns: dotStairEasy, dotStairHard (via renderTutorSave callback),
+  //       stairDirEasy, stairDirHard (FIX 2: now written back each trial)
+  //
+  // Reads: stairCountEasy, stairCountHard (FIX 1: now populated by handleResp)
   //
   // Does NOT touch: responseMatrix, responseMatrixEasy, responseMatrixHard,
-  //                 correctMat, correctMatEasy, correctMatHard (those belong to handleResp)
+  //                 correctMat, correctMatEasy, correctMatHard,
+  //                 stairCountEasy, stairCountHard  (those belong to handleResp)
   // ─────────────────────────────────────────────────────────────────────────
   trialReset() {
     var trialNum = this.state.trialNum + 1;
@@ -1315,8 +1326,12 @@ class PerTut extends React.Component {
         stimPos: stimPos,
         reversals: reversals,
         stairDir: stairDir,
-        stairCountEasy: newStairCountEasy, // single source of truth for staircase history
-        stairCountHard: newStairCountHard, // single source of truth for staircase history
+        // FIX 2: write the updated direction back to the block-specific field
+        // so reversal detection carries forward correctly on the next trial.
+        stairDirEasy: blockCond === "easy" ? stairDir : this.state.stairDirEasy,
+        stairDirHard: blockCond === "hard" ? stairDir : this.state.stairDirHard,
+        stairCountEasy: newStairCountEasy,
+        stairCountHard: newStairCountHard,
         dotDiffStim1: Math.round(Math.exp(dotStair)),
         dotDiffStim2: 0,
         dotStair: dotStair,
@@ -1405,7 +1420,9 @@ class PerTut extends React.Component {
     var prolificID = this.state.prolificID;
     var blockCond = this.state.blockCond;
 
-    // Calculate updated dotStair values before building the save string
+    // FIX 3: compute updated dotStair values before building the save payload.
+    // Because renderTutorSave runs inside a setState callback, state is already
+    // settled and these reads are safe.
     var newDotStairEasy = this.state.dotStairEasy;
     var newDotStairHard = this.state.dotStairHard;
 
@@ -1462,7 +1479,7 @@ class PerTut extends React.Component {
       correctMatEasy: this.state.correctMatEasy,
       correctPerEasy: this.state.correctPerEasy,
       responseMatrixEasy: this.state.responseMatrixEasy,
-      stairCountEasy: this.state.stairCountEasy, // ← now saved
+      stairCountEasy: this.state.stairCountEasy,
       stairDirEasy: this.state.stairDirEasy,
       dotStairEasy: newDotStairEasy,
 
@@ -1470,7 +1487,7 @@ class PerTut extends React.Component {
       correctMatHard: this.state.correctMatHard,
       correctPerHard: this.state.correctPerHard,
       responseMatrixHard: this.state.responseMatrixHard,
-      stairCountHard: this.state.stairCountHard, // ← now saved
+      stairCountHard: this.state.stairCountHard,
       stairDirHard: this.state.stairDirHard,
       dotStairHard: newDotStairHard,
 
@@ -1491,7 +1508,7 @@ class PerTut extends React.Component {
       console.log("Cant post?", e);
     });
 
-    // Update dotStair state, then proceed to the next trial
+    // Update dotStair state, then proceed to the next trial.
     this.setState(
       {
         dotStairEasy: newDotStairEasy,
