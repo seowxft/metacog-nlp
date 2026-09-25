@@ -44,8 +44,8 @@ class Questionnaires extends React.Component {
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
-      studyID = this.state.studyID;
-      sessionID = this.state.sessionID;
+      studyID = this.props.state.studyID;
+      sessionID = this.props.state.sessionID;
       condition = this.props.state.condition;
       userID = this.props.state.userID;
       date = this.props.state.date;
