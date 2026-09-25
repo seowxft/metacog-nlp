@@ -51,7 +51,7 @@ class PerTut extends React.Component {
       memCorrectPer,
       perCorrectPer;
 
-    var debug = false;
+    var debug = true;
 
     if (debug === true) {
       userID = 100;
