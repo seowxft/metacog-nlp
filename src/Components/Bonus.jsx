@@ -92,6 +92,7 @@ class Bonus extends React.Component {
       memBonus: memBonus,
       perBonus: perBonus,
       totalBonus: totalBonus,
+      submitted: false,
 
       debug: debug,
     };
@@ -124,7 +125,11 @@ class Bonus extends React.Component {
   }
 
   handleSubmitFb(event) {
+    event.preventDefault();
     var prolificID = this.state.prolificID;
+
+    if (this.state.submitted) return; // guard against double submission
+    this.setState({ submitted: true });
 
     let saveString = {
       prolificID: this.state.prolificID,
@@ -153,13 +158,11 @@ class Bonus extends React.Component {
       console.log("Cant post?", e);
     });
 
-    event.preventDefault();
-
     setTimeout(
       function () {
         this.redirectToNextTask();
       }.bind(this),
-      0,
+      10,
     );
   }
 
@@ -210,7 +213,11 @@ class Bonus extends React.Component {
               </label>
               <br />
               <br />
-              <input type="submit" value="Submit & Continue" />
+              <input
+                type="submit"
+                value="Submit & Continue"
+                disabled={this.state.submitted}
+              />
             </form>
           </center>
         </span>
