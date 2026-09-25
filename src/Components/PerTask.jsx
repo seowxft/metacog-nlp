@@ -56,8 +56,8 @@ class PerTask extends React.Component {
       condition = 1;
       memCorrectPer = 0.9;
       perCorrectPer = 0;
-      dotStairEasy = 2;
-      dotStairHard = 1;
+      dotStairEasy = 3.85; // ~47 dots — realistic tutorial endpoint
+      dotStairHard = 2.3; // ~10 dots — realistic hard condition starting point
       console.log("DEBUG MODE: Using hardcoded values.");
     } else {
       prolificID = this.props.state.prolificID;
