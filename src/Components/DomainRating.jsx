@@ -18,7 +18,7 @@ class RatingDomain extends React.Component {
     var sectionTime = Math.round(performance.now());
 
     // --- Declare variables OUTSIDE the if/else ---
-    let userID, prolificID, date, startTime, condition;
+    let userID, prolificID, date, sessionID, studyID, startTime, condition;
 
     var debug = false; // Still using manual flag for now
 
@@ -26,6 +26,8 @@ class RatingDomain extends React.Component {
       // --- Assign debug values ---
       userID = 100;
       prolificID = 100;
+      sessionID = 100;
+      studyID = 100;
       date = 100; // Note: You might want a real date string here for debugging
       startTime = 100; // Note: You might want a real timestamp for debugging
       condition = 1;
@@ -34,6 +36,8 @@ class RatingDomain extends React.Component {
     } else {
       prolificID = this.props.state.prolificID;
       condition = this.props.state.condition;
+      studyID = this.props.state.studyID;
+      sessionID = this.props.state.sessionID;
       userID = this.props.state.userID;
       date = this.props.state.date;
       startTime = this.props.state.startTime;
@@ -46,6 +50,8 @@ class RatingDomain extends React.Component {
     this.state = {
       // demo paramters
       prolificID: prolificID,
+      studyID: studyID,
+      sessionID: sessionID,
       condition: condition,
       userID: userID,
       date: date,
@@ -391,6 +397,8 @@ class RatingDomain extends React.Component {
 
     let saveString = {
       prolificID: this.state.prolificID,
+      studyID: this.state.studyID,
+      sessionID: this.state.sessionID,
       condition: this.state.condition,
       task: task,
       userID: this.state.userID,
@@ -479,6 +487,8 @@ class RatingDomain extends React.Component {
     this.props.navigate(condUrl + this.state.prolificID, {
       state: {
         prolificID: this.state.prolificID,
+        studyID: this.state.studyID,
+        sessionID: this.state.sessionID,
         userID: this.state.userID,
         condition: condition,
         date: this.state.date,
