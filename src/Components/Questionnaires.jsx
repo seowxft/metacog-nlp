@@ -417,8 +417,6 @@ class Questionnaires extends React.Component {
       prolificID: this.state.prolificID,
       studyID: this.state.studyID,
       sessionID: this.state.sessionID,
-      studyID: this.state.studyID,
-      sessionID: this.state.sessionID,
       condition: this.state.condition,
       task: "psych",
       userID: this.state.userID,
