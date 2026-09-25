@@ -44,7 +44,7 @@ class PerTask extends React.Component {
       dotStairEasy,
       dotStairHard;
 
-    var debug = false;
+    var debug = true;
 
     if (debug === true) {
       userID = 100;
@@ -146,7 +146,7 @@ class PerTask extends React.Component {
       // dot parameters
       dotRadius: 5,
 
-      // --- responseMatrix: combined log of all responses (easy + hard), updated only in handleResp ---
+      // Combined log of all responses (easy + hard), updated only in handleResp
       responseMatrix: [],
 
       reversals: 0,
@@ -155,20 +155,24 @@ class PerTask extends React.Component {
       dotStairLeft: 0,
       dotStairRight: 0,
 
-      // --- Easy block: response log and staircase step history kept strictly separate ---
+      // Easy block
       correctMatEasy: [],
       correctPerEasy: 0,
-      responseMatrixEasy: [], // per-trial response log, updated only in handleResp
-      stairCountEasy: [], // staircase step history, updated only in trialReset
+      responseMatrixEasy: [],
+      // FIX 1: stairCountEasy receives correct/incorrect outcomes from handleResp
+      // so the staircase function can read back1/back2/back3 on every trial.
+      stairCountEasy: [],
+      // FIX 2: stairDirEasy is written back after every step so reversal
+      // detection carries forward correctly across trials.
       stairDirEasy: ["up", "up"],
       dotStairEasy: dotStairEasy,
 
-      // --- Hard block: same separation ---
+      // Hard block
       correctMatHard: [],
       correctPerHard: 0,
-      responseMatrixHard: [], // per-trial response log, updated only in handleResp
-      stairCountHard: [], // staircase step history, updated only in trialReset
-      stairDirHard: ["up", "up"],
+      responseMatrixHard: [],
+      stairCountHard: [], // same fix as stairCountEasy
+      stairDirHard: ["up", "up"], // same fix as stairDirEasy
       dotStairHard: dotStairHard,
 
       // quiz
@@ -404,9 +408,13 @@ class PerTask extends React.Component {
     if (blockCond === "easy") {
       var newCorrectMatEasy = correctMatEasy.concat(correct);
       var newResponseMatrixEasy = responseMatrixEasy.concat(response ? 1 : 0);
+      // FIX 1: append this trial's outcome to stairCountEasy so the staircase
+      // function can read back1/back2/back3 correctly on the next trial.
+      var newStairCountEasy = this.state.stairCountEasy.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixEasy: newResponseMatrixEasy,
         correctMatEasy: newCorrectMatEasy,
+        stairCountEasy: newStairCountEasy,
         correctPerEasy:
           Math.round((utils.getAvg(newCorrectMatEasy) + Number.EPSILON) * 100) /
           100,
@@ -414,9 +422,12 @@ class PerTask extends React.Component {
     } else if (blockCond === "hard") {
       var newCorrectMatHard = correctMatHard.concat(correct);
       var newResponseMatrixHard = responseMatrixHard.concat(response ? 1 : 0);
+      // FIX 1: same as above for the hard block.
+      var newStairCountHard = this.state.stairCountHard.concat(correct);
       Object.assign(stateUpdates, {
         responseMatrixHard: newResponseMatrixHard,
         correctMatHard: newCorrectMatHard,
+        stairCountHard: newStairCountHard,
         correctPerHard:
           Math.round((utils.getAvg(newCorrectMatHard) + Number.EPSILON) * 100) /
           100,
@@ -767,11 +778,12 @@ class PerTask extends React.Component {
   // ─────────────────────────────────────────────────────────────────────────
   // trialReset
   //
-  // Owns: stairCountEasy, stairCountHard, dotStairEasy, dotStairHard,
-  //       stairDirEasy, stairDirHard
+  // Owns: stairCountEasy, stairCountHard (reads outcomes written by handleResp),
+  //       stairDirEasy, stairDirHard (FIX 2: now written back each trial)
   //
   // Does NOT touch: responseMatrix, responseMatrixEasy, responseMatrixHard,
-  //                 correctMat, correctMatEasy, correctMatHard (those belong to handleResp)
+  //                 correctMat, correctMatEasy, correctMatHard,
+  //                 stairCountEasy, stairCountHard  (those belong to handleResp)
   // ─────────────────────────────────────────────────────────────────────────
   trialReset() {
     this.extractedLeft = null;
@@ -852,8 +864,14 @@ class PerTask extends React.Component {
         stimPos: stimPos,
         reversals: reversals,
         stairDir: stairDir,
-        stairCountEasy: newStairCountEasy, // single source of truth for staircase history
-        stairCountHard: newStairCountHard, // single source of truth for staircase history
+        // FIX 2: write the updated direction back to the block-specific field
+        // so reversal detection carries forward correctly on the next trial.
+        stairDirEasy:
+          this.state.blockCond === "easy" ? stairDir : this.state.stairDirEasy,
+        stairDirHard:
+          this.state.blockCond === "hard" ? stairDir : this.state.stairDirHard,
+        stairCountEasy: newStairCountEasy,
+        stairCountHard: newStairCountHard,
         dotDiffStim1: Math.round(Math.exp(dotStair)),
         dotDiffStim2: 0,
         dotStair: dotStair,
@@ -881,15 +899,15 @@ class PerTask extends React.Component {
   renderStim() {
     var fixTime = Math.round(performance.now()) - this.state.trialTime;
 
+    // FIX 3: dotStairEasy/Hard is no longer updated here. It was updated
+    // mid-trial, before handleResp fired, which created a race where
+    // renderTaskSave could read the wrong value. It is now updated in
+    // renderTaskSave's setState callback, consistent with PerTut.
     this.setState({
       instructScreen: false,
       taskScreen: true,
       taskSection: "stimulus",
       fixTime: fixTime,
-      // Update the active block's dotStair in the same setState call
-      ...(this.state.blockCond === "easy"
-        ? { dotStairEasy: this.state.dotStair }
-        : { dotStairHard: this.state.dotStair }),
     });
 
     // Deliberate timing delay — keep setTimeout
@@ -937,6 +955,9 @@ class PerTask extends React.Component {
     var prolificID = this.state.prolificID;
     var blockCond = this.state.blockCond;
 
+    // FIX 3: compute updated dotStair values here, after the full trial cycle,
+    // rather than in renderStim mid-trial. renderTaskSave runs inside a setState
+    // callback so state is fully settled before these reads.
     var newDotStairEasy = this.state.dotStairEasy;
     var newDotStairHard = this.state.dotStairHard;
 
@@ -1018,7 +1039,7 @@ class PerTask extends React.Component {
       correctMatEasy: this.state.correctMatEasy,
       correctPerEasy: this.state.correctPerEasy,
       responseMatrixEasy: this.state.responseMatrixEasy,
-      stairCountEasy: this.state.stairCountEasy, // ← now saved
+      stairCountEasy: this.state.stairCountEasy,
       stairDirEasy: this.state.stairDirEasy,
 
       // Hard block
@@ -1026,7 +1047,7 @@ class PerTask extends React.Component {
       correctMatHard: this.state.correctMatHard,
       correctPerHard: this.state.correctPerHard,
       responseMatrixHard: this.state.responseMatrixHard,
-      stairCountHard: this.state.stairCountHard, // ← now saved
+      stairCountHard: this.state.stairCountHard,
       stairDirHard: this.state.stairDirHard,
 
       dotStairLeft: this.state.dotStairLeft,

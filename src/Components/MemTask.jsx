@@ -419,12 +419,6 @@ class MemTask extends React.Component {
   // ─────────────────────────────────────────────────────────────────────────
   // handleResp
   //
-  // Owns: responseMatrix (combined), responseMatrixEasy, responseMatrixHard,
-  //       correctMat, correctMatEasy, correctMatHard
-  //
-  // Does NOT touch: stairCountEasy, stairCountHard, stairDirEasy, stairDirHard
-  //                 (those belong to trialReset)
-  // ─────────────────────────────────────────────────────────────────────────
   handleResp(keyPressed) {
     var {
       trialTime,
