@@ -166,7 +166,7 @@ class PerTut extends React.Component {
       // FIX 2: stairDirEasy is written back after every step so reversal
       // detection carries forward correctly across trials.
       stairDirEasy: ["up", "up"],
-      dotStairEasy: 4.65,
+      dotStairEasy: 3.65,
 
       correctMatHard: [],
       correctPerHard: 0,
@@ -1154,7 +1154,7 @@ class PerTut extends React.Component {
         responseMatrixEasy: [],
         stairCountEasy: [],
         stairDirEasy: ["up", "up"],
-        dotStairEasy: 4.65,
+        dotStairEasy: 3.65,
         correctMatHard: [],
         correctPerHard: 0,
         responseMatrixHard: [],
