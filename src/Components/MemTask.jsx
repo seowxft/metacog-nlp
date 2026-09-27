@@ -573,6 +573,10 @@ class MemTask extends React.Component {
           You will not be allowed to move on to the next set of animals if you
           do not adjust the rating scale.
           <br /> <br />
+          After each section we will also ask you to write a few sentences
+          reflecting on the task and your experience of it. These reflections
+          are an important part of what we are studying.
+          <br /> <br />
           If you do well in the task, you can receive up to{" "}
           <strong>£0.50 bonus</strong>!
           <br /> <br />
