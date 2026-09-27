@@ -173,7 +173,7 @@ class PerTut extends React.Component {
       responseMatrixHard: [],
       stairCountHard: [], // same fix as stairCountEasy
       stairDirHard: ["up", "up"], // same fix as stairDirEasy
-      dotStairHard: 4.65,
+      dotStairHard: 2.65,
 
       // quiz parameters
       quizTry: 1,
@@ -1160,7 +1160,7 @@ class PerTut extends React.Component {
         responseMatrixHard: [],
         stairCountHard: [],
         stairDirHard: ["up", "up"],
-        dotStairHard: 4.65,
+        dotStairHard: 2.65,
       },
       () => {
         this.trialReset();
